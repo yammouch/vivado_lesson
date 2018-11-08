@@ -206,7 +206,6 @@ reg     [7:0]                   expect_memwr64_payload [4095:0];
 reg     [7:0]                   expect_cfgwr_payload [3:0];
 reg                             expect_status;
 reg                             expect_finish_check;
-reg                             testError;
 reg     [136:0]                 s_axis_rq_tuser_wo_parity;
 
 assign s_axis_rq_tuser = {(AXISTEN_IF_RQ_PARITY_CHECK ?  s_axis_rq_tparity : 64'b0),s_axis_rq_tuser_wo_parity[72:0]};
@@ -217,7 +216,6 @@ assign user_lnk_up_n = ~user_lnk_up;
  Initial Statements
 *************************************************************/
 initial begin
-
   s_axis_rq_tlast   = 0;
   s_axis_rq_tdata   = 0;
   s_axis_rq_tuser_wo_parity = 0;
@@ -233,8 +231,8 @@ initial begin
   ADDRESS_32_L         = 32'b1011_1110_1110_1111_1100_1010_1111_1110;
   ADDRESS_32_H         = 32'b1011_1110_1110_1111_1100_1010_1111_1110;
   ADDRESS_64           = { ADDRESS_32_H, ADDRESS_32_L };
-   EP_BUS_DEV_FNS       = 16'b0000_0001_0000_0000;
-   RP_BUS_DEV_FNS       = 16'b0000_0000_0000_0000;
+  EP_BUS_DEV_FNS       = 16'b0000_0001_0000_0000;
+  RP_BUS_DEV_FNS       = 16'b0000_0000_0000_0000;
   // EP_BUS_DEV_FNS       = 16'b0000_0001_1010_0000;
   // RP_BUS_DEV_FNS       = 16'b0000_0000_1010_1111;
   DEFAULT_TC           = 3'b000;
@@ -251,12 +249,10 @@ initial begin
   LENGTH               = 10'b00_0000_0001;
 
   set_malformed        = 1'b0;
-
 end
 //-----------------------------------------------------------------------\\
 // Pre-BAR initialization
 initial begin
-
   BAR_INIT_MESSAGE[0] = "DISABLED";
   BAR_INIT_MESSAGE[1] = "IO MAPPED";
   BAR_INIT_MESSAGE[2] = "MEM32 MAPPED";
@@ -296,7 +292,6 @@ initial begin
   NUMBER_OF_IO_BARS         = 0;
   NUMBER_OF_MEM32_BARS      = 0;
   NUMBER_OF_MEM64_BARS      = 0;
-
 end
 //-----------------------------------------------------------------------\\
 
@@ -314,7 +309,7 @@ function cmp_rddata_32(input [31:0] expc);
 reg testError;
 begin
   testError = 1'b0;
-  if ( P_READ_DATA != expc )
+  if ( P_READ_DATA != expc ) begin
     testError=1'b1;
     $display("[%t] : Test FAILED --- Data Error Mismatch, Write Data %x != Read Data %x",
      $realtime, expc, P_READ_DATA);
@@ -322,7 +317,7 @@ begin
     $display("[%t] : Test PASS --- 1DW Write Data: %x successfully received",
      $realtime, P_READ_DATA);
   end
-  cmp_rddata_64 = testError;
+  cmp_rddata_32 = testError;
 end
 endfunction
 
@@ -330,7 +325,7 @@ function cmp_rddata_64(input [63:0] expc);
 reg testError;
 begin
   testError = 1'b0;
-  if ( {P_READ_DATA, P_READ_DATA_2} != expc )
+  if ( {P_READ_DATA, P_READ_DATA_2} != expc ) begin
     testError=1'b1;
     $display("[%t] : Test FAILED --- Data Error Mismatch, Write Data %x != Read Data %x",
      $realtime, expc, {P_READ_DATA, P_READ_DATA_2});
@@ -342,8 +337,10 @@ begin
 end
 endfunction
 
-task test1_io(input [3:0] ii);
+task test1_io(input [3:0] ii, output testError);
 begin
+  testError = 1'b0;
+
   $display("[%t] : Transmitting TLPs to IO Space BAR %x", $realtime, ii);
 
   //----------------------------------------
@@ -371,15 +368,16 @@ begin
     TSK_TX_IO_READ(DEFAULT_TAG, BAR_INIT_P_BAR[ii][31:0], 4'hF);
     TSK_WAIT_FOR_READ_DATA;
   join
-  testError |= cmp_rddata_32(32'hdead_beef);
+  testError = testError | cmp_rddata_32(32'hdead_beef);
 
   TSK_TX_CLK_EAT(10);
   DEFAULT_TAG = DEFAULT_TAG + 1;
 end
 endtask
 
-task test1_mem32(input [3:0] ii);
+task test1_mem32(input [3:0] ii, output testError);
 begin
+  testError = 1'b0;
   // PIO_READWRITE_TEST CASE for C_AXIS_WIDTH == 64 
 
   //$display("[%t] : Transmitting TLPs to Memory 32 Space BAR %x at address %x", $realtime,
@@ -414,7 +412,7 @@ begin
      BAR_INIT_P_BAR[ii][31:0]+8'h10+(ii*8'h40), 4'h0, 4'hF);
     TSK_WAIT_FOR_READ_DATA;
   join
-  testError |= cmp_rddata_32(data_store_4(3, 2, 1, 0));
+  testError = testError | cmp_rddata_32(data_store_4(3, 2, 1, 0));
 
   TSK_TX_CLK_EAT(10);
   DEFAULT_TAG = DEFAULT_TAG + 1;
@@ -434,7 +432,7 @@ begin
      BAR_INIT_P_BAR[ii][31:0]+8'h14+(ii*8'h40), 4'hF, 4'hF);
     TSK_WAIT_FOR_READ_DATA;
   join
-  testError |= cmp_rddata_64({2{data_store_4(3, 2, 1, 0)}});
+  testError = testError | cmp_rddata_64({2{data_store_4(3, 2, 1, 0)}});
 
   TSK_TX_CLK_EAT(10);
   DEFAULT_TAG = DEFAULT_TAG + 1;
@@ -455,15 +453,16 @@ begin
      BAR_INIT_P_BAR[ii][31:0]+8'h20+(ii*8'h40), 4'hF, 4'hF);
     TSK_WAIT_FOR_READ_DATA;
   join
-  testError |= cmp_rddata_64({2{data_store_4(3, 2, 1, 0)}});
+  testError = testError | cmp_rddata_64({2{data_store_4(3, 2, 1, 0)}});
 
   TSK_TX_CLK_EAT(10);
   DEFAULT_TAG = DEFAULT_TAG + 1; 
 end
 endtask
 
-task test1_mem64(input [3:0] ii);
+task test1_mem64(input [3:0] ii, output testError);
 begin
+  testError = 1'b0;
   //$display("[%t] : Transmitting TLPs to Memory 64 Space BAR %x at address %x", $realtime,
   //    board.RP.tx_usrapp.ii, board.RP.tx_usrapp.BAR_INIT_P_BAR[board.RP.tx_usrapp.ii][31:0]+8'h20+(board.RP.tx_usrapp.ii*8'h20));
   $display("[%t] : Transmitting TLPs to Memory 64 Space BAR %x",
@@ -504,7 +503,7 @@ begin
      4'h0, 4'hF);
     TSK_WAIT_FOR_READ_DATA;
   join
-  cmp_rddata_32(data_store_4(3, 2, 1, 0));
+  testError = testError | cmp_rddata_32(data_store_4(3, 2, 1, 0));
 
   TSK_TX_CLK_EAT(10);
   DEFAULT_TAG = DEFAULT_TAG + 1;
@@ -533,10 +532,40 @@ begin
      4'hF, 4'hF);
     TSK_WAIT_FOR_READ_DATA;
   join
-  cmp_rddata_64({data_store_4(7, 6, 5, 4), data_store_4(3, 2, 1, 0)});
-
+  testError = testError
+            | cmp_rddata_64( { data_store_4(7, 6, 5, 4)
+                             , data_store_4(3, 2, 1, 0) } );
   TSK_TX_CLK_EAT(10);
   DEFAULT_TAG = DEFAULT_TAG + 1;
+end
+endtask
+
+task test_main;
+reg testError, te_tmp;
+begin
+  testError = 1'b0;
+  //--------------------------------------------------------------------------
+  // Event : Testing BARs
+  //--------------------------------------------------------------------------
+  for (ii = 0; ii <= 6; ii = ii + 1) begin
+    if (BAR_INIT_P_BAR_ENABLED[ii] > 2'b00) begin // bar is enabled
+      case (BAR_INIT_P_BAR_ENABLED[ii])
+      2'b01  : test1_io(ii, te_tmp);
+      2'b10  : test1_mem32(ii, te_tmp);
+      2'b11  : test1_mem64(ii, te_tmp);
+      default: $display("Error case in usrapp_tx\n");
+      endcase
+      testError = testError | te_tmp;
+    end // for
+  end // if
+
+  if(testError==1'b0)
+  $display("[%t] : PASS - Test Completed Successfully",$realtime);
+
+  if(testError==1'b1)
+  $display("[%t] : FAIL - Test FAILED due to previous error ",$realtime);
+
+  $display("[%t] : Finished transmission of PCI-Express TLPs", $realtime);
 end
 endtask
 
@@ -545,7 +574,6 @@ initial begin
 
   expect_status       = 0;
   expect_finish_check = 0;
-  testError           = 1'b0;
   // Tx transaction interface signal initialization.
   pcie_tlp_data       = 0;
   pcie_tlp_rem        = 0;
@@ -568,28 +596,8 @@ initial begin
   board.RP.cfg_usrapp.TSK_WRITE_CFG_DW(32'h00000001, 32'h00000007, 4'b1110);
   board.RP.cfg_usrapp.TSK_READ_CFG_DW(32'h00000001);
 
-  //--------------------------------------------------------------------------
-  // Event : Testing BARs
-  //--------------------------------------------------------------------------
+  test_main;
 
-  for (ii = 0; ii <= 6; ii = ii + 1) begin
-    if (BAR_INIT_P_BAR_ENABLED[ii] > 2'b00) begin // bar is enabled
-      case (BAR_INIT_P_BAR_ENABLED[ii])
-      2'b01  : test1_io(ii);
-      2'b10  : test1_mem32(ii);
-      2'b11  : test1_mem64(ii);
-      default: $display("Error case in usrapp_tx\n");
-      endcase
-    end // for
-  end // if
-
-  if(testError==1'b0)
-  $display("[%t] : PASS - Test Completed Successfully",$realtime);
-
-  if(testError==1'b1)
-  $display("[%t] : FAIL - Test FAILED due to previous error ",$realtime);
-
-  $display("[%t] : Finished transmission of PCI-Express TLPs", $realtime);
   $finish;
 end
 //-----------------------------------------------------------------------\\
