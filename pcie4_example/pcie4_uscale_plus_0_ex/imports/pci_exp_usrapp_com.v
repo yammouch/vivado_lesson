@@ -584,121 +584,18 @@ end
 
         if (txrx) begin
 
-          board.RP.com_usrapp.frame_store_tx[board.RP.com_usrapp.frame_store_tx_idx] = _byte;
-          board.RP.com_usrapp.frame_store_tx_idx = board.RP.com_usrapp.frame_store_tx_idx + 1;
+          frame_store_tx[frame_store_tx_idx] = _byte;
+          frame_store_tx_idx = frame_store_tx_idx + 1;
 
         end else begin
 
-          board.RP.com_usrapp.frame_store_rx[board.RP.com_usrapp.frame_store_rx_idx] = _byte;
-          board.RP.com_usrapp.frame_store_rx_idx = board.RP.com_usrapp.frame_store_rx_idx + 1;
+          frame_store_rx[frame_store_rx_idx] = _byte;
+          frame_store_rx_idx = frame_store_rx_idx + 1;
         end
 
       end 
                 end
    endtask // TSK_READ_DATA
-
-   /************************************************************
-        Task : TSK_READ_DATA_128
-        Inputs : None
-        Outputs : None
-        Description : Consume clocks.
-   *************************************************************/
-
-  task TSK_READ_DATA_128;
-    input    first;
-    input    last;
-    input    txrx;
-    input  [127:0]  trn_d;
-    input  [1:0]  trn_rem;
-    integer   _i;
-    reg  [7:0]  _byte;
-    reg  [127:0]  _msk;
-    reg  [4:0]  _rem;
-    reg  [3:0]  _strt_pos;
-                begin
-
-      _msk =   128'hff000000000000000000000000000000;
-      _rem = (trn_rem[1] ? (trn_rem[0] ? 4 : 8) : (trn_rem[0] ? 12 : 16)) ;
-      _strt_pos = 4'd15;
-
-      for (_i = 0; _i < _rem; _i = _i + 1) begin
-
-        _byte = (trn_d & (_msk >> (_i * 8))) >> (((_strt_pos) - _i) * 8);
-
-        if (txrx) begin
-
-          board.RP.com_usrapp.frame_store_tx[board.RP.com_usrapp.frame_store_tx_idx] = _byte;
-          board.RP.com_usrapp.frame_store_tx_idx = board.RP.com_usrapp.frame_store_tx_idx + 1;
-
-        end else begin
-
-          board.RP.com_usrapp.frame_store_rx[board.RP.com_usrapp.frame_store_rx_idx] = _byte;
-          board.RP.com_usrapp.frame_store_rx_idx = board.RP.com_usrapp.frame_store_rx_idx + 1;
-        end
-
-      end 
-                end
-   endtask // TSK_READ_DATA_128
-
-   /************************************************************
-        Task : TSK_READ_DATA_256
-        Inputs : None
-        Outputs : None
-        Description : Consume clocks.
-   *************************************************************/
-
-  task TSK_READ_DATA_256;
-    input    first;
-    input    last;
-    input    txrx;
-    input  [255:0]  trn_d;
-    input  [2:0]  trn_rem;
-    integer   _i;
-    reg  [7:0]  _byte;
-    reg  [255:0]  _msk;
-    reg  [5:0]  _rem;
-    reg  [4:0]  _strt_pos;
-                begin
-
-//      _msk = ((first && trn_rem[2]) ? 
-//             (trn_rem[1] ? 256'h000000000000000000000000000000000000000000000000ff00000000000000 : 256'h00000000000000000000000000000000ff000000000000000000000000000000): 
-//             (trn_rem[1] ? 256'h0000000000000000ff0000000000000000000000000000000000000000000000 : 256'hff00000000000000000000000000000000000000000000000000000000000000)); 
-
-      _msk = 256'hff00000000000000000000000000000000000000000000000000000000000000;
-
-       casex (trn_rem)
-           3'b000 : _rem = 32;
-           3'b001 : _rem = 28;
-           3'b010 : _rem = 24;
-           3'b011 : _rem = 20;
-           3'b100 : _rem = 16;
-           3'b101 : _rem = 12;
-           3'b110 : _rem =  8;
-           3'b111 : _rem =  4;
-           default  : _rem = 32;
-        endcase
-
-      //_strt_pos = ((first && trn_rem[2]) ? (trn_rem[1] ? 4'd7 : 4'd15) : (trn_rem[1] ? 4'd23 : 4'd31));
-      _strt_pos = 5'd31; //((first && trn_rem[2]) ? (trn_rem[1] ? 5'd23 : 5'd31) : (trn_rem[1] ? 5'd7 : 5'd15));
-
-      for (_i = 0; _i < _rem; _i = _i + 1) begin
-
-        _byte = (trn_d & (_msk >> (_i * 8))) >> (((_strt_pos) - _i) * 8);
-
-        if (txrx) begin
-
-          board.RP.com_usrapp.frame_store_tx[board.RP.com_usrapp.frame_store_tx_idx] = _byte;
-          board.RP.com_usrapp.frame_store_tx_idx = board.RP.com_usrapp.frame_store_tx_idx + 1;
-
-        end else begin
-
-          board.RP.com_usrapp.frame_store_rx[board.RP.com_usrapp.frame_store_rx_idx] = _byte;
-          board.RP.com_usrapp.frame_store_rx_idx = board.RP.com_usrapp.frame_store_rx_idx + 1;
-        end
-
-      end 
-                end
-   endtask // TSK_READ_DATA_256
 
    /************************************************************
         Task : TSK_READ_DATA_512
@@ -750,13 +647,13 @@ end
 
         if (txrx) begin
 
-          board.RP.com_usrapp.frame_store_tx[board.RP.com_usrapp.frame_store_tx_idx] = _byte;
-          board.RP.com_usrapp.frame_store_tx_idx = board.RP.com_usrapp.frame_store_tx_idx + 1;
+          frame_store_tx[frame_store_tx_idx] = _byte;
+          frame_store_tx_idx = frame_store_tx_idx + 1;
 
         end else begin
 
-          board.RP.com_usrapp.frame_store_rx[board.RP.com_usrapp.frame_store_rx_idx] = _byte;
-          board.RP.com_usrapp.frame_store_rx_idx = board.RP.com_usrapp.frame_store_rx_idx + 1;
+          frame_store_rx[frame_store_rx_idx] = _byte;
+          frame_store_rx_idx = frame_store_rx_idx + 1;
         end
 
       end 
