@@ -2057,63 +2057,47 @@ begin
 end
 endtask // TSK_TX_BAR_READ
 
-
-
-    /************************************************************
-    Task : TSK_TX_BAR_WRITE
-    Inputs : Bar Index, Byte Offset, Tag, Tc, 32 bit Data
-    Outputs : Transaction Tx Interface Signaling
-    Description : Generates a Memory Write 32, 64, IO TLP with
-                  32 bit data
-    *************************************************************/
-
-    task TSK_TX_BAR_WRITE;
-
-        input    [2:0]    bar_index;
-        input    [31:0]   byte_offset;
-        input    [7:0]    tag_;
-        input    [2:0]    tc_;
-        input    [31:0]   data_;
-
-        begin
-
-        case(BAR_INIT_P_BAR_ENABLED[bar_index])
-        2'b01 : // IO SPACE
-            begin
-                TSK_TX_IO_WRITE(tag_, BAR_INIT_P_BAR[bar_index][31:0]+(byte_offset), 4'hF, data_);
-
-                end
-
-        2'b10 : // MEM 32 SPACE
-            begin
-               DATA_STORE[0] = data_[7:0];
-                           DATA_STORE[1] = data_[15:8];
-                           DATA_STORE[2] = data_[23:16];
-                           DATA_STORE[3] = data_[31:24];
-               TSK_TX_MEMORY_WRITE_32(tag_, tc_, 10'd1,
-                                      BAR_INIT_P_BAR[bar_index][31:0]+(byte_offset), 4'h0, 4'hF, 1'b0);
-                end
-        2'b11 : // MEM 64 SPACE
-                begin
-
-                   DATA_STORE[0] = data_[7:0];
-                           DATA_STORE[1] = data_[15:8];
-                           DATA_STORE[2] = data_[23:16];
-                           DATA_STORE[3] = data_[31:24];
-                   TSK_TX_MEMORY_WRITE_64(tag_, tc_, 10'd1, {BAR_INIT_P_BAR[bar_index+1][31:0],
-                                      BAR_INIT_P_BAR[bar_index][31:0]+(byte_offset)}, 4'h0, 4'hF, 1'b0);
-
-
-
-                    end
-        default : begin
-                    $display("Error case in task TSK_TX_BAR_WRITE");
-                  end
-    endcase
-
-
-        end
-    endtask // TSK_TX_BAR_WRITE
+/************************************************************
+Task : TSK_TX_BAR_WRITE
+Inputs : Bar Index, Byte Offset, Tag, Tc, 32 bit Data
+Outputs : Transaction Tx Interface Signaling
+Description : Generates a Memory Write 32, 64, IO TLP with
+              32 bit data
+*************************************************************/
+task TSK_TX_BAR_WRITE;
+input [ 2:0] bar_index;
+input [31:0] byte_offset;
+input [ 7:0] tag_;
+input [ 2:0] tc_;
+input [31:0] data_;
+begin
+  case(BAR_INIT_P_BAR_ENABLED[bar_index])
+  2'b01 : begin // IO SPACE
+    TSK_TX_IO_WRITE(tag_, BAR_INIT_P_BAR[bar_index][31:0]+(byte_offset),
+     4'hF, data_);
+  end
+  2'b10 : begin // MEM 32 SPACE
+    DATA_STORE[0] = data_[7:0];
+    DATA_STORE[1] = data_[15:8];
+    DATA_STORE[2] = data_[23:16];
+    DATA_STORE[3] = data_[31:24];
+    TSK_TX_MEMORY_WRITE_32(tag_, tc_, 10'd1,
+     BAR_INIT_P_BAR[bar_index][31:0]+(byte_offset), 4'h0, 4'hF, 1'b0);
+  end
+  2'b11 : begin // MEM 64 SPACE
+    DATA_STORE[0] = data_[7:0];
+    DATA_STORE[1] = data_[15:8];
+    DATA_STORE[2] = data_[23:16];
+    DATA_STORE[3] = data_[31:24];
+    TSK_TX_MEMORY_WRITE_64(tag_, tc_, 10'd1, {BAR_INIT_P_BAR[bar_index+1][31:0],
+    BAR_INIT_P_BAR[bar_index][31:0]+(byte_offset)}, 4'h0, 4'hF, 1'b0);
+  end
+  default : begin
+    $display("Error case in task TSK_TX_BAR_WRITE");
+  end
+  endcase
+end
+endtask // TSK_TX_BAR_WRITE
 
     /************************************************************
     Task : TSK_USR_DATA_SETUP_SEQ
