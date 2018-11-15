@@ -239,7 +239,7 @@ begin
    EP_BUS_DEV_FNS, 3'h0, 1'b0, 12'h4,
    RP_BUS_DEV_FNS, exp_tag, BAR_INIT_P_BAR[ii][31:0], test_vars[0]);
 
-  TSK_TX_CLK_EAT(10);
+  repeat (10) @(posedge user_clk);
   DEFAULT_TAG = DEFAULT_TAG + 1;
 
   //----------------------------------------
@@ -254,7 +254,7 @@ begin
   join
   testError = testError | cmp_rddata_32(32'hdead_beef);
 
-  TSK_TX_CLK_EAT(10);
+  repeat (10) @(posedge user_clk);
   DEFAULT_TAG = DEFAULT_TAG + 1;
 end
 endtask
@@ -277,7 +277,7 @@ begin
   // Default 1DW PIO
   TSK_TX_MEMORY_WRITE_32(DEFAULT_TAG, DEFAULT_TC, 11'd1,
    BAR_INIT_P_BAR[ii][31:0]+8'h10+(ii*8'h40), 4'h0, 4'hF, 1'b0);
-  TSK_TX_CLK_EAT(100);
+  repeat (100) @(posedge user_clk);
   DEFAULT_TAG = DEFAULT_TAG + 1;
 
   //----------------------------------------
@@ -295,7 +295,7 @@ begin
   join
   testError = testError | cmp_rddata_32(data_store_4(3, 2, 1, 0));
 
-  TSK_TX_CLK_EAT(10);
+  repeat (10) @(posedge user_clk);
   DEFAULT_TAG = DEFAULT_TAG + 1;
 
   // Optional 2DW PIO
@@ -306,7 +306,7 @@ begin
                                                    
   TSK_TX_MEMORY_WRITE_32(DEFAULT_TAG, DEFAULT_TC, 11'd2,
      BAR_INIT_P_BAR[ii][31:0]+8'h14+(ii*8'h40), 4'hF, 4'hF, 1'b0);
-  TSK_TX_CLK_EAT(100);
+  repeat (100) @(posedge user_clk);
   DEFAULT_TAG = DEFAULT_TAG + 1;                   
   fork
     TSK_TX_MEMORY_READ_32(DEFAULT_TAG, DEFAULT_TC, 11'd2,
@@ -315,7 +315,7 @@ begin
   join
   testError = testError | cmp_rddata_64({2{data_store_4(3, 2, 1, 0)}});
 
-  TSK_TX_CLK_EAT(10);
+  repeat (10) @(posedge user_clk);
   DEFAULT_TAG = DEFAULT_TAG + 1;
 
   // Optional 192 DW PIO
@@ -326,7 +326,7 @@ begin
                                                  
   TSK_TX_MEMORY_WRITE_32(DEFAULT_TAG, DEFAULT_TC, 11'd100,
    BAR_INIT_P_BAR[ii][31:0]+8'h20+(ii*8'h40), 4'hF, 4'hF, 1'b0);
-  TSK_TX_CLK_EAT(100);
+  repeat (100) @(posedge user_clk);
   DEFAULT_TAG = DEFAULT_TAG + 1;
  
   fork
@@ -336,7 +336,7 @@ begin
   join
   testError = testError | cmp_rddata_64({2{data_store_4(3, 2, 1, 0)}});
 
-  TSK_TX_CLK_EAT(10);
+  repeat (10) @(posedge user_clk);
   DEFAULT_TAG = DEFAULT_TAG + 1; 
 end
 endtask
@@ -364,7 +364,7 @@ begin
    {BAR_INIT_P_BAR[ii+1][31:0] ,
     BAR_INIT_P_BAR[ii][31:0]+8'h20+(ii*8'h20)},
    4'h0, 4'hF, 1'b0);
-  TSK_TX_CLK_EAT(10);
+  repeat (10) @(posedge user_clk);
   DEFAULT_TAG = DEFAULT_TAG + 1;
 
   //----------------------------------------
@@ -384,7 +384,7 @@ begin
   join
   testError = testError | cmp_rddata_32(data_store_4(3, 2, 1, 0));
 
-  TSK_TX_CLK_EAT(10);
+  repeat (10) @(posedge user_clk);
   DEFAULT_TAG = DEFAULT_TAG + 1;
 
   // Optional 2DW PIO
@@ -401,7 +401,7 @@ begin
    {BAR_INIT_P_BAR[ii+1][31:0],
     BAR_INIT_P_BAR[ii][31:0]+8'h24+(ii*8'h20)},
    4'hF, 4'hF, 1'b0);
-  TSK_TX_CLK_EAT(10);
+  repeat (10) @(posedge user_clk);
   DEFAULT_TAG = DEFAULT_TAG + 1;
  
   fork
@@ -414,7 +414,7 @@ begin
   testError = testError
             | cmp_rddata_64( { data_store_4(7, 6, 5, 4)
                              , data_store_4(3, 2, 1, 0) } );
-  TSK_TX_CLK_EAT(10);
+  repeat (10) @(posedge user_clk);
   DEFAULT_TAG = DEFAULT_TAG + 1;
 end
 endtask
@@ -512,9 +512,9 @@ begin
   $display("[%t] : RP DEV CTL REG is %x", $realtime,
    board.RP.cfg_usrapp.cfg_mgmt_read_data);
 
-  TSK_TX_CLK_EAT(100);
+  repeat (100) @(posedge user_clk);
   wait (board.RP.pcie_4_0_rport.user_lnk_up == 1);
-  TSK_TX_CLK_EAT(100);
+  repeat (100) @(posedge user_clk);
   $display("[%t] : Transaction Link Is Up...", $realtime);
         
   // EP -- Program PCIe Device Control Register for max payload size == 1024 bytes
@@ -526,7 +526,7 @@ begin
   , (P_READ_DATA | (DEV_CAP_MAX_PAYLOAD_SUPPORTED * 32))
   , 4'h1);
   DEFAULT_TAG = DEFAULT_TAG + 1;
-  TSK_TX_CLK_EAT(1000);
+  repeat (1000) @(posedge user_clk);
        
   TSK_TX_TYPE0_CONFIGURATION_READ(DEFAULT_TAG, 12'h78, 4'hF);
   TSK_WAIT_FOR_READ_DATA;
@@ -1088,8 +1088,8 @@ begin
   end else begin 
     data_axis_first_beat = 0;
     repeat (len_i) begin
-      data_axis_first_beat <<= 32;
-      data_axis_first_beat |=  data_axis_i;
+      data_axis_first_beat = data_axis_first_beat << 32;
+      data_axis_first_beat[31:0] = data_axis_i;
     end
   end
   s_axis_rq_tuser_wo_parity <= #(Tcq) {
@@ -1131,8 +1131,9 @@ begin
    addr_[31:2],    // Memory Write address 32-bits
    2'b00 };        // AT -> 00 : Untranslated Address
   //-----------------------------------------------------------------------\\
-  for (data_pcie_i = 0, _j = 0; _j < 20; _j += 1) begin
-    data_pcie_i <<= 8; data_pcie[7:0] = DATA_STORE[_j];
+  for (data_pcie_i = 0, _j = 0; _j < 20; _j = _j + 1) begin
+    data_pcie_i = data_pcie_i << 8;
+    data_pcie_i[7:0] = DATA_STORE[_j];
   end
   pcie_tlp_data <= #(Tcq) {
    3'b010,        // Fmt for 32-bit MWr Req
@@ -1180,7 +1181,7 @@ begin
       TSK_TX_SYNCHRONIZE(1, 1, 0, `SYNC_RQ_RDY);
 
   end else begin
-    s_axis_rq_teep  <= #(Tcq) len_i == 0 ? ~16'd0 : ~(~16'd0 << (len_i + 4));
+    s_axis_rq_tkeep <= #(Tcq) len_i == 0 ? ~16'd0 : ~(~16'd0 << (len_i + 4));
     s_axis_rq_tlast <= #(Tcq) 1'b1;
     len_i            = 0;
     TSK_TX_SYNCHRONIZE(1, 1, 1, `SYNC_RQ_RDY);
@@ -1194,7 +1195,7 @@ begin
         for (_j = start_addr; len_i != 0; _j = _j + 32) begin
           if (1 <= len_i && len_i <= 15) begin
             subs_dw = 0; repeat (len_i) begin
-              subs_dw <<= 32;
+              subs_dw = subs_dw << 32;
               subs_dw[31:0] = data_axis_i;
             end
           end else begin
@@ -1207,7 +1208,7 @@ begin
             len_i = 0;
           end else begin
             s_axis_rq_tkeep <= #(Tcq) ~16'd0;
-            len_i -= 16;
+            len_i = len_i - 16;
           end
 
           if (len_i == 0) s_axis_rq_tlast <= #(Tcq) 1'b1;
@@ -1225,8 +1226,8 @@ begin
 
       begin // Sequential group 2 - pcie_tlp
         for (_j = 20; _len != 0; _j = _j + 32) begin
-          for (tmp = 0, _k = 0; _k < 32; _k += 1) begin
-            tmp <<= 8;
+          for (tmp = 0, _k = 0; _k < 32; _k = _k + 1) begin
+            tmp = tmp << 8;
             tmp[7:0] = DATA_STORE[_j + _k];
           end
           pcie_tlp_data <= #(Tcq) tmp;
@@ -1306,8 +1307,8 @@ begin
   TSK_TX_SYNCHRONIZE(0, 0, 0, `SYNC_RQ_RDY);
   //-----------------------------------------------------------------------\\
   // Start of First Data Beat
-  for (data_axis_i = 0, _j = 15; 0 <= _j; _j -= 1) begin
-    data_axis_i    <<= 8;
+  for (data_axis_i = 0, _j = 15; 0 <= _j; _j = _j - 1) begin
+    data_axis_i = data_axis_i << 8;
     data_axis_i[7:0] = DATA_STORE[_j];
   end
   s_axis_rq_tuser_wo_parity <= #(Tcq) {
@@ -1350,8 +1351,8 @@ begin
    addr_[63:2], // Memory Write address 64-bits
    2'b00 };     // AT -> 00 : Untranslated Address
   //-----------------------------------------------------------------------\\
-  for (data_pcie_i = 0, _j = 0; _j < 16; _j += 1) begin
-    data_pcie_i    <<= 8;
+  for (data_pcie_i = 0, _j = 0; _j < 16; _j = _j + 1) begin
+    data_pcie_i = data_pcie_i << 8;
     data_pcie_i[7:0] = DATA_STORE[_j];
   end
   pcie_tlp_data <= #(Tcq) {
@@ -1410,14 +1411,14 @@ begin
       begin // Sequential group 1 - AXIS RQ
         for (_j = start_addr; len_i != 0; _j = _j + 32) begin
           if(_j == start_addr) begin 
-            for (aa_data = 0, _k = 31; 0 <= _k; _k -= 1) begin
-              aa_data <<= 8;
+            for (aa_data = 0, _k = 31; 0 <= _k; _k = _k - 1) begin
+              aa_data = aa_data << 8;
               aa_data[7:0] = DATA_STORE[_j + _k];
             end
-            aa_data <<= (aa_dw*4*8);
+            aa_data = aa_data << (aa_dw*4*8);
           end else begin 
-            for (aa_data = 0, _k = 31; 0 <= _k; _k -= 1) begin
-              aa_data <<= 8;
+            for (aa_data = 0, _k = 31; 0 <= _k; _k = _k - 1) begin
+              aa_data = aa_data << 8;
               aa_data[7:0] = DATA_STORE[_j + _k - (aa_dw*4)];
             end
           end
@@ -1444,8 +1445,8 @@ begin
                 
       begin // Sequential group 2 - pcie_tlp
         for (_j = 16; _len != 0; _j = _j + 32) begin
-          for (_k = 0; _k < 32; _k += 1) begin
-            tmp <<= 8;
+          for (_k = 0; _k < 32; _k = _k + 1) begin
+            tmp = tmp << 8;
             tmp[7:0] = DATA_STORE[_j + _k];
           end
           pcie_tlp_data <= #(Tcq) tmp;
@@ -1510,6 +1511,7 @@ reg   [        415:0] data_pcie_i; // Data Info for pcie_tlp_data
 reg   [        512:0] tmp;
 reg   [RP_BAR_SIZE:0] _j;          // Byte Index for aa_data
 reg   [RP_BAR_SIZE:0] _jj;         // Byte Index pcie_tlp_data
+integer               _k;
 integer               start_addr;  // Start Location for Payload DW0
 begin
   //-----------------------------------------------------------------------\\
@@ -1533,12 +1535,12 @@ begin
   TSK_TX_SYNCHRONIZE(0, 0, 0, `SYNC_CC_RDY);
   //-----------------------------------------------------------------------\\
   // Start of First Data Beat
-  for (data_axis_i = 0, _j = 51; 0 <= _j; _j -= 1) begin
-    data_axis_i <<= 8;
+  for (data_axis_i = 0, _j = 51; 0 <= _j; _j = _j - 1) begin
+    data_axis_i = data_axis_i << 8;
     data_axis_i[7:0] = DATA_STORE_2[ram_ptr + _j];
   end
-  for (data_pcie_i = 0, _j = 0; _j < 52; _j += 1) begin
-    data_pcie_i <<= 8;
+  for (data_pcie_i = 0, _j = 0; _j < 52; _j = _j + 1) begin
+    data_pcie_i = data_pcie_i << 8;
     data_pcie_i[7:0] = DATA_STORE_2[ram_ptr + _j];
   end
 
@@ -1611,7 +1613,7 @@ begin
     else           TSK_TX_SYNCHRONIZE(1, 1, 0, `SYNC_CC_RDY);
                 
   end else begin
-    s_axis_cc_tkeep <= #(Tcq) len_i == 0 : ~16'd0 : ~(~16'd0 << (3 + len_i));
+    s_axis_cc_tkeep <= #(Tcq) len_i == 0 ? ~16'd0 : ~(~16'd0 << (3 + len_i));
     s_axis_cc_tlast <= #(Tcq) 1'b1;
     len_i = 0;
     TSK_TX_SYNCHRONIZE(1, 1, 1, `SYNC_CC_RDY);
@@ -1624,14 +1626,14 @@ begin
       begin // Sequential group 1 - AXIS CC
         for (_j = start_addr; len_i != 0; _j = _j + 64) begin
           if (_j == start_addr) begin 
-            for (aa_data = 0, _k = 63; 0 <= _k; _k -= 1) begin
-              aa_data <<= 8;
+            for (aa_data = 0, _k = 63; 0 <= _k; _k = _k - 1) begin
+              aa_data = aa_data << 8;
               aa_data[7:0] = DATA_STORE_2[ram_ptr + _j + _k];
             end
-            aa_data <<= (aa_dw*4*8);
+            aa_data = aa_data << (aa_dw*4*8);
           end else begin
-            for (aa_data = 0, _k = 63; 0 <= _k; _k -= 1) begin
-              aa_data <<= 8;
+            for (aa_data = 0, _k = 63; 0 <= _k; _k = _k - 1) begin
+              aa_data = aa_data << 8;
               aa_data[7:0] = DATA_STORE_2[ram_ptr + _j + _k - (aa_dw*4)];
             end
           end
@@ -1641,7 +1643,7 @@ begin
             len_i = 0;
           end else begin
             s_axis_cc_tkeep <= #(Tcq) ~16'd0;
-            len_i -= 16;
+            len_i = len_i - 16;
           end
 
           if (len_i == 0) s_axis_cc_tlast <= #(Tcq) 1'b1;
@@ -1658,8 +1660,8 @@ begin
                 
       begin // Sequential group 2 - pcie_tlp
         for (_jj = 52; _len != 0; _jj = _jj + 64) begin
-          for (_k = 0; _k < 64; _k += 1) begin
-            tmp <<= 8;
+          for (_k = 0; _k < 64; _k = _k + 1) begin
+            tmp = tmp << 8;
             tmp[7:0] = DATA_STORE_2[ram_ptr + _jj + _k];
           end
           pcie_tlp_data <= #(Tcq) tmp;
@@ -1669,7 +1671,7 @@ begin
             _len = 0;
           end else begin
             pcie_tlp_rem <= #(Tcq) 4'd0;
-            _len -= 16;
+            _len = _len - 16;
           end
                                                    
           if (_len == 0) TSK_TX_SYNCHRONIZE(0, 1, 1, `SYNC_CC_RDY);
@@ -2531,7 +2533,7 @@ begin
   for (pattern = 1; pattern != 0; pattern = pattern << 1) begin
     // Write the test pattern. *address = pattern;pio_memTestAddrBus_test1
     TSK_TX_BAR_WRITE(bar_index, 32'h0, DEFAULT_TAG, DEFAULT_TC, pattern);
-    TSK_TX_CLK_EAT(10);
+    repeat (10) @(posedge user_clk);
     DEFAULT_TAG = DEFAULT_TAG + 1;
     TSK_TX_BAR_READ(bar_index, 32'h0, DEFAULT_TAG, DEFAULT_TC);
     TSK_WAIT_FOR_READ_DATA;
@@ -2544,7 +2546,7 @@ begin
       $display("[%t] : Address: %x Write Data: %x successfully received", $realtime,
        BAR_INIT_P_BAR[bar_index][31:0], P_READ_DATA);
     end
-    TSK_TX_CLK_EAT(10);
+    repeat (10) @(posedge user_clk);
     DEFAULT_TAG = DEFAULT_TAG + 1;
 
   end  // for loop
