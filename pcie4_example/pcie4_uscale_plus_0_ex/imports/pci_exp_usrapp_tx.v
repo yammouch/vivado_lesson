@@ -1,235 +1,177 @@
-//-----------------------------------------------------------------------------
-//
-// (c) Copyright 2012-2012 Xilinx, Inc. All rights reserved.
-//
-// This file contains confidential and proprietary information
-// of Xilinx, Inc. and is protected under U.S. and
-// international copyright and other intellectual property
-// laws.
-//
-// DISCLAIMER
-// This disclaimer is not a license and does not grant any
-// rights to the materials distributed herewith. Except as
-// otherwise provided in a valid license issued to you by
-// Xilinx, and to the maximum extent permitted by applicable
-// law: (1) THESE MATERIALS ARE MADE AVAILABLE "AS IS" AND
-// WITH ALL FAULTS, AND XILINX HEREBY DISCLAIMS ALL WARRANTIES
-// AND CONDITIONS, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING
-// BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, NON-
-// INFRINGEMENT, OR FITNESS FOR ANY PARTICULAR PURPOSE; and
-// (2) Xilinx shall not be liable (whether in contract or tort,
-// including negligence, or under any other theory of
-// liability) for any loss or damage of any kind or nature
-// related to, arising under or in connection with these
-// materials, including for any direct, or any indirect,
-// special, incidental, or consequential loss or damage
-// (including loss of data, profits, goodwill, or any type of
-// loss or damage suffered as a result of any action brought
-// by a third party) even if such damage or loss was
-// reasonably foreseeable or Xilinx had been advised of the
-// possibility of the same.
-//
-// CRITICAL APPLICATIONS
-// Xilinx products are not designed or intended to be fail-
-// safe, or for use in any application requiring fail-safe
-// performance, such as life-support or safety devices or
-// systems, Class III medical devices, nuclear facilities,
-// applications related to the deployment of airbags, or any
-// other applications that could lead to death, personal
-// injury, or severe property or environmental damage
-// (individually and collectively, "Critical
-// Applications"). Customer assumes the sole risk and
-// liability of any use of Xilinx products in Critical
-// Applications, subject only to applicable laws and
-// regulations governing limitations on product liability.
-//
-// THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
-// PART OF THIS FILE AT ALL TIMES.
-//
-//-----------------------------------------------------------------------------
-//
-// Project    : UltraScale+ FPGA PCI Express v4.0 Integrated Block
-// File       : pci_exp_usrapp_tx.v
-// Version    : 1.3 
-//-----------------------------------------------------------------------------
-//--------------------------------------------------------------------------------
 `include "board_common.vh"
 
 module pci_exp_usrapp_tx #(
-  parameter        ATTR_AXISTEN_IF_ENABLE_CLIENT_TAG = 0,
-  parameter        AXISTEN_IF_CC_PARITY_CHECK   = 0,
-  parameter        AXISTEN_IF_RQ_ALIGNMENT_MODE      = "FALSE",
-  parameter        AXISTEN_IF_CC_ALIGNMENT_MODE      = "FALSE",
-  parameter        AXISTEN_IF_CQ_ALIGNMENT_MODE      = "FALSE",
-  parameter        AXISTEN_IF_RC_ALIGNMENT_MODE      = "FALSE",
-  parameter        DEV_CAP_MAX_PAYLOAD_SUPPORTED     = 3,
-  parameter        C_DATA_WIDTH                      = 512,
-  parameter        KEEP_WIDTH                        = C_DATA_WIDTH / 32,
-  parameter        STRB_WIDTH                        = C_DATA_WIDTH / 8,
-  parameter        EP_DEV_ID                         = 16'h7700,
-  parameter        REM_WIDTH                         = C_DATA_WIDTH == 512,
-  parameter  [5:0] RP_BAR_SIZE                       = 6'd11                  // Number of RP BAR's Address Bit - 1
+  parameter       AXISTEN_IF_CC_PARITY_CHECK        = 0,
+  parameter       AXISTEN_IF_RQ_ALIGNMENT_MODE      = "FALSE",
+  parameter       AXISTEN_IF_CC_ALIGNMENT_MODE      = "FALSE",
+  parameter       AXISTEN_IF_CQ_ALIGNMENT_MODE      = "FALSE",
+  parameter       AXISTEN_IF_RC_ALIGNMENT_MODE      = "FALSE",
+  parameter       DEV_CAP_MAX_PAYLOAD_SUPPORTED     = 3,
+  parameter       C_DATA_WIDTH                      = 512,
+  parameter       KEEP_WIDTH                        = C_DATA_WIDTH / 32,
+  parameter       STRB_WIDTH                        = C_DATA_WIDTH / 8,
+  parameter       EP_DEV_ID                         = 16'h7700,
+  parameter       REM_WIDTH                         = C_DATA_WIDTH == 512,
+  parameter [5:0] RP_BAR_SIZE                       = 6'd11
+  // ^--- Number of RP BAR's Address Bit - 1
 )
 (
-  output reg                                 s_axis_rq_tlast,
-  output reg      [C_DATA_WIDTH-1:0]         s_axis_rq_tdata,
-  output          [136:0]                    s_axis_rq_tuser,
-  output reg      [KEEP_WIDTH-1:0]           s_axis_rq_tkeep,
-  input                                      s_axis_rq_tready,
-  output reg                                 s_axis_rq_tvalid,
+  output reg                    s_axis_rq_tlast,
+  output reg [C_DATA_WIDTH-1:0] s_axis_rq_tdata,
+  output     [           136:0] s_axis_rq_tuser,
+  output reg [  KEEP_WIDTH-1:0] s_axis_rq_tkeep,
+  input                         s_axis_rq_tready,
+  output reg                    s_axis_rq_tvalid,
 
-  output reg      [C_DATA_WIDTH-1:0]         s_axis_cc_tdata,
-  output reg      [82:0]                     s_axis_cc_tuser,
-  output reg                                 s_axis_cc_tlast,
-  output reg      [KEEP_WIDTH-1:0]           s_axis_cc_tkeep,
-  output reg                                 s_axis_cc_tvalid,
-  input                                      s_axis_cc_tready,
+  output reg [C_DATA_WIDTH-1:0] s_axis_cc_tdata,
+  output reg [            82:0] s_axis_cc_tuser,
+  output reg                    s_axis_cc_tlast,
+  output reg [  KEEP_WIDTH-1:0] s_axis_cc_tkeep,
+  output reg                    s_axis_cc_tvalid,
+  input                         s_axis_cc_tready,
 
-  input           [3:0]                      pcie_rq_seq_num,
-  input                                      pcie_rq_seq_num_vld,
-  input           [5:0]                      pcie_rq_tag,
-  input                                      pcie_rq_tag_vld,
-
-  input           [1:0]                      pcie_tfc_nph_av,
-  input           [1:0]                      pcie_tfc_npd_av,
-//\\------------------------------------------------------
-  input                                      speed_change_done_n,
-//\\------------------------------------------------------
-  input                                      user_clk,
-  input                                      reset,
-  input                                      user_lnk_up
+  input      [             3:0] pcie_rq_seq_num,
+  input                         pcie_rq_seq_num_vld,
+  input      [             5:0] pcie_rq_tag,
+  input                         pcie_rq_tag_vld,
+  input      [             1:0] pcie_tfc_nph_av,
+  input      [             1:0] pcie_tfc_npd_av,
+  input                         speed_change_done_n,
+  input                         user_clk,
+  input                         reset,
+  input                         user_lnk_up
 );
 
 parameter    Tcq = 1;
 
-localparam   [4:0] LINK_CAP_MAX_LINK_WIDTH = 5'h1;
-localparam   [3:0] LINK_CAP_MAX_LINK_SPEED = 4'h1;
-localparam   [3:0] MAX_LINK_SPEED          = (LINK_CAP_MAX_LINK_SPEED==4'h8) ? 4'h4 : (LINK_CAP_MAX_LINK_SPEED==3'h4) ? 4'h3 : ((LINK_CAP_MAX_LINK_SPEED==3'h2) ? 4'h2 : 4'h1);
-localparam   [5:0] BAR_ENABLED             = 6'b000001 ;
+localparam [ 4:0] LINK_CAP_MAX_LINK_WIDTH = 5'h1;
+localparam [ 3:0] LINK_CAP_MAX_LINK_SPEED = 4'h1;
+localparam [ 3:0] MAX_LINK_SPEED         
+                = (LINK_CAP_MAX_LINK_SPEED==4'h8) ? 4'h4
+                : (LINK_CAP_MAX_LINK_SPEED==3'h4) ? 4'h3
+                : (LINK_CAP_MAX_LINK_SPEED==3'h2) ? 4'h2
+                :                                   4'h1;
+localparam [ 5:0] BAR_ENABLED             = 6'b000001 ;
+localparam [11:0] DEV_CTRL_REG_ADDR       = 12'h078;
 
-localparam  [11:0] DEV_CTRL_REG_ADDR  = 12'h078;
-
-reg        [(C_DATA_WIDTH - 1):0]            pcie_tlp_data;
-reg        [(REM_WIDTH - 1):0]               pcie_tlp_rem;
+reg [C_DATA_WIDTH-1:0] pcie_tlp_data;
+reg [   REM_WIDTH-1:0] pcie_tlp_rem;
 
 
 /* Local Variables */
+integer     i, j, k;
+reg [  7:0] DATA_STORE   [4095:0]; // For Downstream Direction Data Storage
+reg [  7:0] DATA_STORE_2 [(2**(RP_BAR_SIZE+1))-1:0];
+ // ^-- For Upstream Direction Data Storage
+reg [ 15:0] EP_BUS_DEV_FNS;
+reg [ 15:0] RP_BUS_DEV_FNS;
+reg [  2:0] DEFAULT_TC;
+reg [  1:0] DEFAULT_ATTR;
+reg [  7:0] DEFAULT_TAG;
+reg         TD;
+reg         EP;
 
-integer                         i, j, k;
-reg     [7:0]                   DATA_STORE   [4095:0]; // For Downstream Direction Data Storage
-reg     [7:0]                   DATA_STORE_2 [(2**(RP_BAR_SIZE+1))-1:0]; // For Upstream Direction Data Storage
-reg     [15:0]                  EP_BUS_DEV_FNS;
-reg     [15:0]                  RP_BUS_DEV_FNS;
-reg     [2:0]                   DEFAULT_TC;
-reg     [1:0]                   DEFAULT_ATTR;
-reg     [7:0]                   DEFAULT_TAG;
-reg                             TD;
-reg                             EP;
+event       test_begin;
 
-event                           test_begin;
-
-reg     [31:0]                  P_ADDRESS_MASK;
-reg     [31:0]                  P_READ_DATA;      // will store the 1st DW (lo) of a PCIE read completion
-reg     [31:0]                  P_READ_DATA_2;    // will store the 2nd DW (hi) of a PCIE read completion
-reg                             P_READ_DATA_VALID;
-reg     [31:0]                  data;
-
-reg                             error_check;
+reg [ 31:0] P_ADDRESS_MASK;
+reg [ 31:0] P_READ_DATA;
+ // ^-- will store the 1st DW (lo) of a PCIE read completion
+reg [ 31:0] P_READ_DATA_2;
+ // ^-- will store the 2nd DW (hi) of a PCIE read completion
+reg         P_READ_DATA_VALID;
+reg [ 31:0] data;
 
 // BAR Init variables
-reg     [32:0]                  BAR_INIT_P_BAR[6:0];           // 6 corresponds to Expansion ROM
-                                                               // note that bit 32 is for overflow checking
-reg     [31:0]                  BAR_INIT_P_BAR_RANGE[6:0];     // 6 corresponds to Expansion ROM
-reg     [1:0]                   BAR_INIT_P_BAR_ENABLED[6:0];   // 6 corresponds to Expansion ROM
-//                              0 = disabled;  1 = io mapped;  2 = mem32 mapped;  3 = mem64 mapped
+reg [ 32:0] BAR_INIT_P_BAR[6:0]; // 6 corresponds to Expansion ROM
+                                 // note that bit 32 is for overflow checking
+reg [ 31:0] BAR_INIT_P_BAR_RANGE[6:0];   // 6 corresponds to Expansion ROM
+reg [  1:0] BAR_INIT_P_BAR_ENABLED[6:0]; // 6 corresponds to Expansion ROM
+// ^-- 0 = disabled;  1 = io mapped;  2 = mem32 mapped;  3 = mem64 mapped
 
-reg     [31:0]                  BAR_INIT_P_MEM64_HI_START;     // start address for hi memory space
-reg     [31:0]                  BAR_INIT_P_MEM64_LO_START;     // start address for hi memory space
-reg     [32:0]                  BAR_INIT_P_MEM32_START;        // start address for low memory space
-                                                               // top bit used for overflow indicator
-reg     [32:0]                  BAR_INIT_P_IO_START;           // start address for io space
-reg     [100:0]                 BAR_INIT_MESSAGE[3:0];         // to be used to display info to user
+reg [ 31:0] BAR_INIT_P_MEM64_HI_START; // start address for hi memory space
+reg [ 31:0] BAR_INIT_P_MEM64_LO_START; // start address for hi memory space
+reg [ 32:0] BAR_INIT_P_MEM32_START;    // start address for low memory space
+                                       // top bit used for overflow indicator
+reg [ 32:0] BAR_INIT_P_IO_START;       // start address for io space
+reg [100:0] BAR_INIT_MESSAGE[3:0];     // to be used to display info to user
 
-reg     [32:0]                  BAR_INIT_TEMP;
+reg [ 32:0] BAR_INIT_TEMP;
 
-reg                             OUT_OF_LO_MEM;                 // flags to indicate out of mem, mem64, and io
-reg                             OUT_OF_IO;
+reg         OUT_OF_LO_MEM; // flags to indicate out of mem, mem64, and io
+reg         OUT_OF_IO;
 
-integer                         NUMBER_OF_IO_BARS;
-integer                         NUMBER_OF_MEM32_BARS;          // Not counting the Mem32 EROM space
-integer                         NUMBER_OF_MEM64_BARS;
+integer     NUMBER_OF_IO_BARS;
+integer     NUMBER_OF_MEM32_BARS; // Not counting the Mem32 EROM space
+integer     NUMBER_OF_MEM64_BARS;
 
-reg     [3:0]                   ii;
-integer                         jj;
+reg [  3:0] ii;
+integer     jj;
 
-integer                         PIO_MAX_NUM_BLOCK_RAMS;        // holds the max number of block RAMS
+integer     PIO_MAX_NUM_BLOCK_RAMS; // holds the max number of block RAMS
 
-reg                             cpld_to;          // boolean value to indicate if time out has occured while waiting for cpld
+reg         cpld_to;
+// ^-- boolean value to indicate if time out has occured while waiting for cpld
 
-wire                            user_lnk_up_n;
-wire    [63:0]                  s_axis_cc_tparity;
-wire    [63:0]                  s_axis_rq_tparity;
+wire        user_lnk_up_n;
+wire [63:0] s_axis_cc_tparity;
+wire [63:0] s_axis_rq_tparity;
 
-integer                         test_vars [31:0];
-reg     [7:0]                   exp_tag;
-reg     [136:0]                 s_axis_rq_tuser_wo_parity;
+integer     test_vars [31:0];
+reg [  7:0] exp_tag;
+reg [136:0] s_axis_rq_tuser_wo_parity;
 
-assign s_axis_rq_tuser = {64'b0 ,s_axis_rq_tuser_wo_parity[72:0]};
-
+assign s_axis_rq_tuser = {64'b0, s_axis_rq_tuser_wo_parity[72:0]};
 assign user_lnk_up_n = ~user_lnk_up;
 
 /************************************************************
  Initial Statements
 *************************************************************/
 initial begin
-  s_axis_rq_tlast   = 0;
-  s_axis_rq_tdata   = 0;
+  s_axis_rq_tlast           = 0;
+  s_axis_rq_tdata           = 0;
   s_axis_rq_tuser_wo_parity = 0;
-  s_axis_rq_tkeep   = 0;
-  s_axis_rq_tvalid  = 0;
+  s_axis_rq_tkeep           = 0;
+  s_axis_rq_tvalid          = 0;
+  s_axis_cc_tdata           = 0;
+  s_axis_cc_tuser           = 0;
+  s_axis_cc_tlast           = 0;
+  s_axis_cc_tkeep           = 0;
+  s_axis_cc_tvalid          = 0;
 
-  s_axis_cc_tdata   = 0;
-  s_axis_cc_tuser   = 0;
-  s_axis_cc_tlast   = 0;
-  s_axis_cc_tkeep   = 0;
-  s_axis_cc_tvalid  = 0;
+  EP_BUS_DEV_FNS = 16'b0000_0001_0000_0000;
+  RP_BUS_DEV_FNS = 16'b0000_0000_0000_0000;
+  DEFAULT_TC     = 3'b000;
+  DEFAULT_ATTR   = 2'b01;
+  DEFAULT_TAG    = 8'h00;
+  TD             = 0;
+  EP             = 0;
 
-  EP_BUS_DEV_FNS       = 16'b0000_0001_0000_0000;
-  RP_BUS_DEV_FNS       = 16'b0000_0000_0000_0000;
-  DEFAULT_TC           = 3'b000;
-  DEFAULT_ATTR         = 2'b01;
-  DEFAULT_TAG          = 8'h00;
-  TD                   = 0;
-  EP                   = 0;
-end
-//-----------------------------------------------------------------------\\
-// Pre-BAR initialization
-initial begin
+  //-----------------------------------------------------------------------\\
+  // Pre-BAR initialization
   BAR_INIT_MESSAGE[0] = "DISABLED";
   BAR_INIT_MESSAGE[1] = "IO MAPPED";
   BAR_INIT_MESSAGE[2] = "MEM32 MAPPED";
   BAR_INIT_MESSAGE[3] = "MEM64 MAPPED";
 
-  OUT_OF_LO_MEM       = 1'b0;
-  OUT_OF_IO           = 1'b0;
+  OUT_OF_LO_MEM = 1'b0;
+  OUT_OF_IO     = 1'b0;
 
   // Disable variables to start
   for (ii = 0; ii <= 6; ii = ii + 1) begin
-
-      BAR_INIT_P_BAR[ii]         = 33'h00000_0000;
-      BAR_INIT_P_BAR_RANGE[ii]   = 32'h0000_0000;
-      BAR_INIT_P_BAR_ENABLED[ii] = 2'b00;
-
+    BAR_INIT_P_BAR[ii]         = 33'h00000_0000;
+    BAR_INIT_P_BAR_RANGE[ii]   = 32'h0000_0000;
+    BAR_INIT_P_BAR_ENABLED[ii] = 2'b00;
   end
 
-  BAR_INIT_P_MEM64_HI_START =  32'h0000_0001;  // hi 32 bit start of 64bit memory
-  BAR_INIT_P_MEM64_LO_START =  32'h0000_0000;  // low 32 bit start of 64bit memory
-  BAR_INIT_P_MEM32_START    =  33'h00000_0000; // start of 32bit memory
-  BAR_INIT_P_IO_START       =  33'h00000_0000; // start of 32bit io
+  BAR_INIT_P_MEM64_HI_START = 32'h0000_0001;
+  // ^-- hi 32 bit start of 64bit memory
+  BAR_INIT_P_MEM64_LO_START = 32'h0000_0000;
+  // ^-- low 32 bit start of 64bit memory
+  BAR_INIT_P_MEM32_START    = 33'h00000_0000; // start of 32bit memory
+  BAR_INIT_P_IO_START       = 33'h00000_0000; // start of 32bit io
 
-  PIO_MAX_NUM_BLOCK_RAMS    = 4;               // PIO has four block RAMS to test
-
-  cpld_to                   = 0;               // By default time out has not occured
+  PIO_MAX_NUM_BLOCK_RAMS    = 4; // PIO has four block RAMS to test
+  cpld_to                   = 0; // By default time out has not occured
 
   NUMBER_OF_IO_BARS         = 0;
   NUMBER_OF_MEM32_BARS      = 0;
@@ -327,10 +269,10 @@ begin
   //----------------------------------------
   // Event : Memory Write 32 bit TLP
   //----------------------------------------
-  DATA_STORE[0] = {ii,4'h4};//8'h04;
-  DATA_STORE[1] = {ii,4'h3};//8'h03;
-  DATA_STORE[2] = {ii,4'h2};//8'h02;
-  DATA_STORE[3] = {ii,4'h1};//8'h01;
+  DATA_STORE[0] = {ii,4'h4};
+  DATA_STORE[1] = {ii,4'h3};
+  DATA_STORE[2] = {ii,4'h2};
+  DATA_STORE[3] = {ii,4'h1};
                           
   // Default 1DW PIO
   TSK_TX_MEMORY_WRITE_32(DEFAULT_TAG, DEFAULT_TC, 11'd1,
@@ -357,10 +299,10 @@ begin
   DEFAULT_TAG = DEFAULT_TAG + 1;
 
   // Optional 2DW PIO
-  DATA_STORE[0] = {ii+4'hA,4'h4};//8'h04;
-  DATA_STORE[1] = {ii+4'hA,4'h3};//8'h03;
-  DATA_STORE[2] = {ii+4'hA,4'h2};//8'h02;
-  DATA_STORE[3] = {ii+4'hA,4'h1};//8'h01;
+  DATA_STORE[0] = {ii+4'hA,4'h4};
+  DATA_STORE[1] = {ii+4'hA,4'h3};
+  DATA_STORE[2] = {ii+4'hA,4'h2};
+  DATA_STORE[3] = {ii+4'hA,4'h1};
                                                    
   TSK_TX_MEMORY_WRITE_32(DEFAULT_TAG, DEFAULT_TC, 11'd2,
      BAR_INIT_P_BAR[ii][31:0]+8'h14+(ii*8'h40), 4'hF, 4'hF, 1'b0);
@@ -377,10 +319,10 @@ begin
   DEFAULT_TAG = DEFAULT_TAG + 1;
 
   // Optional 192 DW PIO
-  DATA_STORE[0] = {ii+4'hB,4'h4};//8'hB4;
-  DATA_STORE[1] = {ii+4'hB,4'h3};//8'hB3;
-  DATA_STORE[2] = {ii+4'hB,4'h2};//8'hB2;
-  DATA_STORE[3] = {ii+4'hB,4'h1};//8'hB1;
+  DATA_STORE[0] = {ii+4'hB,4'h4};
+  DATA_STORE[1] = {ii+4'hB,4'h3};
+  DATA_STORE[2] = {ii+4'hB,4'h2};
+  DATA_STORE[3] = {ii+4'hB,4'h1};
                                                  
   TSK_TX_MEMORY_WRITE_32(DEFAULT_TAG, DEFAULT_TC, 11'd100,
    BAR_INIT_P_BAR[ii][31:0]+8'h20+(ii*8'h40), 4'hF, 4'hF, 1'b0);
@@ -408,14 +350,14 @@ begin
   //----------------------------------------
   // Event : Memory Write 64 bit TLP
   //----------------------------------------
-  DATA_STORE[0] = {ii+6,4'h4};//8'h64;
-  DATA_STORE[1] = {ii+6,4'h3};//8'h63;
-  DATA_STORE[2] = {ii+6,4'h2};//8'h62;
-  DATA_STORE[3] = {ii+6,4'h1};//8'h61;
-  DATA_STORE[4] = {ii+6,4'h8};//8'h74;
-  DATA_STORE[5] = {ii+6,4'h7};//8'h73;
-  DATA_STORE[6] = {ii+6,4'h6};//8'h72;
-  DATA_STORE[7] = {ii+6,4'h5};//8'h71;
+  DATA_STORE[0] = {ii+6,4'h4};
+  DATA_STORE[1] = {ii+6,4'h3};
+  DATA_STORE[2] = {ii+6,4'h2};
+  DATA_STORE[3] = {ii+6,4'h1};
+  DATA_STORE[4] = {ii+6,4'h8};
+  DATA_STORE[5] = {ii+6,4'h7};
+  DATA_STORE[6] = {ii+6,4'h6};
+  DATA_STORE[7] = {ii+6,4'h5};
 
   // Default 1DW PIO
   TSK_TX_MEMORY_WRITE_64(DEFAULT_TAG, DEFAULT_TC, 10'd1,
@@ -446,14 +388,14 @@ begin
   DEFAULT_TAG = DEFAULT_TAG + 1;
 
   // Optional 2DW PIO
-  DATA_STORE[0] = {ii+4'hA,4'h4};//8'h04;
-  DATA_STORE[1] = {ii+4'hA,4'h3};//8'h03;
-  DATA_STORE[2] = {ii+4'hA,4'h2};//8'h02;
-  DATA_STORE[3] = {ii+4'hA,4'h1};//8'h01;
-  DATA_STORE[4] = {ii+4'hA,4'h8};//8'h14;
-  DATA_STORE[5] = {ii+4'hA,4'h7};//8'h13;
-  DATA_STORE[6] = {ii+4'hA,4'h6};//8'h12;
-  DATA_STORE[7] = {ii+4'hA,4'h5};//8'h11;
+  DATA_STORE[0] = {ii+4'hA,4'h4};
+  DATA_STORE[1] = {ii+4'hA,4'h3};
+  DATA_STORE[2] = {ii+4'hA,4'h2};
+  DATA_STORE[3] = {ii+4'hA,4'h1};
+  DATA_STORE[4] = {ii+4'hA,4'h8};
+  DATA_STORE[5] = {ii+4'hA,4'h7};
+  DATA_STORE[6] = {ii+4'hA,4'h6};
+  DATA_STORE[7] = {ii+4'hA,4'h5};
  
   TSK_TX_MEMORY_WRITE_64(DEFAULT_TAG, DEFAULT_TC, 10'd2,
    {BAR_INIT_P_BAR[ii+1][31:0],
@@ -485,7 +427,7 @@ begin
   // Event : Testing BARs
   //--------------------------------------------------------------------------
   for (ii = 0; ii <= 6; ii = ii + 1) begin
-    if (BAR_INIT_P_BAR_ENABLED[ii] > 2'b00) begin // bar is enabled
+    if (BAR_INIT_P_BAR_ENABLED[ii] > 2'b00) begin
       case (BAR_INIT_P_BAR_ENABLED[ii])
       2'b01  : test1_io(ii, te_tmp);
       2'b10  : test1_mem32(ii, te_tmp);
@@ -493,8 +435,8 @@ begin
       default: $display("Error case in usrapp_tx\n");
       endcase
       testError = testError | te_tmp;
-    end // for
-  end // if
+    end
+  end
 
   if(testError==1'b0)
   $display("[%t] : PASS - Test Completed Successfully",$realtime);
@@ -508,8 +450,8 @@ endtask
 
 initial begin
   // Tx transaction interface signal initialization.
-  pcie_tlp_data       = 0;
-  pcie_tlp_rem        = 0;
+  pcie_tlp_data = 0;
+  pcie_tlp_rem  = 0;
 
   // Payload data initialization.
   TSK_USR_DATA_SETUP_SEQ;
@@ -534,1023 +476,788 @@ initial begin
 end
 //-----------------------------------------------------------------------\\
 
-    /************************************************************
-    Task : TSK_SYSTEM_INITIALIZATION
-    Inputs : None
-    Outputs : None
-    Description : Waits for Transaction Interface Reset and Link-Up
-    *************************************************************/
+/************************************************************
+Task : TSK_SYSTEM_INITIALIZATION
+Inputs : None
+Outputs : None
+Description : Waits for Transaction Interface Reset and Link-Up
+*************************************************************/
+task TSK_SYSTEM_INITIALIZATION;
+begin
+  //--------------------------------------------------------------------------
+  // Event # 1: Wait for Transaction reset to be de-asserted...
+  //--------------------------------------------------------------------------
+  wait (reset == 0);
+  $display("[%t] : Transaction Reset Is De-asserted...", $realtime);
 
-    task TSK_SYSTEM_INITIALIZATION;
-        begin
-
-        //--------------------------------------------------------------------------
-        // Event # 1: Wait for Transaction reset to be de-asserted...
-        //--------------------------------------------------------------------------
-        wait (reset == 0);
-        $display("[%t] : Transaction Reset Is De-asserted...", $realtime);
-
-        //--------------------------------------------------------------------------
-        // Event # 2: Wait for Transaction link to be asserted...
-        //--------------------------------------------------------------------------
-        board.RP.cfg_usrapp.TSK_WRITE_CFG_DW(32'h01, 32'h00000007, 4'h1);
+  //--------------------------------------------------------------------------
+  // Event # 2: Wait for Transaction link to be asserted...
+  //--------------------------------------------------------------------------
+  board.RP.cfg_usrapp.TSK_WRITE_CFG_DW(32'h01, 32'h00000007, 4'h1);
 		
-        // RP -- Program PCIe Device Control Register for max payload size == 1024 bytes
-        $display("[%t] : Reading RP DEV CTL REG 0x78", $realtime);
-        board.RP.cfg_usrapp.TSK_READ_CFG_DW(DEV_CTRL_REG_ADDR/4);	
-        $display("[%t] : RP DEV CTL REG is %x", $realtime, board.RP.cfg_usrapp.cfg_mgmt_read_data);
+  // RP -- Program PCIe Device Control Register for max payload size == 1024 bytes
+  $display("[%t] : Reading RP DEV CTL REG 0x78", $realtime);
+  board.RP.cfg_usrapp.TSK_READ_CFG_DW(DEV_CTRL_REG_ADDR/4);	
+  $display("[%t] : RP DEV CTL REG is %x", $realtime,
+   board.RP.cfg_usrapp.cfg_mgmt_read_data);
         
-        board.RP.cfg_usrapp.TSK_WRITE_CFG_DW(DEV_CTRL_REG_ADDR/4,( board.RP.cfg_usrapp.cfg_mgmt_read_data | (DEV_CAP_MAX_PAYLOAD_SUPPORTED * 32)) , 4'h1);
+  board.RP.cfg_usrapp.TSK_WRITE_CFG_DW
+  ( DEV_CTRL_REG_ADDR/4
+  , ( board.RP.cfg_usrapp.cfg_mgmt_read_data
+    | (DEV_CAP_MAX_PAYLOAD_SUPPORTED * 32) )
+  , 4'h1);
         
-        $display("[%t] : Reading RP DEV CTL REG 0x78", $realtime);
-        board.RP.cfg_usrapp.TSK_READ_CFG_DW(DEV_CTRL_REG_ADDR/4);    
-        $display("[%t] : RP DEV CTL REG is %x", $realtime, board.RP.cfg_usrapp.cfg_mgmt_read_data);
+  $display("[%t] : Reading RP DEV CTL REG 0x78", $realtime);
+  board.RP.cfg_usrapp.TSK_READ_CFG_DW(DEV_CTRL_REG_ADDR/4);    
+  $display("[%t] : RP DEV CTL REG is %x", $realtime,
+   board.RP.cfg_usrapp.cfg_mgmt_read_data);
 
-
-        TSK_TX_CLK_EAT(100);
-        wait (board.RP.pcie_4_0_rport.user_lnk_up == 1);
-        TSK_TX_CLK_EAT(100);
-
-        $display("[%t] : Transaction Link Is Up...", $realtime);
+  TSK_TX_CLK_EAT(100);
+  wait (board.RP.pcie_4_0_rport.user_lnk_up == 1);
+  TSK_TX_CLK_EAT(100);
+  $display("[%t] : Transaction Link Is Up...", $realtime);
         
-        // EP -- Program PCIe Device Control Register for max payload size == 1024 bytes
+  // EP -- Program PCIe Device Control Register for max payload size == 1024 bytes
+  TSK_TX_TYPE0_CONFIGURATION_READ(DEFAULT_TAG, 12'h78, 4'hF);
+  TSK_WAIT_FOR_READ_DATA;
 
-        TSK_TX_TYPE0_CONFIGURATION_READ(DEFAULT_TAG, 12'h78, 4'hF); //12'hC4
-        TSK_WAIT_FOR_READ_DATA;
-
-        TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h78, (P_READ_DATA | (DEV_CAP_MAX_PAYLOAD_SUPPORTED * 32)) , 4'h1);
-        DEFAULT_TAG = DEFAULT_TAG + 1;
-        TSK_TX_CLK_EAT(1000);
+  TSK_TX_TYPE0_CONFIGURATION_WRITE
+  ( DEFAULT_TAG, 12'h78
+  , (P_READ_DATA | (DEV_CAP_MAX_PAYLOAD_SUPPORTED * 32))
+  , 4'h1);
+  DEFAULT_TAG = DEFAULT_TAG + 1;
+  TSK_TX_CLK_EAT(1000);
        
-        TSK_TX_TYPE0_CONFIGURATION_READ(DEFAULT_TAG, 12'h78, 4'hF); //12'hC4
-        TSK_WAIT_FOR_READ_DATA;
-         $display("[%t] : EP DEV CTRL REG Read data %x", $realtime,  P_READ_DATA);
-        
+  TSK_TX_TYPE0_CONFIGURATION_READ(DEFAULT_TAG, 12'h78, 4'hF);
+  TSK_WAIT_FOR_READ_DATA;
+  $display("[%t] : EP DEV CTRL REG Read data %x", $realtime,  P_READ_DATA);
 
+  TSK_SYSTEM_CONFIGURATION_CHECK;
+end
+endtask
 
-        TSK_SYSTEM_CONFIGURATION_CHECK;
+/************************************************************
+Task : TSK_SYSTEM_CONFIGURATION_CHECK
+Inputs : None
+Outputs : None
+Description : Check that options selected from Coregen GUI are
+              set correctly.
+              Checks - Max Link Speed/Width, Device/Vendor ID, CMPS
+*************************************************************/
+task TSK_SYSTEM_CONFIGURATION_CHECK;
+real datarate;
+begin
+  // Check Link Speed/Width
+  TSK_TX_TYPE0_CONFIGURATION_READ(DEFAULT_TAG, 12'h80, 4'hF);
+  TSK_WAIT_FOR_READ_DATA;
 
-        end
-    endtask
+  if  (P_READ_DATA[19:16] == MAX_LINK_SPEED) begin
+    case (P_READ_DATA[19:16])
+    1: datarate =  2.5;
+    2: datarate =  5.0;
+    3: datarate =  8.0;
+    4: datarate = 16.0;
+    endcase
+    $display("[%t] : TEST PASS -- Check Max Link Speed = %fGT/s - PASSED",
+     $realtime, datarate);
+  end else begin
+    $display("[%t] : TEST FAIL -- Check Max Link Speed - FAILED", $realtime);
+    $display
+    ( "[%t] : Data Error Mismatch, Parameter Data %x != Read Data %x"
+    , $realtime, MAX_LINK_SPEED, P_READ_DATA[19:16] );
+  end
 
-    /************************************************************
-    Task : TSK_SYSTEM_CONFIGURATION_CHECK
-    Inputs : None
-    Outputs : None
-    Description : Check that options selected from Coregen GUI are
-                  set correctly.
-                  Checks - Max Link Speed/Width, Device/Vendor ID, CMPS
-    *************************************************************/
+  if (P_READ_DATA[24:20] == LINK_CAP_MAX_LINK_WIDTH)
+    $display
+    ( "[%t] : TEST PASS -- Check Negotiated Link Width = 5'h%x - PASSED"
+    , $realtime, LINK_CAP_MAX_LINK_WIDTH );
+  else
+    $display
+    ( "[%t] : TEST FAIL -- Data Error Mismatch, Parameter Data %x != Read Data %x"
+    , $realtime, LINK_CAP_MAX_LINK_WIDTH, P_READ_DATA[23:20] );
 
-    task TSK_SYSTEM_CONFIGURATION_CHECK;
-        begin
+  // Check Device/Vendor ID
+  TSK_TX_TYPE0_CONFIGURATION_READ(DEFAULT_TAG, 12'h0, 4'hF);
+  TSK_WAIT_FOR_READ_DATA;
 
-        error_check = 0;
+  if (P_READ_DATA[31:16] != EP_DEV_ID) begin
+    $display
+    ( "[%t] : TEST FAIL -- Check Device/Vendor ID - FAILED"
+    , $realtime );
+    $display
+    ( "[%t] : Data Error Mismatch, Parameter Data %x != Read Data %x"
+    , $realtime, EP_DEV_ID, P_READ_DATA );
+  end else begin
+    $display("[%t] : TEST PASS -- Check Device/Vendor ID - PASSED", $realtime);
+  end
 
-        // Check Link Speed/Width
-        TSK_TX_TYPE0_CONFIGURATION_READ(DEFAULT_TAG, 12'h80, 4'hF); // 12'hD0
-        TSK_WAIT_FOR_READ_DATA;
+  // Check CMPS
+  TSK_TX_TYPE0_CONFIGURATION_READ(DEFAULT_TAG, 12'h78, 4'hF);
+  TSK_WAIT_FOR_READ_DATA;
 
-        if  (P_READ_DATA[19:16] == MAX_LINK_SPEED) begin
-            if (P_READ_DATA[19:16] == 1)
-                $display("[%t] :   TEST PASS -- Check Max Link Speed = 2.5GT/s - PASSED", $realtime);
-            else if(P_READ_DATA[19:16] == 2)
-                $display("[%t] :   TEST PASS -- Check Max Link Speed = 5.0GT/s - PASSED", $realtime);
-            else if(P_READ_DATA[19:16] == 3)
-                $display("[%t] :   TEST PASS -- Check Max Link Speed = 8.0GT/s - PASSED", $realtime);
-            else if(P_READ_DATA[19:16] == 4)
-                $display("[%t] :   TEST PASS -- Check Max Link Speed = 16.0GT/s - PASSED", $realtime);
-        end else begin
-            $display("[%t] :    TEST FAIL -- Check Max Link Speed - FAILED", $realtime);
-            $display("[%t] :    Data Error Mismatch, Parameter Data %x != Read Data %x", $realtime, MAX_LINK_SPEED, P_READ_DATA[19:16]);
-        end
+  if (P_READ_DATA[7:5] != DEV_CAP_MAX_PAYLOAD_SUPPORTED) begin
+    $display("[%t] : TEST FAIL -- Check CMPS ID - FAILED", $realtime);
+    $display
+    ( "[%t] : Data Error Mismatch, Parameter Data %x != Read data %x"
+    , $realtime, DEV_CAP_MAX_PAYLOAD_SUPPORTED, P_READ_DATA );
+  end else begin
+    $display
+    ( "[%t] : TEST PASS -- Check CMPS ID == %x - PASSED"
+    , $realtime, DEV_CAP_MAX_PAYLOAD_SUPPORTED );
+  end
 
-        if  (P_READ_DATA[24:20] == LINK_CAP_MAX_LINK_WIDTH)
-              $display("[%t] :  TEST PASS -- Check Negotiated Link Width = 5'h%x - PASSED", $realtime, LINK_CAP_MAX_LINK_WIDTH);
-        else
-              $display("[%t] :  TEST FAIL --  Data Error Mismatch, Parameter Data %x != Read Data %x", $realtime, LINK_CAP_MAX_LINK_WIDTH, P_READ_DATA[23:20]);
+  $display("[%t] :    SYSTEM CHECK PASSED", $realtime);
+end
+endtask
 
-        // Check Device/Vendor ID
-        TSK_TX_TYPE0_CONFIGURATION_READ(DEFAULT_TAG, 12'h0, 4'hF);
-        TSK_WAIT_FOR_READ_DATA;
+/************************************************************
+Task : TSK_TX_TYPE0_CONFIGURATION_READ
+Inputs : Tag, PCI/PCI-Express Reg Address, First BypeEn
+Outputs : Transaction Tx Interface Signaling
+Description : Generates a Type 0 Configuration Read TLP
+*************************************************************/
+task TSK_TX_TYPE0_CONFIGURATION_READ;
+input [ 7:0] tag_;
+input [11:0] reg_addr_;
+input [ 3:0] first_dw_be_; // First DW Byte Enable
+begin
+  //-----------------------------------------------------------------------\\
+  if (user_lnk_up_n) begin
+    $display("[%t] :  interface is MIA", $realtime);
+    $finish(1);
+  end
+  //-----------------------------------------------------------------------\\
+  TSK_TX_SYNCHRONIZE(0, 0, 0, `SYNC_RQ_RDY);
+  //--------- CFG TYPE-0 Read Transaction :                     -----------\\
+  s_axis_rq_tvalid <= #(Tcq) 1'b1;
+  s_axis_rq_tlast  <= #(Tcq) 1'b1;
+  s_axis_rq_tkeep  <= #(Tcq) 8'h0F; // 2DW Descriptor
+  s_axis_rq_tuser_wo_parity <= #(Tcq) {
+   64'b0,                   // Parity Bit slot - 64bit
+   6'b101010,               // Seq Number - 6bit
+   6'b101010,               // Seq Number - 6bit
+   16'h0000,                // TPH Steering Tag - 16 bit
+   2'b00,                   // TPH indirect Tag Enable - 2bit
+   4'b0000,                 // TPH Type - 4 bit
+   2'b00,                   // TPH Present - 2 bit
+   1'b0,                    // Discontinue                                   
+   4'b0000,                 // is_eop1_ptr
+   4'b0000,                 // is_eop0_ptr
+   2'b01,                   // is_eop[1:0]
+   2'b10,                   // is_sop1_ptr[1:0]
+   2'b00,                   // is_sop0_ptr[1:0]
+   2'b01,                   // is_sop[1:0]
+   2'b00,2'b00,
+   // ^-- Byte Lane number in case of Address Aligned mode - 4 bit
+   4'b0000,4'b0000,         // Last BE of the Write Data -  8 bit
+   4'b0000, first_dw_be_ }; // First BE of the Write Data - 8 bit
+  s_axis_rq_tdata <= #(Tcq) {
+   256'b0,128'b0,   // 4DW unused             //256
+   1'b0,            // Force ECRC             //128
+   3'b000,
+   // ^-- Attributes {ID Based Ordering, Relaxed Ordering, No Snoop}
+   3'b000,          // Traffic Class
+   1'b1,            // RID Enable to use the Client supplied Bus/Device/Func No
+   EP_BUS_DEV_FNS,  // Completer ID
+   tag_,            // Tag
+   RP_BUS_DEV_FNS,  // Requester ID  //96
+   1'b0,            // Poisoned Req
+   4'b1000,         // Req Type for TYPE0 CFG READ Req
+   11'b00000000001, // DWORD Count
+   32'b0,           // Address *unused*       // 64
+   16'b0,           // Address *unused*       // 32
+   4'b0,            // Address *unused*
+   reg_addr_[11:2], // Extended + Base Register Number
+   2'b00 };         // AT -> 00 : Untranslated Address
+  //-----------------------------------------------------------------------\\
+  pcie_tlp_data <= #(Tcq) {
+   3'b000,          // Fmt for Type 0 Configuration Read Req 
+   5'b00100,        // Type for Type 0 Configuration Read Req
+   1'b0,            // *reserved*
+   3'b000,          // Traffic Class
+   1'b0,            // *reserved*
+   1'b0,            // Attributes {ID Based Ordering}
+   1'b0,            // *reserved*
+   1'b0,            // TLP Processing Hints
+   1'b0,            // TLP Digest Present
+   1'b0,            // Poisoned Req
+   2'b00,           // Attributes {Relaxed Ordering, No Snoop}
+   2'b00,           // Address Translation
+   10'b0000000001,  // DWORD Count            //32
+   RP_BUS_DEV_FNS,  // Requester ID
+   tag_,            // Tag
+   4'b0000,         // Last DW Byte Enable
+   first_dw_be_,    // First DW Byte Enable   //64
+   EP_BUS_DEV_FNS,  // Completer ID
+   4'b0000,         // *reserved*
+   reg_addr_[11:2], // Extended + Base Register Number
+   2'b00,           // *reserved*             //96
+   32'b0 ,          // *unused*               //128
+   128'b0 };        // *unused*               //256
+  pcie_tlp_rem <= #(Tcq) 3'b101;
+  //-----------------------------------------------------------------------\\
+  TSK_TX_SYNCHRONIZE(1, 1, 1, `SYNC_RQ_RDY);
+  //-----------------------------------------------------------------------\\
+  s_axis_rq_tvalid         <= #(Tcq) 1'b0;
+  s_axis_rq_tlast          <= #(Tcq) 1'b0;
+  s_axis_rq_tkeep          <= #(Tcq) 8'h00;
+  s_axis_rq_tuser_wo_parity<= #(Tcq) 137'b0;
+  s_axis_rq_tdata          <= #(Tcq) 512'b0;
+  //-----------------------------------------------------------------------\\
+  pcie_tlp_rem             <= #(Tcq) 3'b000;
+  //-----------------------------------------------------------------------\\
+end
+endtask // TSK_TX_TYPE0_CONFIGURATION_READ
 
-        if  (P_READ_DATA[31:16] != EP_DEV_ID) begin
-            $display("[%t] :   TEST FAIL --  Check Device/Vendor ID - FAILED", $realtime);
-            $display("[%t] :    Data Error Mismatch, Parameter Data %x != Read Data %x", $realtime, EP_DEV_ID, P_READ_DATA);
+/************************************************************
+Task : TSK_TX_TYPE0_CONFIGURATION_WRITE
+Inputs : Tag, PCI/PCI-Express Reg Address, First BypeEn
+Outputs : Transaction Tx Interface Signaling
+Description : Generates a Type 0 Configuration Write TLP
+*************************************************************/
+task TSK_TX_TYPE0_CONFIGURATION_WRITE;
+input [ 7:0] tag_;
+input [11:0] reg_addr_;
+input [31:0] reg_data_;
+input [ 3:0] first_dw_be_; // First DW Byte Enable
+begin
+  //-----------------------------------------------------------------------\\
+  if (user_lnk_up_n) begin
+    $display("[%t] :  interface is MIA", $realtime);
+    $finish(1);
+  end
+  //-----------------------------------------------------------------------\\
+  TSK_TX_SYNCHRONIZE(0, 0, 0, `SYNC_RQ_RDY);
+  //--------- TYPE-0 CFG Write Transaction :                     -----------\\
+  s_axis_rq_tvalid <= #(Tcq) 1'b1;
+  s_axis_rq_tlast  <= #(Tcq)
+   (AXISTEN_IF_RQ_ALIGNMENT_MODE == "TRUE") ? 1'b0 : 1'b1;
+  s_axis_rq_tkeep  <= #(Tcq)
+   (AXISTEN_IF_RQ_ALIGNMENT_MODE == "TRUE") ? 8'hFF : 8'h1F; // 2DW Descriptor
+  s_axis_rq_tuser_wo_parity <= #(Tcq) {
+   64'b0,                  // Parity Bit slot - 64bit
+   6'b101010,              // Seq Number - 6bit
+   6'b101010,              // Seq Number - 6bit
+   16'h0000,               // TPH Steering Tag - 16 bit
+   2'b00,                  // TPH indirect Tag Enable - 2bit
+   4'b0000,                // TPH Type - 4 bit
+   2'b00,                  // TPH Present - 2 bit
+   1'b0,                   // Discontinue                                   
+   4'b0000,                // is_eop1_ptr
+   4'b0000,                // is_eop0_ptr
+   2'b01,                  // is_eop[1:0]
+   2'b10,                  // is_sop1_ptr[1:0]
+   2'b00,                  // is_sop0_ptr[1:0]
+   2'b01,                  // is_sop[1:0]
+   2'b00,2'b00,
+   // ^-- Byte Lane number in case of Address Aligned mode - 4 bit
+   4'b0000,4'b0000,        // Last BE of the Write Data -  8 bit
+   4'b0000,first_dw_be_ }; // First BE of the Write Data - 8 bit
+  s_axis_rq_tdata <= #(Tcq) {
+   256'b0,96'b0,           // 3 DW unused            //256
+   ( (AXISTEN_IF_RQ_ALIGNMENT_MODE=="FALSE")
+   ? {reg_data_[31:24], reg_data_[23:16], reg_data_[15:8], reg_data_[7:0]}
+   : 32'h0), // Data
+   1'b0,            // Force ECRC             //128
+   3'b000,
+   // ^-- Attributes {ID Based Ordering, Relaxed Ordering, No Snoop}
+   3'b000,          // Traffic Class
+   1'b1,            // RID Enable to use the Client supplied Bus/Device/Func No
+   EP_BUS_DEV_FNS,  // Completer ID
+   tag_,            // Tag
+   RP_BUS_DEV_FNS,  // Requester ID           //96
+   1'b0,            // Poisoned Req
+   4'b1010,         // Req Type for TYPE0 CFG Write Req
+   11'b00000000001, // DWORD Count
+   32'b0,           // Address *unused*       //64
+   16'b0,           // Address *unused*       //32
+   4'b0,            // Address *unused*
+   reg_addr_[11:2], // Extended + Base Register Number
+   2'b00};          // AT -> 00 : Untranslated Address
+  //-----------------------------------------------------------------------\\
+  pcie_tlp_data <= #(Tcq) {
+   3'b010,           // Fmt for Type 0 Configuration Write Req
+   5'b00100,         // Type for Type 0 Configuration Write Req
+   1'b0,             // *reserved*
+   3'b000,           // Traffic Class
+   1'b0,             // *reserved*
+   1'b0,             // Attributes {ID Based Ordering}
+   1'b0,             // *reserved*
+   1'b0,             // TLP Processing Hints
+   1'b0,             // TLP Digest Present
+   1'b0,             // Poisoned Req
+   2'b00,            // Attributes {Relaxed Ordering, No Snoop}
+   2'b00,            // Address Translation
+   10'b0000000001,   // DWORD Count           //32
+   RP_BUS_DEV_FNS,   // Requester ID
+   tag_,             // Tag
+   4'b0000,          // Last DW Byte Enable
+   first_dw_be_,     // First DW Byte Enable  //64
+   EP_BUS_DEV_FNS,   // Completer ID
+   4'b0000,          // *reserved*
+   reg_addr_[11:2],  // Extended + Base Register Number
+   2'b00,            // *reserved*            //96
+   reg_data_[7:0],   // Data
+   reg_data_[15:8],  // Data
+   reg_data_[23:16], // Data
+   reg_data_[31:24], // Data                  //128
+   128'b0 };         // *unused*              //256
+  pcie_tlp_rem <= #(Tcq)  3'b100;
+  TSK_TX_SYNCHRONIZE(1, 1, 1, `SYNC_RQ_RDY);
+  //-----------------------------------------------------------------------\\
+  if(AXISTEN_IF_RQ_ALIGNMENT_MODE == "TRUE") begin
+   s_axis_rq_tvalid <= #(Tcq) 1'b1;
+   s_axis_rq_tlast  <= #(Tcq) 1'b1;
+   s_axis_rq_tkeep  <= #(Tcq) 8'h01;             // 2DW Descriptor
+   s_axis_rq_tdata <= #(Tcq) {
+    256'b0,128'b0,
+    32'b0,            // *unused* //128
+    32'b0,            // *unused* //96
+    32'b0,            // *unused* //64
+    reg_data_[31:24],             //32
+    reg_data_[23:16],
+    reg_data_[15:8],
+    reg_data_[7:0] };
 
-        //    error_check = 1;
-        end else begin
-            $display("[%t] :   TEST PASS --  Check Device/Vendor ID - PASSED", $realtime);
-        end
+    // Just call TSK_TX_SYNCHRONIZE to wait for tready but don't log anything,
+    // because the pcie_tlp_data has complete in the previous clock cycle
+    TSK_TX_SYNCHRONIZE(0, 0, 0, `SYNC_RQ_RDY);
+  end
+  //-----------------------------------------------------------------------\\
+  s_axis_rq_tvalid         <= #(Tcq) 1'b0;
+  s_axis_rq_tlast          <= #(Tcq) 1'b0;
+  s_axis_rq_tkeep          <= #(Tcq) 8'h00;
+  s_axis_rq_tuser_wo_parity<= #(Tcq) 137'b0;
+  s_axis_rq_tdata          <= #(Tcq) 512'b0;
+  //-----------------------------------------------------------------------\\
+  pcie_tlp_rem             <= #(Tcq) 3'b0;
+  //-----------------------------------------------------------------------\\
+end
+endtask // TSK_TX_TYPE0_CONFIGURATION_WRITE
 
-        // Check CMPS
-        TSK_TX_TYPE0_CONFIGURATION_READ(DEFAULT_TAG, 12'h78, 4'hF); //12'hC4
-        TSK_WAIT_FOR_READ_DATA;
-
-        if (P_READ_DATA[7:5] != DEV_CAP_MAX_PAYLOAD_SUPPORTED) begin
-            $display("[%t] :   TEST FAIL --  Check CMPS ID - FAILED", $realtime);
-            $display("[%t] :    Data Error Mismatch, Parameter Data %x != Read data %x", $realtime, DEV_CAP_MAX_PAYLOAD_SUPPORTED, P_READ_DATA);
-
-        //    error_check = 1;
-        end else begin
-            $display("[%t] :  TEST PASS --  Check CMPS ID == %x - PASSED", $realtime, DEV_CAP_MAX_PAYLOAD_SUPPORTED);
-        end
-
-
-        if (error_check == 0) begin
-            $display("[%t] :    SYSTEM CHECK PASSED", $realtime);
-        end else begin
-            $display("[%t] :    SYSTEM CHECK FAILED", $realtime);
-            $finish;
-        end
-
-        end
-    endtask
-
-    /************************************************************
-    Task : TSK_TX_TYPE0_CONFIGURATION_READ
-    Inputs : Tag, PCI/PCI-Express Reg Address, First BypeEn
-    Outputs : Transaction Tx Interface Signaling
-    Description : Generates a Type 0 Configuration Read TLP
-    *************************************************************/
-
-    task TSK_TX_TYPE0_CONFIGURATION_READ;
-        input    [7:0]    tag_;         // Tag
-        input    [11:0]   reg_addr_;    // Register Number
-        input    [3:0]    first_dw_be_; // First DW Byte Enable
-        begin
-            //-----------------------------------------------------------------------\\
-            if (user_lnk_up_n) begin
-                $display("[%t] :  interface is MIA", $realtime);
-                $finish(1);
-            end
-            //-----------------------------------------------------------------------\\
-            TSK_TX_SYNCHRONIZE(0, 0, 0, `SYNC_RQ_RDY);
-            //--------- CFG TYPE-0 Read Transaction :                     -----------\\
-            s_axis_rq_tvalid         <= #(Tcq) 1'b1;
-            s_axis_rq_tlast          <= #(Tcq) 1'b1;
-            s_axis_rq_tkeep          <= #(Tcq) 8'h0F;            // 2DW Descriptor
-            s_axis_rq_tuser_wo_parity<= #(Tcq) {
-                                                64'b0,                   // Parity Bit slot - 64bit
-                                                6'b101010,               // Seq Number - 6bit
-                                                6'b101010,               // Seq Number - 6bit
-                                                16'h0000,                // TPH Steering Tag - 16 bit
-                                                2'b00,                   // TPH indirect Tag Enable - 2bit
-                                                4'b0000,                 // TPH Type - 4 bit
-                                                2'b00,                   // TPH Present - 2 bit
-                                                1'b0,                    // Discontinue                                   
-                                                4'b0000,                 // is_eop1_ptr
-                                                4'b0000,                 // is_eop0_ptr
-                                                2'b01,                   // is_eop[1:0]
-                                                2'b10,                   // is_sop1_ptr[1:0]
-                                                2'b00,                   // is_sop0_ptr[1:0]
-                                                2'b01,                   // is_sop[1:0]
-                                                2'b00,2'b00,             // Byte Lane number in case of Address Aligned mode - 4 bit
-                                                4'b0000,4'b0000,     // Last BE of the Write Data -  8 bit
-                                                4'b0000,first_dw_be_     // First BE of the Write Data - 8 bit
-                                               };
- 
-                                                 
-            s_axis_rq_tdata          <= #(Tcq) {256'b0,128'b0,          // 4DW unused             //256
-                                                1'b0,            // Force ECRC             //128
-                                                3'b000,          // Attributes {ID Based Ordering, Relaxed Ordering, No Snoop}
-                                                3'b000,          // Traffic Class
-                                                1'b1,            // RID Enable to use the Client supplied Bus/Device/Func No
-                                                EP_BUS_DEV_FNS,  // Completer ID
-                                                (ATTR_AXISTEN_IF_ENABLE_CLIENT_TAG ? 8'hCC : tag_), // Tag
-                                                RP_BUS_DEV_FNS,  // Requester ID  //96
-                                                1'b0,            // Poisoned Req
-                                                4'b1000,         // Req Type for TYPE0 CFG READ Req
-                                                11'b00000000001, // DWORD Count
-                                                32'b0,           // Address *unused*       // 64
-                                                16'b0,           // Address *unused*       // 32
-                                                4'b0,            // Address *unused*
-                                                reg_addr_[11:2], // Extended + Base Register Number
-                                                2'b00};          // AT -> 00 : Untranslated Address
-            //-----------------------------------------------------------------------\\
-            pcie_tlp_data            <= #(Tcq) {
-                                                3'b000,          // Fmt for Type 0 Configuration Read Req 
-                                                5'b00100,        // Type for Type 0 Configuration Read Req
-                                                1'b0,            // *reserved*
-                                                3'b000,          // Traffic Class
-                                                1'b0,            // *reserved*
-                                                1'b0,            // Attributes {ID Based Ordering}
-                                                1'b0,            // *reserved*
-                                                1'b0,            // TLP Processing Hints
-                                                1'b0,            // TLP Digest Present
-                                                1'b0,            // Poisoned Req
-                                                2'b00,           // Attributes {Relaxed Ordering, No Snoop}
-                                                2'b00,           // Address Translation
-                                                10'b0000000001,  // DWORD Count            //32
-                                                RP_BUS_DEV_FNS,  // Requester ID
-                                                (ATTR_AXISTEN_IF_ENABLE_CLIENT_TAG ? 8'hCC : tag_), // Tag
-                                                4'b0000,         // Last DW Byte Enable
-                                                first_dw_be_,    // First DW Byte Enable   //64
-                                                EP_BUS_DEV_FNS,  // Completer ID
-                                                4'b0000,         // *reserved*
-                                                reg_addr_[11:2], // Extended + Base Register Number
-                                                2'b00,           // *reserved*             //96
-                                                32'b0 ,          // *unused*               //128
-                                                128'b0           // *unused*               //256
-                                               };
-
-            pcie_tlp_rem             <= #(Tcq)  3'b101;
-            //-----------------------------------------------------------------------\\
-            TSK_TX_SYNCHRONIZE(1, 1, 1, `SYNC_RQ_RDY);
-            //-----------------------------------------------------------------------\\
-            s_axis_rq_tvalid         <= #(Tcq) 1'b0;
-            s_axis_rq_tlast          <= #(Tcq) 1'b0;
-            s_axis_rq_tkeep          <= #(Tcq) 8'h00;
-            s_axis_rq_tuser_wo_parity<= #(Tcq) 137'b0;
-            s_axis_rq_tdata          <= #(Tcq) 512'b0;
-            //-----------------------------------------------------------------------\\
-            pcie_tlp_rem             <= #(Tcq) 3'b000;
-            //-----------------------------------------------------------------------\\
-        end
-    endtask // TSK_TX_TYPE0_CONFIGURATION_READ
-
-    /************************************************************
-    Task : TSK_TX_TYPE0_CONFIGURATION_WRITE
-    Inputs : Tag, PCI/PCI-Express Reg Address, First BypeEn
-    Outputs : Transaction Tx Interface Signaling
-    Description : Generates a Type 0 Configuration Write TLP
-    *************************************************************/
-
-    task TSK_TX_TYPE0_CONFIGURATION_WRITE;
-        input    [7:0]    tag_;         // Tag
-        input    [11:0]   reg_addr_;    // Register Number
-        input    [31:0]   reg_data_;    // Data
-        input    [3:0]    first_dw_be_; // First DW Byte Enable
-        begin
-            //-----------------------------------------------------------------------\\
-            if (user_lnk_up_n) begin
-                $display("[%t] :  interface is MIA", $realtime);
-                $finish(1);
-            end
-            //-----------------------------------------------------------------------\\
-            TSK_TX_SYNCHRONIZE(0, 0, 0, `SYNC_RQ_RDY);
-            //--------- TYPE-0 CFG Write Transaction :                     -----------\\
-            s_axis_rq_tvalid         <= #(Tcq) 1'b1;
-            s_axis_rq_tlast          <= #(Tcq) (AXISTEN_IF_RQ_ALIGNMENT_MODE == "TRUE") ?  1'b0 : 1'b1;
-            s_axis_rq_tkeep          <= #(Tcq) (AXISTEN_IF_RQ_ALIGNMENT_MODE == "TRUE") ?  8'hFF : 8'h1F;       // 2DW Descriptor
-            s_axis_rq_tuser_wo_parity<= #(Tcq) {
-                                                64'b0,                   // Parity Bit slot - 64bit
-                                                6'b101010,               // Seq Number - 6bit
-                                                6'b101010,               // Seq Number - 6bit
-                                                16'h0000,                // TPH Steering Tag - 16 bit
-                                                2'b00,                   // TPH indirect Tag Enable - 2bit
-                                                4'b0000,                 // TPH Type - 4 bit
-                                                2'b00,                   // TPH Present - 2 bit
-                                                1'b0,                    // Discontinue                                   
-                                                4'b0000,                 // is_eop1_ptr
-                                                4'b0000,                 // is_eop0_ptr
-                                                2'b01,                   // is_eop[1:0]
-                                                2'b10,                   // is_sop1_ptr[1:0]
-                                                2'b00,                   // is_sop0_ptr[1:0]
-                                                2'b01,                   // is_sop[1:0]
-                                                2'b00,2'b00,             // Byte Lane number in case of Address Aligned mode - 4 bit
-                                                4'b0000,4'b0000,     // Last BE of the Write Data -  8 bit
-                                                4'b0000,first_dw_be_     // First BE of the Write Data - 8 bit
-                                               };
- 
-                                                
-            s_axis_rq_tdata          <= #(Tcq) {256'b0,96'b0,           // 3 DW unused            //256
-                                                ((AXISTEN_IF_RQ_ALIGNMENT_MODE=="FALSE")? {reg_data_[31:24], reg_data_[23:16], reg_data_[15:8], reg_data_[7:0]} : 32'h0), // Data
-                                                1'b0,            // Force ECRC             //128
-                                                3'b000,          // Attributes {ID Based Ordering, Relaxed Ordering, No Snoop}
-                                                3'b000,          // Traffic Class
-                                                1'b1,            // RID Enable to use the Client supplied Bus/Device/Func No
-                                                EP_BUS_DEV_FNS,  // Completer ID
-                                                (ATTR_AXISTEN_IF_ENABLE_CLIENT_TAG ? 8'hCC : tag_), // Tag
-                                                RP_BUS_DEV_FNS,  // Requester ID           //96
-                                                1'b0,            // Poisoned Req
-                                                4'b1010,         // Req Type for TYPE0 CFG Write Req
-                                                11'b00000000001, // DWORD Count
-                                                32'b0,           // Address *unused*       //64
-                                                16'b0,           // Address *unused*       //32
-                                                4'b0,            // Address *unused*
-                                                reg_addr_[11:2], // Extended + Base Register Number
-                                                2'b00};          // AT -> 00 : Untranslated Address
-            //-----------------------------------------------------------------------\\
-            pcie_tlp_data            <= #(Tcq) {
-                                                3'b010,           // Fmt for Type 0 Configuration Write Req
-                                                5'b00100,         // Type for Type 0 Configuration Write Req
-                                                1'b0,             // *reserved*
-                                                3'b000,           // Traffic Class
-                                                1'b0,             // *reserved*
-                                                1'b0,             // Attributes {ID Based Ordering}
-                                                1'b0,             // *reserved*
-                                                1'b0,             // TLP Processing Hints
-                                                1'b0,             // TLP Digest Present
-                                                1'b0,             // Poisoned Req
-                                                2'b00,            // Attributes {Relaxed Ordering, No Snoop}
-                                                2'b00,            // Address Translation
-                                                10'b0000000001,   // DWORD Count           //32
-                                                RP_BUS_DEV_FNS,   // Requester ID
-                                                (ATTR_AXISTEN_IF_ENABLE_CLIENT_TAG ? 8'hCC : tag_), // Tag
-                                                4'b0000,          // Last DW Byte Enable
-                                                first_dw_be_,     // First DW Byte Enable  //64
-                                                EP_BUS_DEV_FNS,   // Completer ID
-                                                4'b0000,          // *reserved*
-                                                reg_addr_[11:2],  // Extended + Base Register Number
-                                                2'b00,            // *reserved*            //96
-                                                reg_data_[7:0],   // Data
-                                                reg_data_[15:8],  // Data
-                                                reg_data_[23:16], // Data
-                                                reg_data_[31:24], // Data                  //128
-                                                128'b0            // *unused*              //256
-                                               };
-                                               
-            pcie_tlp_rem             <= #(Tcq)  3'b100;
-
-            TSK_TX_SYNCHRONIZE(1, 1, 1, `SYNC_RQ_RDY);
-            //-----------------------------------------------------------------------\\
-            if(AXISTEN_IF_RQ_ALIGNMENT_MODE == "TRUE") begin
-               s_axis_rq_tvalid      <= #(Tcq) 1'b1;
-               s_axis_rq_tlast       <= #(Tcq) 1'b1;
-               s_axis_rq_tkeep       <= #(Tcq) 8'h01;             // 2DW Descriptor
-
-               s_axis_rq_tdata       <= #(Tcq) {256'b0,128'b0,
-                                                32'b0,            // *unused* //128
-                                                32'b0,            // *unused* //96
-                                                32'b0,            // *unused* //64
-                                                reg_data_[31:24],             //32
-                                                reg_data_[23:16],
-                                                reg_data_[15:8],
-                                                reg_data_[7:0]
-                                               };
-
-               // Just call TSK_TX_SYNCHRONIZE to wait for tready but don't log anything, because
-               // the pcie_tlp_data has complete in the previous clock cycle
-               TSK_TX_SYNCHRONIZE(0, 0, 0, `SYNC_RQ_RDY);
-            end
-            //-----------------------------------------------------------------------\\
-            s_axis_rq_tvalid         <= #(Tcq) 1'b0;
-            s_axis_rq_tlast          <= #(Tcq) 1'b0;
-            s_axis_rq_tkeep          <= #(Tcq) 8'h00;
-            s_axis_rq_tuser_wo_parity<= #(Tcq) 137'b0;
-            s_axis_rq_tdata          <= #(Tcq) 512'b0;
-            //-----------------------------------------------------------------------\\
-            pcie_tlp_rem             <= #(Tcq) 3'b0;
-            //-----------------------------------------------------------------------\\
-        end
-    endtask // TSK_TX_TYPE0_CONFIGURATION_WRITE
-
-    /************************************************************
-    Task : TSK_TX_MEMORY_READ_32
-    Inputs : Tag, Length, Address, Last Byte En, First Byte En
-    Outputs : Transaction Tx Interface Signaling
-    Description : Generates a Memory Read 32 TLP
-    *************************************************************/
-
-    task TSK_TX_MEMORY_READ_32;
-        input    [7:0]    tag_;         // Tag
-        input    [2:0]    tc_;          // Traffic Class
-        input    [10:0]   len_;         // Length (in DW)
-        input    [31:0]   addr_;        // Address
-        input    [3:0]    last_dw_be_;  // Last DW Byte Enable
-        input    [3:0]    first_dw_be_; // First DW Byte Enable
-        begin
-            //-----------------------------------------------------------------------\\
-            if (user_lnk_up_n) begin
-                $display("[%t] :  interface is MIA", $realtime);
-                $finish(1);
-            end
-            $display("[%t] : Mem32 Read Req @address %x", $realtime,addr_);
-            //-----------------------------------------------------------------------\\
-            TSK_TX_SYNCHRONIZE(0, 0, 0, `SYNC_RQ_RDY);
-            //-----------------------------------------------------------------------\\
-            s_axis_rq_tvalid         <= #(Tcq) 1'b1;
-            s_axis_rq_tlast          <= #(Tcq) 1'b1;
-            s_axis_rq_tkeep          <= #(Tcq) 8'h0F;             // 2DW Descriptor for Memory Transactions alone
-            s_axis_rq_tuser_wo_parity<= #(Tcq) {
-                                                64'b0,                   // Parity Bit slot - 64bit
-                                                6'b101010,               // Seq Number - 6bit
-                                                6'b101010,               // Seq Number - 6bit
-                                                16'h0000,                // TPH Steering Tag - 16 bit
-                                                2'b00,                   // TPH indirect Tag Enable - 2bit
-                                                4'b0000,                 // TPH Type - 4 bit
-                                                2'b00,                   // TPH Present - 2 bit
-                                                1'b0,                    // Discontinue                                   
-                                                4'b0000,                 // is_eop1_ptr
-                                                4'b0000,                 // is_eop0_ptr
-                                                2'b01,                   // is_eop[1:0]
-                                                2'b10,                   // is_sop1_ptr[1:0]
-                                                2'b00,                   // is_sop0_ptr[1:0]
-                                                2'b01,                   // is_sop[1:0]
-                                                2'b00,2'b00,             // Byte Lane number in case of Address Aligned mode - 4 bit
-                                                4'b0000,last_dw_be_,     // Last BE of the Write Data -  8 bit
-                                                4'b0000,first_dw_be_     // First BE of the Write Data - 8 bit
-                                               };
+/************************************************************
+Task : TSK_TX_MEMORY_READ_32
+Inputs : Tag, Length, Address, Last Byte En, First Byte En
+Outputs : Transaction Tx Interface Signaling
+Description : Generates a Memory Read 32 TLP
+*************************************************************/
+task TSK_TX_MEMORY_READ_32;
+input [ 7:0] tag_;
+input [ 2:0] tc_;          // Traffic Class
+input [10:0] len_;         // Length (in DW)
+input [31:0] addr_;        // Address
+input [ 3:0] last_dw_be_;  // Last DW Byte Enable
+input [ 3:0] first_dw_be_; // First DW Byte Enable
+begin
+  //-----------------------------------------------------------------------\\
+  if (user_lnk_up_n) begin
+      $display("[%t] :  interface is MIA", $realtime);
+      $finish(1);
+  end
+  $display("[%t] : Mem32 Read Req @address %x", $realtime,addr_);
+  //-----------------------------------------------------------------------\\
+  TSK_TX_SYNCHRONIZE(0, 0, 0, `SYNC_RQ_RDY);
+  //-----------------------------------------------------------------------\\
+  s_axis_rq_tvalid         <= #(Tcq) 1'b1;
+  s_axis_rq_tlast          <= #(Tcq) 1'b1;
+  s_axis_rq_tkeep          <= #(Tcq) 8'h0F;             // 2DW Descriptor for Memory Transactions alone
+  s_axis_rq_tuser_wo_parity<= #(Tcq) {
+   64'b0,                   // Parity Bit slot - 64bit
+   6'b101010,               // Seq Number - 6bit
+   6'b101010,               // Seq Number - 6bit
+   16'h0000,                // TPH Steering Tag - 16 bit
+   2'b00,                   // TPH indirect Tag Enable - 2bit
+   4'b0000,                 // TPH Type - 4 bit
+   2'b00,                   // TPH Present - 2 bit
+   1'b0,                    // Discontinue                                   
+   4'b0000,                 // is_eop1_ptr
+   4'b0000,                 // is_eop0_ptr
+   2'b01,                   // is_eop[1:0]
+   2'b10,                   // is_sop1_ptr[1:0]
+   2'b00,                   // is_sop0_ptr[1:0]
+   2'b01,                   // is_sop[1:0]
+   2'b00,2'b00,
+   // ^-- Byte Lane number in case of Address Aligned mode - 4 bit
+   4'b0000,last_dw_be_,     // Last BE of the Write Data -  8 bit
+   4'b0000,first_dw_be_ };  // First BE of the Write Data - 8 bit
          
-            s_axis_rq_tdata          <= #(Tcq) {256'b0,128'b0,           // 4 DW unused                                    //256
-                                                1'b0,             // Force ECRC                                     //128
-                                                3'b000,           // Attributes {ID Based Ordering, Relaxed Ordering, No Snoop}
-                                                tc_,              // Traffic Class
-                                                1'b1,             // RID Enable to use the Client supplied Bus/Device/Func No
-                                                EP_BUS_DEV_FNS,   // Completer ID
-                                                (ATTR_AXISTEN_IF_ENABLE_CLIENT_TAG ? 8'hCC : tag_), // Tag
-                                                RP_BUS_DEV_FNS,   // Requester ID -- Used only when RID enable = 1  //96
-                                                1'b0,             // Poisoned Req
-                                                4'b0000,          // Req Type for MRd Req
-                                                len_ ,            // DWORD Count
-                                                32'b0,            // 32-bit Addressing. So, bits[63:32] = 0         //64
-                                                addr_[31:2],      // Memory read address 32-bits                    //32
-                                                2'b00};           // AT -> 00 : Untranslated Address
-            //-----------------------------------------------------------------------\\
-            pcie_tlp_data            <= #(Tcq) {
-                                                3'b000,           // Fmt for 32-bit MRd Req
-                                                5'b00000,         // Type for 32-bit Mrd Req
-                                                1'b0,             // *reserved*
-                                                tc_,              // 3-bit Traffic Class
-                                                1'b0,             // *reserved*
-                                                1'b0,             // Attributes {ID Based Ordering}
-                                                1'b0,             // *reserved*
-                                                1'b0,             // TLP Processing Hints
-                                                1'b0,             // TLP Digest Present
-                                                1'b0,             // Poisoned Req
-                                                2'b00,            // Attributes {Relaxed Ordering, No Snoop}
-                                                2'b00,            // Address Translation
-                                                len_[9:0],        // DWORD Count                                    //32
-                                                RP_BUS_DEV_FNS,   // Requester ID
-                                                (ATTR_AXISTEN_IF_ENABLE_CLIENT_TAG ? 8'hCC : tag_), // Tag
-                                                last_dw_be_,      // Last DW Byte Enable
-                                                first_dw_be_,     // First DW Byte Enable                           //64
-                                                addr_[31:2],      // Address
-                                                2'b00,            // *reserved*                                     //96
-                                                32'b0,            // *unused*                                       //128
-                                                128'b0            // *unused*                                       //256
-                                               };
+  s_axis_rq_tdata          <= #(Tcq) {
+   256'b0,128'b0,    // 4 DW unused                                    //256
+   1'b0,             // Force ECRC                                     //128
+   3'b000,
+   // ^-- Attributes {ID Based Ordering, Relaxed Ordering, No Snoop}
+   tc_,              // Traffic Class
+   1'b1,             // RID Enable to use the Client supplied Bus/Device/Func No
+   EP_BUS_DEV_FNS,   // Completer ID
+   tag_,             // Tag
+   RP_BUS_DEV_FNS,   // Requester ID -- Used only when RID enable = 1  //96
+   1'b0,             // Poisoned Req
+   4'b0000,          // Req Type for MRd Req
+   len_ ,            // DWORD Count
+   32'b0,            // 32-bit Addressing. So, bits[63:32] = 0         //64
+   addr_[31:2],      // Memory read address 32-bits                    //32
+   2'b00};           // AT -> 00 : Untranslated Address
+  //-----------------------------------------------------------------------\\
+  pcie_tlp_data            <= #(Tcq) {
+   3'b000,         // Fmt for 32-bit MRd Req
+   5'b00000,       // Type for 32-bit Mrd Req
+   1'b0,           // *reserved*
+   tc_,            // 3-bit Traffic Class
+   1'b0,           // *reserved*
+   1'b0,           // Attributes {ID Based Ordering}
+   1'b0,           // *reserved*
+   1'b0,           // TLP Processing Hints
+   1'b0,           // TLP Digest Present
+   1'b0,           // Poisoned Req
+   2'b00,          // Attributes {Relaxed Ordering, No Snoop}
+   2'b00,          // Address Translation
+   len_[9:0],      // DWORD Count                                    //32
+   RP_BUS_DEV_FNS, // Requester ID
+   tag_,           // Tag
+   last_dw_be_,    // Last DW Byte Enable
+   first_dw_be_,   // First DW Byte Enable                           //64
+   addr_[31:2],    // Address
+   2'b00,          // *reserved*                                     //96
+   32'b0,          // *unused*                                       //128
+   128'b0 };       // *unused*                                       //256
+  pcie_tlp_rem             <= #(Tcq)  3'b100;
+  //-----------------------------------------------------------------------\\
+  TSK_TX_SYNCHRONIZE(1, 1, 1, `SYNC_RQ_RDY);
+  //-----------------------------------------------------------------------\\
+  s_axis_rq_tvalid         <= #(Tcq) 1'b0;
+  s_axis_rq_tlast          <= #(Tcq) 1'b0;
+  s_axis_rq_tkeep          <= #(Tcq) 8'h00;
+  s_axis_rq_tuser_wo_parity<= #(Tcq) 137'b0;
+  s_axis_rq_tdata          <= #(Tcq) 512'b0;
+  //-----------------------------------------------------------------------\\
+  pcie_tlp_rem             <= #(Tcq) 3'b0;
+  //-----------------------------------------------------------------------\\
+end
+endtask // TSK_TX_MEMORY_READ_32
 
-            pcie_tlp_rem             <= #(Tcq)  3'b100;
-            //-----------------------------------------------------------------------\\
-            TSK_TX_SYNCHRONIZE(1, 1, 1, `SYNC_RQ_RDY);
-            //-----------------------------------------------------------------------\\
-            s_axis_rq_tvalid         <= #(Tcq) 1'b0;
-            s_axis_rq_tlast          <= #(Tcq) 1'b0;
-            s_axis_rq_tkeep          <= #(Tcq) 8'h00;
-            s_axis_rq_tuser_wo_parity<= #(Tcq) 137'b0;
-            s_axis_rq_tdata          <= #(Tcq) 512'b0;
-            //-----------------------------------------------------------------------\\
-            pcie_tlp_rem             <= #(Tcq) 3'b0;
-            //-----------------------------------------------------------------------\\
-        end
-    endtask // TSK_TX_MEMORY_READ_32
+/************************************************************
+Task : TSK_TX_MEMORY_READ_64
+Inputs : Tag, Length, Address, Last Byte En, First Byte En
+Outputs : Transaction Tx Interface Signaling
+Description : Generates a Memory Read 64 TLP
+*************************************************************/
+task TSK_TX_MEMORY_READ_64;
+input [ 7:0] tag_;
+input [ 2:0] tc_;          // Traffic Class
+input [10:0] len_;         // Length (in DW)
+input [63:0] addr_;        // Address
+input [ 3:0] last_dw_be_;  // Last DW Byte Enable
+input [ 3:0] first_dw_be_; // First DW Byte Enable
+begin
+  //-----------------------------------------------------------------------\\
+  if (user_lnk_up_n) begin
+      $display("[%t] :  interface is MIA", $realtime);
+      $finish(1);
+  end
+  $display("[%t] : Mem64 Read Req @address %x", $realtime,addr_[31:0]);
+  //-----------------------------------------------------------------------\\
+  TSK_TX_SYNCHRONIZE(0, 0, 0, `SYNC_RQ_RDY);
+  //-----------------------------------------------------------------------\\
+  s_axis_rq_tvalid         <= #(Tcq) 1'b1;
+  s_axis_rq_tlast          <= #(Tcq) 1'b1;
+  s_axis_rq_tkeep          <= #(Tcq) 8'h0F;
+  // ^-- 2DW Descriptor for Memory Transactions alone
+  s_axis_rq_tuser_wo_parity<= #(Tcq) {
+   64'b0,                  // Parity Bit slot - 64bit
+   6'b101010,              // Seq Number - 6bit
+   6'b101010,              // Seq Number - 6bit
+   16'h0000,               // TPH Steering Tag - 16 bit
+   2'b00,                  // TPH indirect Tag Enable - 2bit
+   4'b0000,                // TPH Type - 4 bit
+   2'b00,                  // TPH Present - 2 bit
+   1'b0,                   // Discontinue                                   
+   4'b0000,                // is_eop1_ptr
+   4'b0000,                // is_eop0_ptr
+   2'b01,                  //is_eop[1:0]
+   2'b10,                  //is_sop1_ptr[1:0]
+   2'b00,                  //is_sop0_ptr[1:0]
+   2'b01,                  //is_sop[1:0]
+   2'b00,2'b00,
+   // ^-- Byte Lane number in case of Address Aligned mode - 4 bit
+   4'b0000,last_dw_be_,    // Last BE of the Write Data -  8 bit
+   4'b0000,first_dw_be_ }; // First BE of the Write Data - 8 bit
+  s_axis_rq_tdata <= #(Tcq) {
+   256'b0,128'b0,  // 4 DW unused                                    //256
+   1'b0,           // Force ECRC                                     //128
+   3'b000,         // Attributes {ID Based Ordering, Relaxed Ordering, No Snoop}
+   tc_,            // Traffic Class
+   1'b1,           // RID Enable to use the Client supplied Bus/Device/Func No
+   EP_BUS_DEV_FNS, // Completer ID
+   tag_,           // Tag
+   RP_BUS_DEV_FNS, // Requester ID -- Used only when RID enable = 1  //96
+   1'b0,           // Poisoned Req
+   4'b0000,        // Req Type for MRd Req
+   len_ ,          // DWORD Count
+   addr_[63:2],    // Memory read address 64-bits                    //64
+   2'b00 };        // AT -> 00 : Untranslated Address
+  //-----------------------------------------------------------------------\\
+  pcie_tlp_data <= #(Tcq) {
+   3'b001,         // Fmt for 64-bit MRd Req
+   5'b00000,       // Type for 64-bit Mrd Req
+   1'b0,           // *reserved*
+   tc_,            // 3-bit Traffic Class
+   1'b0,           // *reserved*
+   1'b0,           // Attributes {ID Based Ordering}
+   1'b0,           // *reserved*
+   1'b0,           // TLP Processing Hints
+   1'b0,           // TLP Digest Present
+   1'b0,           // Poisoned Req
+   2'b00,          // Attributes {Relaxed Ordering, No Snoop}
+   2'b00,          // Address Translation
+   len_[9:0],      // DWORD Count                                    //32
+   RP_BUS_DEV_FNS, // Requester ID
+   tag_,           // Tag
+   last_dw_be_,    // Last DW Byte Enable
+   first_dw_be_,   // First DW Byte Enable                           //64
+   addr_[63:2],    // Address
+   2'b00,          // *reserved*                                     //128
+   128'b0 };       // *unused*                                       //256
+  pcie_tlp_rem              <= #(Tcq)  3'b100;
+  //-----------------------------------------------------------------------\\
+  TSK_TX_SYNCHRONIZE(1, 1, 1, `SYNC_RQ_RDY);
+  //-----------------------------------------------------------------------\\
+  s_axis_rq_tvalid          <= #(Tcq) 1'b0;
+  s_axis_rq_tlast           <= #(Tcq) 1'b0;
+  s_axis_rq_tkeep           <= #(Tcq) 8'h00;
+  s_axis_rq_tuser_wo_parity <= #(Tcq) 137'b0;
+  s_axis_rq_tdata           <= #(Tcq) 512'b0;
+  //-----------------------------------------------------------------------\\
+  pcie_tlp_rem              <= #(Tcq) 3'b0;
+  //-----------------------------------------------------------------------\\
+end
+endtask // TSK_TX_MEMORY_READ_64
 
-    /************************************************************
-    Task : TSK_TX_MEMORY_READ_64
-    Inputs : Tag, Length, Address, Last Byte En, First Byte En
-    Outputs : Transaction Tx Interface Signaling
-    Description : Generates a Memory Read 64 TLP
-    *************************************************************/
-
-    task TSK_TX_MEMORY_READ_64;
-        input    [7:0]    tag_;         // Tag
-        input    [2:0]    tc_;          // Traffic Class
-        input    [10:0]   len_;         // Length (in DW)
-        input    [63:0]   addr_;        // Address
-        input    [3:0]    last_dw_be_;  // Last DW Byte Enable
-        input    [3:0]    first_dw_be_; // First DW Byte Enable
-        begin
-            //-----------------------------------------------------------------------\\
-            if (user_lnk_up_n) begin
-                $display("[%t] :  interface is MIA", $realtime);
-                $finish(1);
-            end
-            $display("[%t] : Mem64 Read Req @address %x", $realtime,addr_[31:0]);
-            //-----------------------------------------------------------------------\\
-            TSK_TX_SYNCHRONIZE(0, 0, 0, `SYNC_RQ_RDY);
-            //-----------------------------------------------------------------------\\
-            s_axis_rq_tvalid         <= #(Tcq) 1'b1;
-            s_axis_rq_tlast          <= #(Tcq) 1'b1;
-            s_axis_rq_tkeep          <= #(Tcq) 8'h0F;             // 2DW Descriptor for Memory Transactions alone
-            s_axis_rq_tuser_wo_parity<= #(Tcq) {
-                                                64'b0,                   // Parity Bit slot - 64bit
-                                                6'b101010,               // Seq Number - 6bit
-                                                6'b101010,               // Seq Number - 6bit
-                                                16'h0000,                // TPH Steering Tag - 16 bit
-                                                2'b00,                   // TPH indirect Tag Enable - 2bit
-                                                4'b0000,                 // TPH Type - 4 bit
-                                                2'b00,                   // TPH Present - 2 bit
-                                                1'b0,                    // Discontinue                                   
-                                                4'b0000,                 // is_eop1_ptr
-                                                4'b0000,                 // is_eop0_ptr
-                                                2'b01,                   //is_eop[1:0]
-                                                2'b10,                   //is_sop1_ptr[1:0]
-                                                2'b00,                   //is_sop0_ptr[1:0]
-                                                2'b01,                   //is_sop[1:0]
-                                                2'b00,2'b00,             // Byte Lane number in case of Address Aligned mode - 4 bit
-                                                4'b0000,last_dw_be_,     // Last BE of the Write Data -  8 bit
-                                                4'b0000,first_dw_be_     // First BE of the Write Data - 8 bit
-                                               };
-                                                  
-            s_axis_rq_tdata          <= #(Tcq) {256'b0,128'b0,           // 4 DW unused                                    //256
-                                                1'b0,             // Force ECRC                                     //128
-                                                3'b000,           // Attributes {ID Based Ordering, Relaxed Ordering, No Snoop}
-                                                tc_,              // Traffic Class
-                                                1'b1,             // RID Enable to use the Client supplied Bus/Device/Func No
-                                                EP_BUS_DEV_FNS,   // Completer ID
-                                                (ATTR_AXISTEN_IF_ENABLE_CLIENT_TAG ? 8'hCC : tag_), // Tag
-                                                RP_BUS_DEV_FNS,   // Requester ID -- Used only when RID enable = 1  //96
-                                                1'b0,             // Poisoned Req
-                                                4'b0000,          // Req Type for MRd Req
-                                                len_ ,            // DWORD Count
-                                                addr_[63:2],      // Memory read address 64-bits                    //64
-                                                2'b00};           // AT -> 00 : Untranslated Address
-            //-----------------------------------------------------------------------\\
-            pcie_tlp_data            <= #(Tcq) {
-                                                3'b001,           // Fmt for 64-bit MRd Req
-                                                5'b00000,         // Type for 64-bit Mrd Req
-                                                1'b0,             // *reserved*
-                                                tc_,              // 3-bit Traffic Class
-                                                1'b0,             // *reserved*
-                                                1'b0,             // Attributes {ID Based Ordering}
-                                                1'b0,             // *reserved*
-                                                1'b0,             // TLP Processing Hints
-                                                1'b0,             // TLP Digest Present
-                                                1'b0,             // Poisoned Req
-                                                2'b00,            // Attributes {Relaxed Ordering, No Snoop}
-                                                2'b00,            // Address Translation
-                                                len_[9:0],        // DWORD Count                                    //32
-                                                RP_BUS_DEV_FNS,   // Requester ID
-                                                (ATTR_AXISTEN_IF_ENABLE_CLIENT_TAG ? 8'hCC : tag_), // Tag
-                                                last_dw_be_,      // Last DW Byte Enable
-                                                first_dw_be_,     // First DW Byte Enable                           //64
-                                                addr_[63:2],      // Address
-                                                2'b00,            // *reserved*                                     //128
-                                                128'b0            // *unused*                                       //256
-                                               };
-                                                
-            pcie_tlp_rem             <= #(Tcq)  3'b100;
-            //-----------------------------------------------------------------------\\
-            TSK_TX_SYNCHRONIZE(1, 1, 1, `SYNC_RQ_RDY);
-            //-----------------------------------------------------------------------\\
-            s_axis_rq_tvalid         <= #(Tcq) 1'b0;
-            s_axis_rq_tlast          <= #(Tcq) 1'b0;
-            s_axis_rq_tkeep          <= #(Tcq) 8'h00;
-            s_axis_rq_tuser_wo_parity<= #(Tcq) 137'b0;
-            s_axis_rq_tdata          <= #(Tcq) 512'b0;
-            //-----------------------------------------------------------------------\\
-            pcie_tlp_rem             <= #(Tcq) 3'b0;
-            //-----------------------------------------------------------------------\\
-        end
-    endtask // TSK_TX_MEMORY_READ_64
-
-    /************************************************************
-    Task : TSK_TX_MEMORY_WRITE_32
-    Inputs : Tag, Length, Address, Last Byte En, First Byte En
-    Outputs : Transaction Tx Interface Signaling
-    Description : Generates a Memory Write 32 TLP
-    *************************************************************/
-
-    task TSK_TX_MEMORY_WRITE_32;
-        input  [7:0]    tag_;         // Tag
-        input  [2:0]    tc_;          // Traffic Class
-        input  [10:0]   len_;         // Length (in DW)
-        input  [31:0]   addr_;        // Address
-        input  [3:0]    last_dw_be_;  // Last DW Byte Enable
-        input  [3:0]    first_dw_be_; // First DW Byte Enable
-        input           ep_;          // Poisoned Data: Payload is invalid if set
-        reg    [10:0]   _len;         // Length Info on pcie_tlp_data -- Used to count how many times to loop
-        reg    [10:0]   len_i;        // Length Info on s_axis_rq_tdata -- Used to count how many times to loop
-        reg    [2:0]    aa_dw;        // Adjusted DW Count for Address Aligned Mode
-        reg    [255:0]  aa_data;      // Adjusted Data for Address Aligned Mode
-        reg    [31:0]  data_axis_i;   // Data Info for s_axis_rq_tdata changed from 128 bit to 32 bit
-        reg    [511:0] subs_dw;      // adjusted for subsequent DW when len >12
-        reg    [159:0]  data_pcie_i;  // Data Info for pcie_tlp_data
-        reg    [383:0] data_axis_first_beat;
-        integer         _j;           // Byte Index
-        integer         start_addr;   // Start Location for Payload DW0
-
-        begin
-            //-----------------------------------------------------------------------\\            
-            if(AXISTEN_IF_RQ_ALIGNMENT_MODE=="TRUE")begin
-                start_addr  = 0;
-                aa_dw       = addr_[4:2];
-            end else begin
-                start_addr  = 48;
-                aa_dw       = 3'b000;
-            end
+/************************************************************
+Task : TSK_TX_MEMORY_WRITE_32
+Inputs : Tag, Length, Address, Last Byte En, First Byte En
+Outputs : Transaction Tx Interface Signaling
+Description : Generates a Memory Write 32 TLP
+*************************************************************/
+task TSK_TX_MEMORY_WRITE_32;
+input [  7:0] tag_;         // Tag
+input [  2:0] tc_;          // Traffic Class
+input [ 10:0] len_;         // Length (in DW)
+input [ 31:0] addr_;        // Address
+input [  3:0] last_dw_be_;  // Last DW Byte Enable
+input [  3:0] first_dw_be_; // First DW Byte Enable
+input         ep_;          // Poisoned Data: Payload is invalid if set
+reg   [ 10:0] _len;
+// ^-- Length Info on pcie_tlp_data -- Used to count how many times to loop
+reg   [ 10:0] len_i;
+// ^-- Length Info on s_axis_rq_tdata -- Used to count how many times to loop
+reg   [  2:0] aa_dw;        // Adjusted DW Count for Address Aligned Mode
+reg   [ 31:0] data_axis_i;
+// ^-- Data Info for s_axis_rq_tdata changed from 128 bit to 32 bit
+reg   [511:0] subs_dw;      // adjusted for subsequent DW when len >12
+reg   [159:0] data_pcie_i;  // Data Info for pcie_tlp_data
+reg   [383:0] data_axis_first_beat;
+reg   [255:0] tmp;
+integer       _j, _k;       // Byte Index
+integer       start_addr;   // Start Location for Payload DW0
+begin
+  //-----------------------------------------------------------------------\\            
+  if (AXISTEN_IF_RQ_ALIGNMENT_MODE=="TRUE")begin
+    start_addr  = 0;
+    aa_dw       = addr_[4:2];
+  end else begin
+    start_addr  = 48;
+    aa_dw       = 3'b000;
+  end
             
-            len_i           = len_ + aa_dw;
-            _len            = len_;
-            //-----------------------------------------------------------------------\\
-            if (user_lnk_up_n) begin
-                $display("[%t] :  interface is MIA", $realtime);
-                $finish(1);
-            end
-            $display("[%t] : Mem32 Write Req @address %x", $realtime,addr_);
-            //-----------------------------------------------------------------------\\
-            TSK_TX_SYNCHRONIZE(0, 0, 0, `SYNC_RQ_RDY);
-            //-----------------------------------------------------------------------\\
-            // Start of First Data Beat
-           data_axis_i        =  {
-                                   /*DATA_STORE[15],
-                                   DATA_STORE[14],
-                                   DATA_STORE[13],
-                                   DATA_STORE[12],
-                                   DATA_STORE[11],
-                                   DATA_STORE[10],
-                                   DATA_STORE[9],
-                                   DATA_STORE[8],
-                                   DATA_STORE[7],
-                                   DATA_STORE[6],
-                                   DATA_STORE[5],
-                                   DATA_STORE[4],*/
-                                   DATA_STORE[3],
-                                   DATA_STORE[2],
-                                   DATA_STORE[1],
-                                   DATA_STORE[0]
-                                  };
+  len_i = len_ + aa_dw;
+  _len  = len_;
+  //-----------------------------------------------------------------------\\
+  if (user_lnk_up_n) begin
+    $display("[%t] :  interface is MIA", $realtime);
+    $finish(1);
+  end
+  $display("[%t] : Mem32 Write Req @address %x", $realtime,addr_);
+  //-----------------------------------------------------------------------\\
+  TSK_TX_SYNCHRONIZE(0, 0, 0, `SYNC_RQ_RDY);
+  //-----------------------------------------------------------------------\\
+  // Start of First Data Beat
+  data_axis_i = {DATA_STORE[3], DATA_STORE[2], DATA_STORE[1], DATA_STORE[0]};
            
-            if (len_i > 12 ) begin
-               data_axis_first_beat = {12{data_axis_i}}; 
-            end else begin 
-               case (len_i) 
-                   0 :  data_axis_first_beat =   384'h0;
-                   1 :  data_axis_first_beat =  {352'h0,data_axis_i};
-                   2 :  data_axis_first_beat =  {320'h0,{2{data_axis_i}}};
-                   3 :  data_axis_first_beat =  {288'h0,{3{data_axis_i}}};
-                   4 :  data_axis_first_beat =  {256'h0,{4{data_axis_i}}};
-                   5 :  data_axis_first_beat =  {224'h0, {5{data_axis_i}}};
-                   6 :  data_axis_first_beat =  {192'h0, {6{data_axis_i}}};
-                   7 :  data_axis_first_beat =  {160'h0, {7{data_axis_i}}};
-                   8 :  data_axis_first_beat =  {128'h0, {8{data_axis_i}}};
-                   9 :  data_axis_first_beat =  {96'h0, {9{data_axis_i}}};
-                   10 :  data_axis_first_beat = {64'h0, {10{data_axis_i}}};
-                   11 :  data_axis_first_beat = {32'h0, {11{data_axis_i}}};
-                   12 :  data_axis_first_beat = {12{data_axis_i}};
-                   endcase
-                   end
-            
-            
-            s_axis_rq_tuser_wo_parity <= #(Tcq) {
-                                         64'b0,                   // Parity Bit slot - 64bit
-                                         6'b101010,               // Seq Number - 6bit
-                                         6'b101010,               // Seq Number - 6bit
-                                         16'h0000,                // TPH Steering Tag - 16 bit
-                                         2'b00,                   // TPH indirect Tag Enable - 2bit
-                                         4'b0000,                 // TPH Type - 4 bit
-                                         2'b00,                   // TPH Present - 2 bit
-                                         1'b0,                    // Discontinue                                   
-                                         4'b0000,                 // is_eop1_ptr
-                                         4'b1111,                 // is_eop0_ptr
-                                         2'b01,                   // is_eop[1:0]
-                                         2'b00,                   // is_sop1_ptr[1:0]
-                                         2'b00,                   // is_sop0_ptr[1:0]
-                                         2'b01,                   // is_sop[1:0]
-                                         2'b0,aa_dw[1:0],         // Byte Lane number in case of Address Aligned mode - 4 bit
-                                         4'b0000,last_dw_be_,     // Last BE of the Write Data 8 bit
-                                         4'b0000,first_dw_be_     // First BE of the Write Data 8 bit
-                                        };
+  if (len_i > 12 ) begin
+    data_axis_first_beat = {12{data_axis_i}}; 
+  end else begin 
+    data_axis_first_beat = 0;
+    repeat (len_i) begin
+      data_axis_first_beat <<= 32;
+      data_axis_first_beat |=  data_axis_i;
+    end
+  end
+  s_axis_rq_tuser_wo_parity <= #(Tcq) {
+   64'b0,                  // Parity Bit slot - 64bit
+   6'b101010,              // Seq Number - 6bit
+   6'b101010,              // Seq Number - 6bit
+   16'h0000,               // TPH Steering Tag - 16 bit
+   2'b00,                  // TPH indirect Tag Enable - 2bit
+   4'b0000,                // TPH Type - 4 bit
+   2'b00,                  // TPH Present - 2 bit
+   1'b0,                   // Discontinue                                   
+   4'b0000,                // is_eop1_ptr
+   4'b1111,                // is_eop0_ptr
+   2'b01,                  // is_eop[1:0]
+   2'b00,                  // is_sop1_ptr[1:0]
+   2'b00,                  // is_sop0_ptr[1:0]
+   2'b01,                  // is_sop[1:0]
+   2'b0,aa_dw[1:0],
+   // ^-- Byte Lane number in case of Address Aligned mode - 4 bit
+   4'b0000,last_dw_be_,    // Last BE of the Write Data 8 bit
+   4'b0000,first_dw_be_ }; // First BE of the Write Data 8 bit
+  s_axis_rq_tdata   <= #(Tcq) {
+   ( (AXISTEN_IF_RQ_ALIGNMENT_MODE == "FALSE" )
+   ? data_axis_first_beat : 384'h0), // 12 DW write data
+    //128
+   1'b0,           // Force ECRC
+   3'b000,         // Attributes {ID Based Ordering, Relaxed Ordering, No Snoop}
+   tc_,            // Traffic Class
+   1'b1,           // RID Enable to use the Client supplied Bus/Device/Func No
+   EP_BUS_DEV_FNS, // Completer ID
+   tag_,           // Tag
+    //96
+   RP_BUS_DEV_FNS, // Requester ID -- Used only when RID enable = 1
+   ep_,            // Poisoned Req
+   4'b0001,        // Req Type for MWr Req
+   len_,           // DWORD Count - length does not include padded zeros
+    //64
+   32'b0,          // High Address *unused*
+   addr_[31:2],    // Memory Write address 32-bits
+   2'b00 };        // AT -> 00 : Untranslated Address
+  //-----------------------------------------------------------------------\\
+  for (data_pcie_i = 0, _j = 0; _j < 20; _j += 1) begin
+    data_pcie_i <<= 8; data_pcie[7:0] = DATA_STORE[_j];
+  end
+  pcie_tlp_data <= #(Tcq) {
+   3'b010,        // Fmt for 32-bit MWr Req
+   5'b00000,      // Type for 32-bit MWr Req
+   1'b0,          // *reserved*
+   tc_,           // 3-bit Traffic Class
+   1'b0,          // *reserved*
+   1'b0,          // Attributes {ID Based Ordering}
+   1'b0,          // *reserved*
+   1'b0,          // TLP Processing Hints
+   1'b0,          // TLP Digest Present
+   ep_,           // Poisoned Req
+   2'b00,         // Attributes {Relaxed Ordering, No Snoop}
+   2'b00,         // Address Translation
+   len_[9:0],     // DWORD Count
+    //32
+   RP_BUS_DEV_FNS,   // Requester ID
+   tag_,          // Tag
+   last_dw_be_,   // Last DW Byte Enable
+   first_dw_be_,  // First DW Byte Enable
+    //64
+   addr_[31:2],   // Memory Write address 32-bits
+   2'b00,         // *reserved* or Processing Hint
+    //96
+   data_pcie_i    // Payload Data
+  };//256
+  pcie_tlp_rem     <= #(Tcq) (_len > 12) ? 3'b000 : (_len - 12);
+  _len              = (_len > 12) ? (_len - 11'hC) : 11'b0;
+  //-----------------------------------------------------------------------\\
+  s_axis_rq_tvalid <= #(Tcq) 1'b1;
 
-            s_axis_rq_tdata   <= #(Tcq) { ((AXISTEN_IF_RQ_ALIGNMENT_MODE == "FALSE" ) ? data_axis_first_beat : 384'h0), // 12 DW write data
-                                          //128
-                                         1'b0,          // Force ECRC
-                                         3'b000,        // Attributes {ID Based Ordering, Relaxed Ordering, No Snoop}
-                                         tc_,           // Traffic Class
-                                         1'b1,          // RID Enable to use the Client supplied Bus/Device/Func No
-                                         EP_BUS_DEV_FNS,   // Completer ID
-                                         (ATTR_AXISTEN_IF_ENABLE_CLIENT_TAG ? 8'hCC : tag_), // Tag
-                                          //96
-                                         RP_BUS_DEV_FNS,   // Requester ID -- Used only when RID enable = 1
-                                         ep_,           // Poisoned Req
-                                         4'b0001,       // Req Type for MWr Req
-                                         len_,          // DWORD Count - length does not include padded zeros
-                                          //64
-                                         32'b0,         // High Address *unused*
-                                         addr_[31:2],   // Memory Write address 32-bits
-                                         2'b00          // AT -> 00 : Untranslated Address
-                                        };
-            //-----------------------------------------------------------------------\\
-            data_pcie_i        =  {
-                                   DATA_STORE[0],
-                                   DATA_STORE[1],
-                                   DATA_STORE[2],
-                                   DATA_STORE[3],
-                                   DATA_STORE[4],
-                                   DATA_STORE[5],
-                                   DATA_STORE[6],
-                                   DATA_STORE[7],
-                                   DATA_STORE[8],
-                                   DATA_STORE[9],
-                                   DATA_STORE[10],
-                                   DATA_STORE[11],
-                                   DATA_STORE[12],
-                                   DATA_STORE[13],
-                                   DATA_STORE[14],
-                                   DATA_STORE[15],
-                                   DATA_STORE[16],
-                                   DATA_STORE[17],
-                                   DATA_STORE[18],
-                                   DATA_STORE[19]
-                                  };
+  if (len_i > 12 || AXISTEN_IF_RQ_ALIGNMENT_MODE == "TRUE") begin
+    s_axis_rq_tlast <= #(Tcq) 1'b0;
+    s_axis_rq_tkeep <= #(Tcq) 16'hFFFF;
 
-            pcie_tlp_data     <= #(Tcq) {
-                                         3'b010,        // Fmt for 32-bit MWr Req
-                                         5'b00000,      // Type for 32-bit MWr Req
-                                         1'b0,          // *reserved*
-                                         tc_,           // 3-bit Traffic Class
-                                         1'b0,          // *reserved*
-                                         1'b0,          // Attributes {ID Based Ordering}
-                                         1'b0,          // *reserved*
-                                         1'b0,          // TLP Processing Hints
-                                         1'b0,          // TLP Digest Present
-                                         ep_,           // Poisoned Req
-                                         2'b00,         // Attributes {Relaxed Ordering, No Snoop}
-                                         2'b00,         // Address Translation
-                                         len_[9:0],     // DWORD Count
-                                          //32
-                                         RP_BUS_DEV_FNS,   // Requester ID
-                                         (ATTR_AXISTEN_IF_ENABLE_CLIENT_TAG ? 8'hCC : tag_), // Tag
-                                         last_dw_be_,   // Last DW Byte Enable
-                                         first_dw_be_,  // First DW Byte Enable
-                                          //64
-                                         addr_[31:2],   // Memory Write address 32-bits
-                                         2'b00,         // *reserved* or Processing Hint
-                                          //96
-                                         data_pcie_i    // Payload Data
-                                          //256
-                                        };
-                                          
-            pcie_tlp_rem      <= #(Tcq) (_len > 12) ? 3'b000 : (_len - 12);
-            _len               = (_len > 12) ? (_len - 11'hC) : 11'b0;
-            //-----------------------------------------------------------------------\\
-            s_axis_rq_tvalid  <= #(Tcq) 1'b1;
+    len_i = (AXISTEN_IF_RQ_ALIGNMENT_MODE == "FALSE") ? (len_i - 12) : len_i;
+    // Don't subtract 12 in Address Aligned because
+    // it's always padded with zeros on first beat
+ 
+    // pcie_tlp_data doesn't append zero even in Address Aligned mode, so it should mark this cycle as the last beat if it has no more payload to log.
+    // The AXIS RQ interface will need to execute the next cycle, but we're just not going to log that data beat in pcie_tlp_data
+    if (_len == 0)
+      TSK_TX_SYNCHRONIZE(1, 1, 1, `SYNC_RQ_RDY);
+    else
+      TSK_TX_SYNCHRONIZE(1, 1, 0, `SYNC_RQ_RDY);
 
-            if (len_i > 12 || AXISTEN_IF_RQ_ALIGNMENT_MODE == "TRUE") begin  //changed from 4 to 12
-                s_axis_rq_tlast          <= #(Tcq) 1'b0;
-                s_axis_rq_tkeep          <= #(Tcq) 16'hFFFF;
-
-                len_i                     = (AXISTEN_IF_RQ_ALIGNMENT_MODE == "FALSE") ? (len_i - 12) : len_i; // Don't subtract 12 in Address Aligned because
-                                                                                                             // it's always padded with zeros on first beat
-
-                // pcie_tlp_data doesn't append zero even in Address Aligned mode, so it should mark this cycle as the last beat if it has no more payload to log.
-                // The AXIS RQ interface will need to execute the next cycle, but we're just not going to log that data beat in pcie_tlp_data
-                if (_len == 0)
-                    TSK_TX_SYNCHRONIZE(1, 1, 1, `SYNC_RQ_RDY);
-                else
-                    TSK_TX_SYNCHRONIZE(1, 1, 0, `SYNC_RQ_RDY);
-
-            end else begin
-                if (len_i == 1)
-                    s_axis_rq_tkeep      <= #(Tcq) 16'h001F;
-                else if (len_i == 2)
-                    s_axis_rq_tkeep      <= #(Tcq) 16'h003F;
-                else if (len_i == 3)
-                    s_axis_rq_tkeep      <= #(Tcq) 16'h007F;
-                else if (len_i == 4)
-                    s_axis_rq_tkeep      <= #(Tcq) 16'h00FF;
-                else if (len_i == 5)
-                    s_axis_rq_tkeep      <= #(Tcq) 16'h01FF;
-                else if (len_i == 6)
-                    s_axis_rq_tkeep      <= #(Tcq) 16'h03FF;
-                else if (len_i == 7)
-                    s_axis_rq_tkeep      <= #(Tcq) 16'h07FF;
-                else if (len_i == 9)
-                    s_axis_rq_tkeep      <= #(Tcq) 16'h1FFF;
-                else if (len_i == 10)
-                    s_axis_rq_tkeep      <= #(Tcq) 16'h3FFF;
-                else if (len_i == 11)
-                    s_axis_rq_tkeep      <= #(Tcq) 16'h7FFF;
-                else
-                    s_axis_rq_tkeep      <= #(Tcq) 16'hFFFF; 
-
-                s_axis_rq_tlast          <= #(Tcq) 1'b1;
-
-                len_i                     = 0;
-                TSK_TX_SYNCHRONIZE(1, 1, 1, `SYNC_RQ_RDY);
+  end else begin
+    s_axis_rq_teep  <= #(Tcq) len_i == 0 ? ~16'd0 : ~(~16'd0 << (len_i + 4));
+    s_axis_rq_tlast <= #(Tcq) 1'b1;
+    len_i            = 0;
+    TSK_TX_SYNCHRONIZE(1, 1, 1, `SYNC_RQ_RDY);
+  end
+  // End of First Data Beat
+  //-----------------------------------------------------------------------\\
+  // Start of Second and Subsequent Data Beat
+  if (len_i != 0 || AXISTEN_IF_RQ_ALIGNMENT_MODE == "TRUE") begin
+    fork
+      begin // Sequential group 1 - AXIS RQ
+        for (_j = start_addr; len_i != 0; _j = _j + 32) begin
+          if (1 <= len_i && len_i <= 15) begin
+            subs_dw = 0; repeat (len_i) begin
+              subs_dw <<= 32;
+              subs_dw[31:0] = data_axis_i;
             end
-            // End of First Data Beat
-            //-----------------------------------------------------------------------\\
-            // Start of Second and Subsequent Data Beat
-            if (len_i != 0 || AXISTEN_IF_RQ_ALIGNMENT_MODE == "TRUE") begin
-                fork
+          end else begin
+            subs_dw = {16{data_axis_i}}; 
+          end
 
-                begin // Sequential group 1 - AXIS RQ
-                    for (_j = start_addr; len_i != 0; _j = _j + 32) begin
-                       /* if(_j==start_addr) begin 
-                            aa_data = {
-                                       DATA_STORE[_j + 31],
-                                       DATA_STORE[_j + 30],
-                                       DATA_STORE[_j + 29],
-                                       DATA_STORE[_j + 28],
-                                       DATA_STORE[_j + 27],
-                                       DATA_STORE[_j + 26],
-                                       DATA_STORE[_j + 25],
-                                       DATA_STORE[_j + 24],
-                                       DATA_STORE[_j + 23],
-                                       DATA_STORE[_j + 22],
-                                       DATA_STORE[_j + 21],
-                                       DATA_STORE[_j + 20],
-                                       DATA_STORE[_j + 19],
-                                       DATA_STORE[_j + 18],
-                                       DATA_STORE[_j + 17],
-                                       DATA_STORE[_j + 16],
-                                       DATA_STORE[_j + 15],
-                                       DATA_STORE[_j + 14],
-                                       DATA_STORE[_j + 13],
-                                       DATA_STORE[_j + 12],
-                                       DATA_STORE[_j + 11],
-                                       DATA_STORE[_j + 10],
-                                       DATA_STORE[_j +  9],
-                                       DATA_STORE[_j +  8],
-                                       DATA_STORE[_j +  7],
-                                       DATA_STORE[_j +  6],
-                                       DATA_STORE[_j +  5],
-                                       DATA_STORE[_j +  4],
-                                       DATA_STORE[_j +  3],
-                                       DATA_STORE[_j +  2],
-                                       DATA_STORE[_j +  1],
-                                       DATA_STORE[_j +  0]
-                                      } << (aa_dw*4*8);
-                        end else begin 
-                            aa_data = {
-                                       DATA_STORE[_j + 31 - (aa_dw*4)],
-                                       DATA_STORE[_j + 30 - (aa_dw*4)],
-                                       DATA_STORE[_j + 29 - (aa_dw*4)],
-                                       DATA_STORE[_j + 28 - (aa_dw*4)],
-                                       DATA_STORE[_j + 27 - (aa_dw*4)],
-                                       DATA_STORE[_j + 26 - (aa_dw*4)],
-                                       DATA_STORE[_j + 25 - (aa_dw*4)],
-                                       DATA_STORE[_j + 24 - (aa_dw*4)],
-                                       DATA_STORE[_j + 23 - (aa_dw*4)],
-                                       DATA_STORE[_j + 22 - (aa_dw*4)],
-                                       DATA_STORE[_j + 21 - (aa_dw*4)],
-                                       DATA_STORE[_j + 20 - (aa_dw*4)],
-                                       DATA_STORE[_j + 19 - (aa_dw*4)],
-                                       DATA_STORE[_j + 18 - (aa_dw*4)],
-                                       DATA_STORE[_j + 17 - (aa_dw*4)],
-                                       DATA_STORE[_j + 16 - (aa_dw*4)],
-                                       DATA_STORE[_j + 15 - (aa_dw*4)],
-                                       DATA_STORE[_j + 14 - (aa_dw*4)],
-                                       DATA_STORE[_j + 13 - (aa_dw*4)],
-                                       DATA_STORE[_j + 12 - (aa_dw*4)],
-                                       DATA_STORE[_j + 11 - (aa_dw*4)],
-                                       DATA_STORE[_j + 10 - (aa_dw*4)],
-                                       DATA_STORE[_j +  9 - (aa_dw*4)],
-                                       DATA_STORE[_j +  8 - (aa_dw*4)],
-                                       DATA_STORE[_j +  7 - (aa_dw*4)],
-                                       DATA_STORE[_j +  6 - (aa_dw*4)],
-                                       DATA_STORE[_j +  5 - (aa_dw*4)],
-                                       DATA_STORE[_j +  4 - (aa_dw*4)],
-                                       DATA_STORE[_j +  3 - (aa_dw*4)],
-                                       DATA_STORE[_j +  2 - (aa_dw*4)],
-                                       DATA_STORE[_j +  1 - (aa_dw*4)],
-                                       DATA_STORE[_j +  0 - (aa_dw*4)]
-                                      };
-                        end
-                        */
-                        if (((len_i-1)/16) == 0) begin 
-                            case (len_i) 
-                                    1 :  subs_dw =  {480'h0, data_axis_i};
-                                    2 :  subs_dw =  {448'h0, {2{data_axis_i}}};
-                                    3 :  subs_dw  = {416'h0, {3{data_axis_i}}};
-                                    4 :  subs_dw =  {384'h0, {4{data_axis_i}}};
-                                    5 :  subs_dw =  {352'h0, {5{data_axis_i}}};
-                                    6 :  subs_dw =  {320'h0, {6{data_axis_i}}};
-                                    7 :  subs_dw =  {288'h0, {7{data_axis_i}}};
-                                    8 :  subs_dw =  {256'h0, {8{data_axis_i}}};
-                                    9 :  subs_dw =  {224'h0, {9{data_axis_i}}};
-                                   10 :  subs_dw =  {192'h0, {10{data_axis_i}}};
-                                   11 :  subs_dw =  {160'h0, {11{data_axis_i}}};
-                                   12 :  subs_dw =  {120'h0, {12{data_axis_i}}};
-                                   13:   subs_dw =  {96'h0,  {13{data_axis_i}}};
-                                   14 :  subs_dw =  {64'h0,  {14{data_axis_i}}};
-                                   15 :  subs_dw =  {32'h0,  {15{data_axis_i}}};
-                                   16 :  subs_dw =  {16{data_axis_i}};
-                            endcase
-                        end else begin 
-                                 subs_dw = {16{data_axis_i}}; 
-                        end 
+          s_axis_rq_tdata   <= #(Tcq) subs_dw ;
+          if (1 <= len_i && len_i <= 15) begin
+            s_axis_rq_tkeep <= #(Tcq) ~(~16'd0 << len_i);
+            len_i = 0;
+          end else begin
+            s_axis_rq_tkeep <= #(Tcq) ~16'd0;
+            len_i -= 16;
+          end
 
-                           
-                        s_axis_rq_tdata   <= #(Tcq) subs_dw ;
+          if (len_i == 0) s_axis_rq_tlast <= #(Tcq) 1'b1;
+          else            s_axis_rq_tlast <= #(Tcq) 1'b0;
 
-                        if((len_i/16) == 0) begin
-                            case (len_i % 16)
-                                1 : begin len_i = len_i - 1; s_axis_rq_tkeep <= #(Tcq) 16'h0001; end  // D0----------------------------------------------------
-                                2 : begin len_i = len_i - 2; s_axis_rq_tkeep <= #(Tcq) 16'h0003; end  // D0-D1-------------------------------------------------
-                                3 : begin len_i = len_i - 3; s_axis_rq_tkeep <= #(Tcq) 16'h0007; end  // D0-D1-D2----------------------------------------------
-                                4 : begin len_i = len_i - 4; s_axis_rq_tkeep <= #(Tcq) 16'h000F; end  // D0-D1-D2-D3-------------------------------------------
-                                5 : begin len_i = len_i - 5; s_axis_rq_tkeep <= #(Tcq) 16'h001F; end  // D0-D1-D2-D3-D4----------------------------------------
-                                6 : begin len_i = len_i - 6; s_axis_rq_tkeep <= #(Tcq) 16'h003F; end  // D0-D1-D2-D3-D4-D5-------------------------------------
-                                7 : begin len_i = len_i - 7; s_axis_rq_tkeep <= #(Tcq) 16'h007F; end  // D0-D1-D2-D3-D4-D5-D6----------------------------------
-                                8 : begin len_i = len_i - 8; s_axis_rq_tkeep <= #(Tcq) 16'h00FF; end  // D0-D1-D2-D3-D4-D5-D6-D7-------------------------------
-                                9 : begin len_i = len_i - 9; s_axis_rq_tkeep <= #(Tcq) 16'h01FF; end  // D0-D1-D2-D3-D4-D5-D6-D7-D8----------------------------
-                               10 : begin len_i = len_i - 10; s_axis_rq_tkeep <= #(Tcq) 16'h03FF; end  // D0-D1-D2-D3-D4-D5-D6-D7-D8-D9------------------------
-                               11 : begin len_i = len_i - 11; s_axis_rq_tkeep <= #(Tcq) 16'h07FF; end  // D0-D1-D2-D3-D4-D5-D6-D7-D8-D9-D10-------------------
-                               12 : begin len_i = len_i - 12; s_axis_rq_tkeep <= #(Tcq) 16'h0FFF; end  // D0-D1-D2-D3-D4-D5-D6-D7-D8-D9-D10-D11----------------
-                               13 : begin len_i = len_i - 13; s_axis_rq_tkeep <= #(Tcq) 16'h1FFF; end  // D0-D1-D2-D3-D4-D5-D6-D7-D8-D9-D10-D11-D12------------
-                               14 : begin len_i = len_i - 14; s_axis_rq_tkeep <= #(Tcq) 16'h3FFF; end  // D0-D1-D2-D3-D4-D5-D6-D7-D8-D9-D10-D11-D12-D13--------
-                               15 : begin len_i = len_i - 15; s_axis_rq_tkeep <= #(Tcq) 16'h7FFF; end  // D0-D1-D2-D3-D4-D5-D6-D7-D8-D9-D10-D11-D12-D13-D14----
-                                0 : begin len_i = len_i - 16; s_axis_rq_tkeep <= #(Tcq) 16'hFFFF; end  // D0-D1-D2-D3-D4-D5-D6-D7-D8-D9-D10-D11-D12-D13-D14-D15
+          // Call this just to check for the tready, but don't log anything. That's the job for pcie_tlp_data
+          // The reason for splitting the TSK_TX_SYNCHRONIZE task and distribute them in both sequential group
+          // is that in address aligned mode, it's possible that the additional padded zeros cause the AXIS RQ
+          // to be one beat longer than the actual PCIe TLP. When it happens do not log the last clock beat
+          // but just send the packet on AXIS RQ interface
+          TSK_TX_SYNCHRONIZE(0, 0, 0, `SYNC_RQ_RDY);
 
-                            endcase 
-                        end else begin
-                            len_i               = len_i - 16; s_axis_rq_tkeep <= #(Tcq) 16'hFFFF;      // D0-D1-D2-D3-D4-D5-D6-D7-D8-D9-D10-D11-D12-D13-D14-D15
-                        end
+        end // for loop
+      end // End sequential group 1 - AXIS RQ
 
-                        if (len_i == 0) begin
-                            s_axis_rq_tlast        <= #(Tcq) 1'b1;
-                        end
-                        else begin
-                            s_axis_rq_tlast        <= #(Tcq) 1'b0;
-                        end
+      begin // Sequential group 2 - pcie_tlp
+        for (_j = 20; _len != 0; _j = _j + 32) begin
+          for (tmp = 0, _k = 0; _k < 32; _k += 1) begin
+            tmp <<= 8;
+            tmp[7:0] = DATA_STORE[_j + _k];
+          end
+          pcie_tlp_data <= #(Tcq) tmp;
+          if (1 <= _len && _len <= 15) begin
+            pcie_tlp_rem <= #(Tcq) ~(_len[3:0]);
+            _len          = 0;
+          end else begin
+            pcie_tlp_rem <= #(Tcq) 4'b0000;
+            _len          = _len - 16;
+          end
 
-                        // Call this just to check for the tready, but don't log anything. That's the job for pcie_tlp_data
-                        // The reason for splitting the TSK_TX_SYNCHRONIZE task and distribute them in both sequential group
-                        // is that in address aligned mode, it's possible that the additional padded zeros cause the AXIS RQ
-                        // to be one beat longer than the actual PCIe TLP. When it happens do not log the last clock beat
-                        // but just send the packet on AXIS RQ interface
-                        TSK_TX_SYNCHRONIZE(0, 0, 0, `SYNC_RQ_RDY);
+          if (_len == 0) TSK_TX_SYNCHRONIZE(0, 1, 1, `SYNC_RQ_RDY);
+          else           TSK_TX_SYNCHRONIZE(0, 1, 0, `SYNC_RQ_RDY);
+        end // for loop
+      end // End sequential group 2 - pcie_tlp */
 
-                    end // for loop
-                end // End sequential group 1 - AXIS RQ
-
-                begin // Sequential group 2 - pcie_tlp
-                    for (_j = 20; _len != 0; _j = _j + 32) begin
-                        pcie_tlp_data <= #(Tcq)    {
-                                                    DATA_STORE[_j + 0],
-                                                    DATA_STORE[_j + 1],
-                                                    DATA_STORE[_j + 2],
-                                                    DATA_STORE[_j + 3],
-                                                    DATA_STORE[_j + 4],
-                                                    DATA_STORE[_j + 5],
-                                                    DATA_STORE[_j + 6],
-                                                    DATA_STORE[_j + 7],
-                                                    DATA_STORE[_j + 8],
-                                                    DATA_STORE[_j + 9],
-                                                    DATA_STORE[_j + 10],
-                                                    DATA_STORE[_j + 11],
-                                                    DATA_STORE[_j + 12],
-                                                    DATA_STORE[_j + 13],
-                                                    DATA_STORE[_j + 14],
-                                                    DATA_STORE[_j + 15],
-                                                    DATA_STORE[_j + 16],
-                                                    DATA_STORE[_j + 17],
-                                                    DATA_STORE[_j + 18],
-                                                    DATA_STORE[_j + 19],
-                                                    DATA_STORE[_j + 20],
-                                                    DATA_STORE[_j + 21],
-                                                    DATA_STORE[_j + 22],
-                                                    DATA_STORE[_j + 23],
-                                                    DATA_STORE[_j + 24],
-                                                    DATA_STORE[_j + 25],
-                                                    DATA_STORE[_j + 26],
-                                                    DATA_STORE[_j + 27],
-                                                    DATA_STORE[_j + 28],
-                                                    DATA_STORE[_j + 29],
-                                                    DATA_STORE[_j + 30],
-                                                    DATA_STORE[_j + 31]
-                                                   };
-
-                        if ((_len/16) == 0) begin
-                            case (_len % 16)
-                                1 : begin _len = _len - 1; pcie_tlp_rem  <= #(Tcq) 4'b1111; end  // D0--------------------------------------------------
-                                2 : begin _len = _len - 2; pcie_tlp_rem  <= #(Tcq) 4'b1110; end  // D0-
-                                3 : begin _len = _len - 3; pcie_tlp_rem  <= #(Tcq) 4'b1101; end  // D0-D1-D2-D3-D4-D5-D6-D7-D8-D9-D10-D11-D12-D13-D14-D15
-                                4 : begin _len = _len - 4; pcie_tlp_rem  <= #(Tcq) 4'b1100; end  // D0-D1-D2-D3-D4-D5-D6-D7-D8-D9-D10-D11-D12-D13-D14-D15
-                                5 : begin _len = _len - 5; pcie_tlp_rem  <= #(Tcq) 4'b1011; end  // D0-D1-D2-D3-D4-D5-D6-D7-D8-D9-D10-D11-D12-D13-D14-D15
-                                6 : begin _len = _len - 6; pcie_tlp_rem  <= #(Tcq) 4'b1010; end  // D0-D1-D2-D3-D4-D5-D6-D7-D8-D9-D10-D11-D12-D13-D14-D15
-                                7 : begin _len = _len - 7; pcie_tlp_rem  <= #(Tcq) 4'b1001; end  // D0-D1-D2-D3-D4-D5-D6-D7-D8-D9-D10-D11-D12-D13-D14-D15
-                                8 : begin _len = _len - 8; pcie_tlp_rem  <= #(Tcq) 4'b1000; end  // D0-D1-D2-D3-D4-D5-D6-D7-D8-D9-D10-D11-D12-D13-D14-D15
-                                9 : begin _len = _len - 9; pcie_tlp_rem  <= #(Tcq) 4'b0111; end  // D0-D1-D2-D3-D4-D5-D6-D7-D8-D9-D10-D11-D12-D13-D14-D15
-                               10 : begin _len = _len - 10; pcie_tlp_rem  <= #(Tcq) 4'b0110; end  // D0-D1-D2-D3-D4-D5-D6-D7-D8-D9-D10-D11-D12-D13-D14-D15
-                               11 : begin _len = _len - 11; pcie_tlp_rem  <= #(Tcq) 4'b0101; end  // D0-D1-D2-D3-D4-D5-D6-D7-D8-D9-D10-D11-D12-D13-D14-D15
-                               12 : begin _len = _len - 12; pcie_tlp_rem  <= #(Tcq) 4'b0100; end  // D0-D1-D2-D3-D4-D5-D6-D7-D8-D9-D10-D11-D12-D13-D14-D15
-                               13 : begin _len = _len - 13; pcie_tlp_rem  <= #(Tcq) 4'b0011; end  // D0-D1-D2-D3-D4-D5-D6-D7-D8-D9-D10-D11-D12-D13-D14-D15
-                               14 : begin _len = _len - 14; pcie_tlp_rem  <= #(Tcq) 4'b0010; end  // D0-D1-D2-D3-D4-D5-D6-D7-D8-D9-D10-D11-D12-D13-D14-D15
-                               15 : begin _len = _len - 15; pcie_tlp_rem  <= #(Tcq) 4'b0001; end  // D0-D1-D2-D3-D4-D5-D6-D7-D8-D9-D10-D11-D12-D13-D14-D15
-                                0 : begin _len = _len - 16; pcie_tlp_rem  <= #(Tcq) 4'b0000; end  // D0-D1-D2-D3-D4-D5-D6-D7-D8-D9-D10-D11-D12-D13-D14-D15
-
-                            endcase 
-                        end else begin
-                            _len               = _len - 16; pcie_tlp_rem   <= #(Tcq) 4'b0000;     // D0-D1-D2-D3-D4-D5-D6-D7
-                        end
-
-                        if (_len == 0)
-                            TSK_TX_SYNCHRONIZE(0, 1, 1, `SYNC_RQ_RDY);
-                        else
-                            TSK_TX_SYNCHRONIZE(0, 1, 0, `SYNC_RQ_RDY);
-                    end // for loop
-                end // End sequential group 2 - pcie_tlp */
-
-                join
-            end  // if
-            // End of Second and Subsequent Data Beat
-            //-----------------------------------------------------------------------\\
-            // Packet Complete - Drive 0s
-            s_axis_rq_tvalid         <= #(Tcq) 1'b0;
-            s_axis_rq_tlast          <= #(Tcq) 1'b0;
-            s_axis_rq_tkeep          <= #(Tcq) 8'h00;
-            s_axis_rq_tuser_wo_parity<= #(Tcq) 137'b0;
-            s_axis_rq_tdata          <= #(Tcq) 512'b0;
-            //-----------------------------------------------------------------------\\
-            pcie_tlp_rem             <= #(Tcq) 3'b0;
-            //-----------------------------------------------------------------------\\
-        end
-    endtask // TSK_TX_MEMORY_WRITE_32
+    join
+  end  // if
+  // End of Second and Subsequent Data Beat
+  //-----------------------------------------------------------------------\\
+  // Packet Complete - Drive 0s
+  s_axis_rq_tvalid         <= #(Tcq) 1'b0;
+  s_axis_rq_tlast          <= #(Tcq) 1'b0;
+  s_axis_rq_tkeep          <= #(Tcq) 8'h00;
+  s_axis_rq_tuser_wo_parity<= #(Tcq) 137'b0;
+  s_axis_rq_tdata          <= #(Tcq) 512'b0;
+  //-----------------------------------------------------------------------\\
+  pcie_tlp_rem             <= #(Tcq) 3'b0;
+  //-----------------------------------------------------------------------\\
+end
+endtask // TSK_TX_MEMORY_WRITE_32
 
     /************************************************************
     Task : TSK_TX_MEMORY_WRITE_64
@@ -1645,7 +1352,7 @@ end
                                          tc_,         // Traffic Class
                                          1'b1,        // RID Enable to use the Client supplied Bus/Device/Func No
                                          EP_BUS_DEV_FNS,   // Completer ID
-                                         (ATTR_AXISTEN_IF_ENABLE_CLIENT_TAG ? 8'hCC : tag_), // Tag
+                                         tag_,        // Tag
                                           //96
                                          RP_BUS_DEV_FNS,   // Requester ID -- Used only when RID enable = 1
                                          ep_,         // Poisoned Req
@@ -1690,7 +1397,7 @@ end
                                          2'b00,       // Address Translation
                                          len_[9:0],   // DWORD Count
                                          RP_BUS_DEV_FNS,   // Requester ID
-                                         (ATTR_AXISTEN_IF_ENABLE_CLIENT_TAG ? 8'hCC : tag_), // Tag
+                                         tag_,          // Tag
                                          last_dw_be_,   // Last DW Byte Enable
                                          first_dw_be_,  // First DW Byte Enable
                                           //64
@@ -2331,7 +2038,7 @@ end
                                                 5'b0,          // *reserved*
                                                 message_rtg_,  // Message Routing
                                                 message_code_, // Message Code
-                                                (ATTR_AXISTEN_IF_ENABLE_CLIENT_TAG ? 8'hCC : tag_), // Tag
+                                                tag_,          // Tag
                                                 RP_BUS_DEV_FNS, // Requester ID
                                                 1'b0,          // Poisoned Req
                                                 4'b1100,       // Request Type for Message
@@ -2356,7 +2063,7 @@ end
                                                 2'b00,          // Address Translation
                                                 10'b0,          // DWORD Count                                     //32
                                                 RP_BUS_DEV_FNS, // Requester ID
-                                                (ATTR_AXISTEN_IF_ENABLE_CLIENT_TAG ? 8'hCC : tag_), // Tag
+                                                tag_,           // Tag
                                                 message_code_,  // Message Code                                    //64
                                                 data_[63:32],   // Vendor Defined Header Bytes
                                                 data_[31:16],   // Destination ID
@@ -2429,7 +2136,7 @@ end
                                                 3'b000,         // Traffic Class
                                                 1'b1,           // RID Enable to use the Client supplied Bus/Device/Func No
                                                 EP_BUS_DEV_FNS,   // Completer ID
-                                                (ATTR_AXISTEN_IF_ENABLE_CLIENT_TAG ? 8'hCC : tag_), // Tag
+                                                tag_,           // Tag
                                                 RP_BUS_DEV_FNS,   // Requester ID -- Used only when RID enable = 1    //96
                                                 1'b0,           // Poisoned Req
                                                 4'b0010,        // Req Type for IORd Req
@@ -2453,7 +2160,7 @@ end
                                                 2'b00,          // Address Translation
                                                 10'b1,          // DWORD Count                                        //32
                                                 RP_BUS_DEV_FNS, // Requester ID
-                                                (ATTR_AXISTEN_IF_ENABLE_CLIENT_TAG ? 8'hCC : tag_), // Tag
+                                                tag_,           // Tag
                                                 4'b0,           // Last DW Byte Enable
                                                 first_dw_be_,   // First DW Byte Enable                               //64
                                                 addr_[31:2],    // Address
@@ -2531,7 +2238,7 @@ end
                                                 3'b000,         // Traffic Class
                                                 1'b1,           // RID Enable to use the Client supplied Bus/Device/Func No
                                                 EP_BUS_DEV_FNS, // Completer ID
-                                                (ATTR_AXISTEN_IF_ENABLE_CLIENT_TAG ? 8'hCC : tag_), // Tag
+                                                tag_,           // Tag
                                                 RP_BUS_DEV_FNS, // Requester ID -- Used only when RID enable = 1      //96
                                                 1'b0,           // Poisoned Req
                                                 4'b0011,        // Req Type for IOWr Req
@@ -2555,7 +2262,7 @@ end
                                                 2'b00,          // Address Translation
                                                 10'b1,          // DWORD Count                                        //32
                                                 RP_BUS_DEV_FNS, // Requester ID
-                                                (ATTR_AXISTEN_IF_ENABLE_CLIENT_TAG ? 8'hCC : tag_), // Tag
+                                                tag_,           // Tag
                                                 4'b0,           // last DW Byte Enable
                                                 first_dw_be_,   // First DW Byte Enable                               //64
                                                 addr_[31:2],    // Address
