@@ -2099,139 +2099,96 @@ begin
 end
 endtask // TSK_TX_BAR_WRITE
 
-    /************************************************************
-    Task : TSK_USR_DATA_SETUP_SEQ
-    Inputs : None
-    Outputs : None
-    Description : Populates scratch pad data area with known good data.
-    *************************************************************/
+/************************************************************
+Task : TSK_USR_DATA_SETUP_SEQ
+Inputs : None
+Outputs : None
+Description : Populates scratch pad data area with known good data.
+*************************************************************/
+task TSK_USR_DATA_SETUP_SEQ;
+integer i_;
+begin
+  for (i_ = 0; i_ <= 4095; i_ = i_ + 1) begin
+    DATA_STORE[i_] = i_;
+  end
+  for (i_ = 0; i_ <= (2**(RP_BAR_SIZE+1))-1; i_ = i_ + 1) begin
+    DATA_STORE_2[i_] = i_;
+  end
+end
+endtask // TSK_USR_DATA_SETUP_SEQ
 
-    task TSK_USR_DATA_SETUP_SEQ;
-        integer        i_;
-        begin
-            for (i_ = 0; i_ <= 4095; i_ = i_ + 1) begin
-                DATA_STORE[i_] = i_;
-            end
-            
-            for (i_ = 0; i_ <= (2**(RP_BAR_SIZE+1))-1; i_ = i_ + 1) begin
-                DATA_STORE_2[i_] = i_;
-            end
-            
-        end
-    endtask // TSK_USR_DATA_SETUP_SEQ
+/************************************************************
+Task : TSK_SET_READ_DATA
+Inputs : Data
+Outputs : None
+Description : Called from common app. Common app hands read
+              data to usrapp_tx.
+*************************************************************/
+task TSK_SET_READ_DATA;
+input [ 3:0] be_;   // not implementing be's yet
+input [63:0] data_; // might need to change this to byte
+begin
+  P_READ_DATA   = data_[31:0];
+  P_READ_DATA_2 = data_[63:32];
+  P_READ_DATA_VALID = 1;
+end
+endtask // TSK_SET_READ_DATA
 
-    /************************************************************
-    Task : TSK_TX_CLK_EAT
-    Inputs : None
-    Outputs : None
-    Description : Consume clocks.
-    *************************************************************/
+/************************************************************
+Task : TSK_WAIT_FOR_READ_DATA
+Inputs : None
+Outputs : Read data P_READ_DATA will be valid
+Description : Called from tx app. Common app hands read
+              data to usrapp_tx. This task must be executed
+              immediately following a call to
+              TSK_TX_TYPE0_CONFIGURATION_READ in order for the
+              read process to function correctly. Otherwise
+              there is a potential race condition with
+              P_READ_DATA_VALID.
+*************************************************************/
+task TSK_WAIT_FOR_READ_DATA;
+integer j;
+begin
+  j = 30;
+  P_READ_DATA_VALID = 0;
+  fork
+    while ((!P_READ_DATA_VALID) && (cpld_to == 0)) @(posedge user_clk);
+    begin // second process
+      while ((j > 0) && (!P_READ_DATA_VALID)) begin
+        repeat (500) @(posedge user_clk);
+        j = j - 1;
+      end
+      if (!P_READ_DATA_VALID) begin
+        cpld_to = 1;
+        $display("TIMEOUT ERROR in usrapp_tx:TSK_WAIT_FOR_READ_DATA. Completion data never received.");
+        $finish;
+      end
+    end
+  join
+end
+endtask // TSK_WAIT_FOR_READ_DATA
 
-    task TSK_TX_CLK_EAT;
-        input    [31:0]            clock_count;
-        integer            i_;
-        begin
-            for (i_ = 0; i_ < clock_count; i_ = i_ + 1) begin
-
-                @(posedge user_clk);
-
-            end
-        end
-    endtask // TSK_TX_CLK_EAT
-
-    /************************************************************
-    Task : TSK_SET_READ_DATA
-    Inputs : Data
-    Outputs : None
-    Description : Called from common app. Common app hands read
-                  data to usrapp_tx.
-    *************************************************************/
-
-    task TSK_SET_READ_DATA;
-
-        input   [3:0]   be_;   // not implementing be's yet
-        input   [63:0]  data_; // might need to change this to byte
-        begin
-
-          P_READ_DATA   = data_[31:0];
-          P_READ_DATA_2 = data_[63:32];
-          P_READ_DATA_VALID = 1;
-
-        end
-    endtask // TSK_SET_READ_DATA
-
-    /************************************************************
-    Task : TSK_WAIT_FOR_READ_DATA
-    Inputs : None
-    Outputs : Read data P_READ_DATA will be valid
-    Description : Called from tx app. Common app hands read
-                  data to usrapp_tx. This task must be executed
-                  immediately following a call to
-                  TSK_TX_TYPE0_CONFIGURATION_READ in order for the
-                  read process to function correctly. Otherwise
-                  there is a potential race condition with
-                  P_READ_DATA_VALID.
-    *************************************************************/
-
-    task TSK_WAIT_FOR_READ_DATA;
-
-                integer j;
-
-        begin
-                  j = 30;
-                  P_READ_DATA_VALID = 0;
-                  fork
-                   while ((!P_READ_DATA_VALID) && (cpld_to == 0)) @(posedge user_clk);
-                   begin // second process
-                     while ((j > 0) && (!P_READ_DATA_VALID))
-                       begin
-                         TSK_TX_CLK_EAT(500);
-                         j = j - 1;
-                       end
-                       if (!P_READ_DATA_VALID) begin
-                         cpld_to = 1;
-                         $display("TIMEOUT ERROR in usrapp_tx:TSK_WAIT_FOR_READ_DATA. Completion data never received.");
-                         $finish;
-                     end
-                   end
-
-          join
-
-        end
-    endtask // TSK_WAIT_FOR_READ_DATA
-
-    /************************************************************
-    Function : TSK_DISPLAY_PCIE_MAP
-    Inputs : none
-    Outputs : none
-    Description : Displays the Memory Manager's P_MAP calculations
-                  based on range values read from PCI_E device.
-    *************************************************************/
-
-        task TSK_DISPLAY_PCIE_MAP;
-
-           reg[2:0] ii;
-
-           begin
-
-             for (ii=0; ii <= 6; ii = ii + 1) begin
-                 if (ii !=6) begin
-
-                   $display("\tBAR %x: VALUE = %x RANGE = %x TYPE = %s", ii, BAR_INIT_P_BAR[ii][31:0],
-                     BAR_INIT_P_BAR_RANGE[ii], BAR_INIT_MESSAGE[BAR_INIT_P_BAR_ENABLED[ii]]);
-
-                 end
-                 else begin
-
-                   $display("\tEROM : VALUE = %x RANGE = %x TYPE = %s", BAR_INIT_P_BAR[6][31:0],
-                     BAR_INIT_P_BAR_RANGE[6], BAR_INIT_MESSAGE[BAR_INIT_P_BAR_ENABLED[6]]);
-
-                 end
-             end
-
-           end
-
-        endtask
+/************************************************************
+Function : TSK_DISPLAY_PCIE_MAP
+Inputs : none
+Outputs : none
+Description : Displays the Memory Manager's P_MAP calculations
+              based on range values read from PCI_E device.
+*************************************************************/
+task TSK_DISPLAY_PCIE_MAP;
+reg [2:0] ii;
+begin
+  for (ii = 0; ii <= 6; ii = ii + 1) begin
+    if (ii !=6) begin
+      $display("\tBAR %x: VALUE = %x RANGE = %x TYPE = %s", ii, BAR_INIT_P_BAR[ii][31:0],
+       BAR_INIT_P_BAR_RANGE[ii], BAR_INIT_MESSAGE[BAR_INIT_P_BAR_ENABLED[ii]]);
+    end else begin
+      $display("\tEROM : VALUE = %x RANGE = %x TYPE = %s", BAR_INIT_P_BAR[6][31:0],
+       BAR_INIT_P_BAR_RANGE[6], BAR_INIT_MESSAGE[BAR_INIT_P_BAR_ENABLED[6]]);
+    end
+  end
+end
+endtask
 
     /************************************************************
     Task : TSK_BUILD_PCIE_MAP
@@ -2497,7 +2454,7 @@ endtask // TSK_TX_BAR_WRITE
 
     TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h10, P_ADDRESS_MASK, 4'hF);
         DEFAULT_TAG = DEFAULT_TAG + 1;
-        TSK_TX_CLK_EAT(100);
+        repeat (100) @(posedge user_clk);
 
     // Read BAR0 Range
 
@@ -2511,7 +2468,7 @@ endtask // TSK_TX_BAR_WRITE
 
         TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h14, P_ADDRESS_MASK, 4'hF);
         DEFAULT_TAG = DEFAULT_TAG + 1;
-        TSK_TX_CLK_EAT(100);
+        repeat (100) @(posedge user_clk);
 
     // Read BAR1 Range
 
@@ -2525,7 +2482,7 @@ endtask // TSK_TX_BAR_WRITE
 
         TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h18, P_ADDRESS_MASK, 4'hF);
         DEFAULT_TAG = DEFAULT_TAG + 1;
-        TSK_TX_CLK_EAT(100);
+        repeat (100) @(posedge user_clk);
 
 
     // Read BAR2 Range
@@ -2540,7 +2497,7 @@ endtask // TSK_TX_BAR_WRITE
 
         TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h1C, P_ADDRESS_MASK, 4'hF);
         DEFAULT_TAG = DEFAULT_TAG + 1;
-        TSK_TX_CLK_EAT(100);
+        repeat (100) @(posedge user_clk);
 
     // Read BAR3 Range
 
@@ -2554,7 +2511,7 @@ endtask // TSK_TX_BAR_WRITE
 
         TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h20, P_ADDRESS_MASK, 4'hF);
         DEFAULT_TAG = DEFAULT_TAG + 1;
-        TSK_TX_CLK_EAT(100);
+        repeat (100) @(posedge user_clk);
 
     // Read BAR4 Range
 
@@ -2568,7 +2525,7 @@ endtask // TSK_TX_BAR_WRITE
 
         TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h24, P_ADDRESS_MASK, 4'hF);
         DEFAULT_TAG = DEFAULT_TAG + 1;
-        TSK_TX_CLK_EAT(100);
+        repeat (100) @(posedge user_clk);
 
     // Read BAR5 Range
 
@@ -2582,7 +2539,7 @@ endtask // TSK_TX_BAR_WRITE
 
         TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h30, P_ADDRESS_MASK, 4'hF);
         DEFAULT_TAG = DEFAULT_TAG + 1;
-        TSK_TX_CLK_EAT(100);
+        repeat (100) @(posedge user_clk);
 
     // Read Expansion ROM BAR Range
 
@@ -2617,55 +2574,55 @@ endtask // TSK_TX_BAR_WRITE
 
     TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h10, BAR_INIT_P_BAR[0][31:0], 4'hF);
         DEFAULT_TAG = DEFAULT_TAG + 1;
-        TSK_TX_CLK_EAT(100);
+        repeat (100) @(posedge user_clk);
 
     // Program BAR1
 
         TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h14, BAR_INIT_P_BAR[1][31:0], 4'hF);
         DEFAULT_TAG = DEFAULT_TAG + 1;
-        TSK_TX_CLK_EAT(100);
+        repeat (100) @(posedge user_clk);
 
     // Program BAR2
 
         TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h18, BAR_INIT_P_BAR[2][31:0], 4'hF);
         DEFAULT_TAG = DEFAULT_TAG + 1;
-        TSK_TX_CLK_EAT(100);
+        repeat (100) @(posedge user_clk);
 
     // Program BAR3
 
         TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h1C, BAR_INIT_P_BAR[3][31:0], 4'hF);
         DEFAULT_TAG = DEFAULT_TAG + 1;
-        TSK_TX_CLK_EAT(100);
+        repeat (100) @(posedge user_clk);
 
     // Program BAR4
 
         TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h20, BAR_INIT_P_BAR[4][31:0], 4'hF);
         DEFAULT_TAG = DEFAULT_TAG + 1;
-        TSK_TX_CLK_EAT(100);
+        repeat (100) @(posedge user_clk);
 
     // Program BAR5
 
         TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h24, BAR_INIT_P_BAR[5][31:0], 4'hF);
         DEFAULT_TAG = DEFAULT_TAG + 1;
-        TSK_TX_CLK_EAT(100);
+        repeat (100) @(posedge user_clk);
 
     // Program Expansion ROM BAR
 
         TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h30, BAR_INIT_P_BAR[6][31:0], 4'hF);
         DEFAULT_TAG = DEFAULT_TAG + 1;
-        TSK_TX_CLK_EAT(100);
+        repeat (100) @(posedge user_clk);
 
     // Program PCI Command Register
 
         TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h04, 32'h00000003, 4'h1);
         DEFAULT_TAG = DEFAULT_TAG + 1;
-        TSK_TX_CLK_EAT(100);
+        repeat (100) @(posedge user_clk);
 
     // Program PCIe Device Control Register
 
         TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'hC8, 32'h0000005f, 4'h1);
         DEFAULT_TAG = DEFAULT_TAG + 1;
-        TSK_TX_CLK_EAT(1000);
+        repeat (1000) @(posedge user_clk);
 
        end
     endtask // TSK_BAR_PROGRAM
