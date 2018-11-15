@@ -1259,376 +1259,223 @@ begin
 end
 endtask // TSK_TX_MEMORY_WRITE_32
 
-    /************************************************************
-    Task : TSK_TX_MEMORY_WRITE_64
-    Inputs : Tag, Length, Address, Last Byte En, First Byte En
-    Outputs : Transaction Tx Interface Signaling
-    Description : Generates a Memory Write 64 TLP
-    *************************************************************/
+/************************************************************
+Task : TSK_TX_MEMORY_WRITE_64
+Inputs : Tag, Length, Address, Last Byte En, First Byte En
+Outputs : Transaction Tx Interface Signaling
+Description : Generates a Memory Write 64 TLP
+*************************************************************/
+task TSK_TX_MEMORY_WRITE_64;
+input [  7:0] tag_;         // Tag
+input [  2:0] tc_;          // Traffic Class
+input [ 10:0] len_;         // Length (in DW)
+input [ 63:0] addr_;        // Address
+input [  3:0] last_dw_be_;  // Last DW Byte Enable
+input [  3:0] first_dw_be_; // First DW Byte Enable
+input         ep_;          // Poisoned Data: Payload is invalid if set
+reg   [ 10:0] _len;
+// ^-- Length Info on pcie_tlp_data -- Used to count how many times to loop
+reg   [ 10:0] len_i;
+// ^-- Length Info on s_axis_rq_tdata -- Used to count how many times to loop
+reg   [  2:0] aa_dw;        // Adjusted DW Count for Address Aligned Mode
+reg   [255:0] aa_data;      // Adjusted Data for Address Aligned Mode
+reg   [127:0] data_axis_i;  // Data Info for s_axis_rq_tdata
+reg   [127:0] data_pcie_i;  // Data Info for pcie_tlp_data
+integer       _j;           // Byte Index
+integer       start_addr;   // Start Location for Payload DW0
+begin
+  //-----------------------------------------------------------------------\\
+  if (AXISTEN_IF_RQ_ALIGNMENT_MODE=="TRUE") begin
+    start_addr  = 0;
+    aa_dw       = addr_[4:2];
+  end else begin
+    start_addr = 48;
+    aa_dw      = 3'b000;
+  end
 
-    task TSK_TX_MEMORY_WRITE_64;
-        input  [7:0]    tag_;         // Tag
-        input  [2:0]    tc_;          // Traffic Class
-        input  [10:0]   len_;         // Length (in DW)
-        input  [63:0]   addr_;        // Address
-        input  [3:0]    last_dw_be_;  // Last DW Byte Enable
-        input  [3:0]    first_dw_be_; // First DW Byte Enable
-        input           ep_;          // Poisoned Data: Payload is invalid if set
-        reg    [10:0]   _len;         // Length Info on pcie_tlp_data -- Used to count how many times to loop
-        reg    [10:0]   len_i;        // Length Info on s_axis_rq_tdata -- Used to count how many times to loop
-        reg    [2:0]    aa_dw;        // Adjusted DW Count for Address Aligned Mode
-        reg    [255:0]  aa_data;      // Adjusted Data for Address Aligned Mode
-        reg    [127:0]  data_axis_i;  // Data Info for s_axis_rq_tdata
-        reg    [127:0]  data_pcie_i;  // Data Info for pcie_tlp_data
-        integer         _j;           // Byte Index
-        integer         start_addr;   // Start Location for Payload DW0
+  len_i = len_ + aa_dw;
+  _len  = len_;
+  //-----------------------------------------------------------------------\\
+  if (user_lnk_up_n) begin
+    $display("[%t] :  interface is MIA", $realtime);
+    $finish(1);
+  end
+  $display("[%t] : Mem64 Write Req @address %x", $realtime, addr_[31:0]);
+  //-----------------------------------------------------------------------\\
+  TSK_TX_SYNCHRONIZE(0, 0, 0, `SYNC_RQ_RDY);
+  //-----------------------------------------------------------------------\\
+  // Start of First Data Beat
+  for (data_axis_i = 0, _j = 15; 0 < _j; _j -= 1) begin
+    data_axis_i    <<= 8;
+    data_axis_i[7:0] = DATA_STORE[_j];
+  end
+  s_axis_rq_tuser_wo_parity <= #(Tcq) {
+   64'b0,                  // Parity Bit slot - 64bit
+   6'b101010,              // Seq Number - 6bit
+   6'b101010,              // Seq Number - 6bit
+   16'h0000,               // TPH Steering Tag - 16 bit
+   2'b00,                  // TPH indirect Tag Enable - 2bit
+   4'b0000,                // TPH Type - 4 bit
+   2'b00,                  // TPH Present - 2 bit
+   1'b0,                   // Discontinue                                   
+   4'b0000,                // is_eop1_ptr
+   4'b1111,                // is_eop0_ptr
+   2'b01,                  // is_eop[1:0]
+   2'b00,                  // is_sop1_ptr[1:0]
+   2'b00,                  // is_sop0_ptr[1:0]
+   2'b01,                  // is_sop[1:0]
+   2'b0,aa_dw[1:0],
+   // ^-- Byte Lane number in case of Address Aligned mode - 4 bit
+   4'b0000,last_dw_be_,    // Last BE of the Write Data 8 bit
+   4'b0000,first_dw_be_ }; // First BE of the Write Data 8 bit
 
-        begin
-            //-----------------------------------------------------------------------\\
-            if (AXISTEN_IF_RQ_ALIGNMENT_MODE=="TRUE") begin
-                start_addr  = 0;
-                aa_dw       = addr_[4:2];
-            end else begin
-                start_addr  = 48;
-                aa_dw       = 3'b000;
-            end
-            
-            len_i           = len_ + aa_dw;
-            _len            = len_;
-            //-----------------------------------------------------------------------\\
-            if (user_lnk_up_n) begin
-                $display("[%t] :  interface is MIA", $realtime);
-                $finish(1);
-            end
-            $display("[%t] : Mem64 Write Req @address %x", $realtime,addr_[31:0]);
-            //-----------------------------------------------------------------------\\
-            TSK_TX_SYNCHRONIZE(0, 0, 0, `SYNC_RQ_RDY);
-            //-----------------------------------------------------------------------\\
-            // Start of First Data Beat
-            data_axis_i        =  {
-                                   DATA_STORE[15],
-                                   DATA_STORE[14],
-                                   DATA_STORE[13],
-                                   DATA_STORE[12],
-                                   DATA_STORE[11],
-                                   DATA_STORE[10],
-                                   DATA_STORE[9],
-                                   DATA_STORE[8],
-                                   DATA_STORE[7],
-                                   DATA_STORE[6],
-                                   DATA_STORE[5],
-                                   DATA_STORE[4],
-                                   DATA_STORE[3],
-                                   DATA_STORE[2],
-                                   DATA_STORE[1],
-                                   DATA_STORE[0]
-                                  };
-
-            s_axis_rq_tuser_wo_parity <= #(Tcq) {
-                                         64'b0,                   // Parity Bit slot - 64bit
-                                         6'b101010,               // Seq Number - 6bit
-                                         6'b101010,               // Seq Number - 6bit
-                                         16'h0000,                // TPH Steering Tag - 16 bit
-                                         2'b00,                   // TPH indirect Tag Enable - 2bit
-                                         4'b0000,                 // TPH Type - 4 bit
-                                         2'b00,                   // TPH Present - 2 bit
-                                         1'b0,                    // Discontinue                                   
-                                         4'b0000,                 // is_eop1_ptr
-                                         4'b1111,                 // is_eop0_ptr
-                                         2'b01,                   // is_eop[1:0]
-                                         2'b00,                   // is_sop1_ptr[1:0]
-                                         2'b00,                   // is_sop0_ptr[1:0]
-                                         2'b01,                   // is_sop[1:0]
-                                         2'b0,aa_dw[1:0],         // Byte Lane number in case of Address Aligned mode - 4 bit
-                                         4'b0000,last_dw_be_,     // Last BE of the Write Data 8 bit
-                                         4'b0000,first_dw_be_     // First BE of the Write Data 8 bit
-                                        };
-
-            s_axis_rq_tdata   <= #(Tcq) { 256'b0,//256
-                                         ((AXISTEN_IF_RQ_ALIGNMENT_MODE == "FALSE" ) ?  data_axis_i : 128'h0), // 128-bit write data
-                                          //128
-                                         1'b0,        // Force ECRC
-                                         3'b000,      // Attributes {ID Based Ordering, Relaxed Ordering, No Snoop}
-                                         tc_,         // Traffic Class
-                                         1'b1,        // RID Enable to use the Client supplied Bus/Device/Func No
-                                         EP_BUS_DEV_FNS,   // Completer ID
-                                         tag_,        // Tag
-                                          //96
-                                         RP_BUS_DEV_FNS,   // Requester ID -- Used only when RID enable = 1
-                                         ep_,         // Poisoned Req
-                                         4'b0001,     // Req Type for MWr Req
-                                         len_,        // DWORD Count
-                                          //64
-                                         addr_[63:2], // Memory Write address 64-bits
-                                         2'b00        // AT -> 00 : Untranslated Address
-                                        };
-            //-----------------------------------------------------------------------\\
-            data_pcie_i        =  {
-                                   DATA_STORE[0],
-                                   DATA_STORE[1],
-                                   DATA_STORE[2],
-                                   DATA_STORE[3],
-                                   DATA_STORE[4],
-                                   DATA_STORE[5],
-                                   DATA_STORE[6],
-                                   DATA_STORE[7],
-                                   DATA_STORE[8],
-                                   DATA_STORE[9],
-                                   DATA_STORE[10],
-                                   DATA_STORE[11],
-                                   DATA_STORE[12],
-                                   DATA_STORE[13],
-                                   DATA_STORE[14],
-                                   DATA_STORE[15]
-                                  };
-
-            pcie_tlp_data     <= #(Tcq) {
-                                         3'b011,      // Fmt for 64-bit MWr Req
-                                         5'b00000,    // Type for 64-bit MWr Req
-                                         1'b0,        // *reserved*
-                                         tc_,         // 3-bit Traffic Class
-                                         1'b0,        // *reserved*
-                                         1'b0,        // Attributes {ID Based Ordering}
-                                         1'b0,        // *reserved*
-                                         1'b0,        // TLP Processing Hints
-                                         1'b0,        // TLP Digest Present
-                                         ep_,         // Poisoned Req
-                                         2'b00,       // Attributes {Relaxed Ordering, No Snoop}
-                                         2'b00,       // Address Translation
-                                         len_[9:0],   // DWORD Count
-                                         RP_BUS_DEV_FNS,   // Requester ID
-                                         tag_,          // Tag
-                                         last_dw_be_,   // Last DW Byte Enable
-                                         first_dw_be_,  // First DW Byte Enable
-                                          //64
-                                         addr_[63:2],   // Memory Write address 64-bits
-                                         2'b00,         // *reserved*
-                                          //128
-                                         data_pcie_i    // Payload Data
-                                          //256
-                                        };
+  s_axis_rq_tdata   <= #(Tcq) {
+   256'b0,//256
+   ( (AXISTEN_IF_RQ_ALIGNMENT_MODE == "FALSE" )
+   ? data_axis_i : 128'h0), // 128-bit write data
+    //128
+   1'b0,        // Force ECRC
+   3'b000,      // Attributes {ID Based Ordering, Relaxed Ordering, No Snoop}
+   tc_,         // Traffic Class
+   1'b1,        // RID Enable to use the Client supplied Bus/Device/Func No
+   EP_BUS_DEV_FNS,   // Completer ID
+   tag_,        // Tag
+    //96
+   RP_BUS_DEV_FNS,   // Requester ID -- Used only when RID enable = 1
+   ep_,         // Poisoned Req
+   4'b0001,     // Req Type for MWr Req
+   len_,        // DWORD Count
+    //64
+   addr_[63:2], // Memory Write address 64-bits
+   2'b00 };     // AT -> 00 : Untranslated Address
+  //-----------------------------------------------------------------------\\
+  for (data_pcie_i = 0, _j = 0; _j < 16; _j += 1) begin
+    data_pcie_i    <<= 8;
+    data_pcie_i[7:0] = DATA_STORE[_j];
+  end
+  pcie_tlp_data <= #(Tcq) {
+   3'b011,      // Fmt for 64-bit MWr Req
+   5'b00000,    // Type for 64-bit MWr Req
+   1'b0,        // *reserved*
+   tc_,         // 3-bit Traffic Class
+   1'b0,        // *reserved*
+   1'b0,        // Attributes {ID Based Ordering}
+   1'b0,        // *reserved*
+   1'b0,        // TLP Processing Hints
+   1'b0,        // TLP Digest Present
+   ep_,         // Poisoned Req
+   2'b00,       // Attributes {Relaxed Ordering, No Snoop}
+   2'b00,       // Address Translation
+   len_[9:0],   // DWORD Count
+   RP_BUS_DEV_FNS,   // Requester ID
+   tag_,          // Tag
+   last_dw_be_,   // Last DW Byte Enable
+   first_dw_be_,  // First DW Byte Enable
+    //64
+   addr_[63:2],   // Memory Write address 64-bits
+   2'b00,         // *reserved*
+    //128
+   data_pcie_i    // Payload Data
+  };//256
                                          
-            pcie_tlp_rem      <= #(Tcq) (_len > 3) ? 3'b000 : (4-_len);
-            _len               = (_len > 3) ? (_len - 11'h4) : 11'h0;
-            //-----------------------------------------------------------------------\\
-            s_axis_rq_tvalid  <= #(Tcq) 1'b1;
+  pcie_tlp_rem     <= #(Tcq) (_len > 3) ? 3'b000 : (4-_len);
+  _len              = (_len > 3) ? (_len - 11'h4) : 11'h0;
+  //-----------------------------------------------------------------------\\
+  s_axis_rq_tvalid <= #(Tcq) 1'b1;
 
-            if (len_i > 4 || AXISTEN_IF_RQ_ALIGNMENT_MODE == "TRUE") begin
-                s_axis_rq_tlast          <= #(Tcq) 1'b0;
-                s_axis_rq_tkeep          <= #(Tcq) 8'hFF;
+  if (len_i > 4 || AXISTEN_IF_RQ_ALIGNMENT_MODE == "TRUE") begin
+    s_axis_rq_tlast <= #(Tcq) 1'b0;
+    s_axis_rq_tkeep <= #(Tcq) 8'hFF;
 
-                len_i                     = (AXISTEN_IF_RQ_ALIGNMENT_MODE == "FALSE") ? (len_i - 4) : len_i; // Don't subtract 4 in Address Aligned because
-                                                                                                             // it's always padded with zeros on first beat
+    len_i = (AXISTEN_IF_RQ_ALIGNMENT_MODE == "FALSE") ? (len_i - 4) : len_i;
+    // ^-- Don't subtract 4 in Address Aligned because
+    //     it's always padded with zeros on first beat
 
-                // pcie_tlp_data doesn't append zero even in Address Aligned mode, so it should mark this cycle as the last beat if it has no more payload to log.
-                // The AXIS RQ interface will need to execute the next cycle, but we're just not going to log that data beat in pcie_tlp_data
-                if (_len == 0)
-                    TSK_TX_SYNCHRONIZE(1, 1, 1, `SYNC_RQ_RDY);
-                else
-                    TSK_TX_SYNCHRONIZE(1, 1, 0, `SYNC_RQ_RDY);
-
-            end else begin
-                if (len_i == 1)
-                    s_axis_rq_tkeep      <= #(Tcq) 8'h1F;
-                else if (len_i == 2)
-                    s_axis_rq_tkeep      <= #(Tcq) 8'h3F;
-                else if (len_i == 3)
-                    s_axis_rq_tkeep      <= #(Tcq) 8'h7F;
-                else // len_i == 4
-                    s_axis_rq_tkeep      <= #(Tcq) 8'hFF;
-                
-                s_axis_rq_tlast          <= #(Tcq) 1'b1;
-                
-                len_i                     = 0;
-
-                TSK_TX_SYNCHRONIZE(1, 1, 1, `SYNC_RQ_RDY);
+    // pcie_tlp_data doesn't append zero even in Address Aligned mode, so it should mark this cycle as the last beat if it has no more payload to log.
+    // The AXIS RQ interface will need to execute the next cycle, but we're just not going to log that data beat in pcie_tlp_data
+    if (_len == 0) TSK_TX_SYNCHRONIZE(1, 1, 1, `SYNC_RQ_RDY);
+    else           TSK_TX_SYNCHRONIZE(1, 1, 0, `SYNC_RQ_RDY);
+  end else begin
+    if (1 <= len_i) s_axis_rq_tkeep <= #(Tcq) ~(~8'd0 << (1 + len_i));
+    s_axis_rq_tlast <= #(Tcq) 1'b1;
+    len_i = 0;
+    TSK_TX_SYNCHRONIZE(1, 1, 1, `SYNC_RQ_RDY);
+  end
+  // End of First Data Beat
+  //-----------------------------------------------------------------------\\
+  // Start of Second and Subsequent Data Beat
+  if (len_i != 0 || AXISTEN_IF_RQ_ALIGNMENT_MODE == "TRUE") begin
+    fork 
+      begin // Sequential group 1 - AXIS RQ
+        for (_j = start_addr; len_i != 0; _j = _j + 32) begin
+          if(_j == start_addr) begin 
+            for (aa_data = 0, _k = 31; 0 < _k; _k += 1) begin
+              aa_data <<= 8;
+              aa_data[7:0] = DATA_STORE[_j + _k];
             end
-            // End of First Data Beat
-            //-----------------------------------------------------------------------\\
-            // Start of Second and Subsequent Data Beat
-            if (len_i != 0 || AXISTEN_IF_RQ_ALIGNMENT_MODE == "TRUE") begin
-                fork 
-                
-                begin // Sequential group 1 - AXIS RQ
-                    for (_j = start_addr; len_i != 0; _j = _j + 32) begin
-                        if(_j == start_addr) begin 
-                            aa_data = {
-                                       DATA_STORE[_j + 31],
-                                       DATA_STORE[_j + 30],
-                                       DATA_STORE[_j + 29],
-                                       DATA_STORE[_j + 28],
-                                       DATA_STORE[_j + 27],
-                                       DATA_STORE[_j + 26],
-                                       DATA_STORE[_j + 25],
-                                       DATA_STORE[_j + 24],
-                                       DATA_STORE[_j + 23],
-                                       DATA_STORE[_j + 22],
-                                       DATA_STORE[_j + 21],
-                                       DATA_STORE[_j + 20],
-                                       DATA_STORE[_j + 19],
-                                       DATA_STORE[_j + 18],
-                                       DATA_STORE[_j + 17],
-                                       DATA_STORE[_j + 16],
-                                       DATA_STORE[_j + 15],
-                                       DATA_STORE[_j + 14],
-                                       DATA_STORE[_j + 13],
-                                       DATA_STORE[_j + 12],
-                                       DATA_STORE[_j + 11],
-                                       DATA_STORE[_j + 10],
-                                       DATA_STORE[_j +  9],
-                                       DATA_STORE[_j +  8],
-                                       DATA_STORE[_j +  7],
-                                       DATA_STORE[_j +  6],
-                                       DATA_STORE[_j +  5],
-                                       DATA_STORE[_j +  4],
-                                       DATA_STORE[_j +  3],
-                                       DATA_STORE[_j +  2],
-                                       DATA_STORE[_j +  1],
-                                       DATA_STORE[_j +  0]
-                                       } << (aa_dw*4*8);
-                        end else begin 
-                            aa_data = {
-                                       DATA_STORE[_j + 31 - (aa_dw*4)],
-                                       DATA_STORE[_j + 30 - (aa_dw*4)],
-                                       DATA_STORE[_j + 29 - (aa_dw*4)],
-                                       DATA_STORE[_j + 28 - (aa_dw*4)],
-                                       DATA_STORE[_j + 27 - (aa_dw*4)],
-                                       DATA_STORE[_j + 26 - (aa_dw*4)],
-                                       DATA_STORE[_j + 25 - (aa_dw*4)],
-                                       DATA_STORE[_j + 24 - (aa_dw*4)],
-                                       DATA_STORE[_j + 23 - (aa_dw*4)],
-                                       DATA_STORE[_j + 22 - (aa_dw*4)],
-                                       DATA_STORE[_j + 21 - (aa_dw*4)],
-                                       DATA_STORE[_j + 20 - (aa_dw*4)],
-                                       DATA_STORE[_j + 19 - (aa_dw*4)],
-                                       DATA_STORE[_j + 18 - (aa_dw*4)],
-                                       DATA_STORE[_j + 17 - (aa_dw*4)],
-                                       DATA_STORE[_j + 16 - (aa_dw*4)],
-                                       DATA_STORE[_j + 15 - (aa_dw*4)],
-                                       DATA_STORE[_j + 14 - (aa_dw*4)],
-                                       DATA_STORE[_j + 13 - (aa_dw*4)],
-                                       DATA_STORE[_j + 12 - (aa_dw*4)],
-                                       DATA_STORE[_j + 11 - (aa_dw*4)],
-                                       DATA_STORE[_j + 10 - (aa_dw*4)],
-                                       DATA_STORE[_j +  9 - (aa_dw*4)],
-                                       DATA_STORE[_j +  8 - (aa_dw*4)],
-                                       DATA_STORE[_j +  7 - (aa_dw*4)],
-                                       DATA_STORE[_j +  6 - (aa_dw*4)],
-                                       DATA_STORE[_j +  5 - (aa_dw*4)],
-                                       DATA_STORE[_j +  4 - (aa_dw*4)],
-                                       DATA_STORE[_j +  3 - (aa_dw*4)],
-                                       DATA_STORE[_j +  2 - (aa_dw*4)],
-                                       DATA_STORE[_j +  1 - (aa_dw*4)],
-                                       DATA_STORE[_j +  0 - (aa_dw*4)]
-                                       };
-                        end
+            aa_data <<= (aa_dw*4*8);
+          end else begin 
+            for (aa_data = 0, _k = 31; 0 < _k; _k += 1) begin
+              aa_data <<= 8;
+              aa_data[7:0] = DATA_STORE[_j + _k - (aa_dw*4)];
+            end
+          end
+          s_axis_rq_tdata           <= #(Tcq) aa_data;
+          if (1 <= len_i && len_i <= 7) begin
+            s_axis_rq_tkeep <= #(Tcq) ~(~8'd0 << len_i);
+            len_i = 0;
+          end else begin
+            s_axis_rq_tkeep <= #(Tcq) ~8'd0;
+            len_i = len_i - 8;
+          end
+                        
+          if (len_i == 0) s_axis_rq_tlast <= #(Tcq) 1'b1;
+          else            s_axis_rq_tlast <= #(Tcq) 1'b0;
 
-                        s_axis_rq_tdata           <= #(Tcq) aa_data;
-                        
-                        if((len_i)/8 == 0) begin
-                            case ((len_i) % 8)
-                                1 : begin len_i = len_i - 1; s_axis_rq_tkeep <= #(Tcq) 8'h01; end  // D0---------------------
-                                2 : begin len_i = len_i - 2; s_axis_rq_tkeep <= #(Tcq) 8'h03; end  // D0-D1------------------
-                                3 : begin len_i = len_i - 3; s_axis_rq_tkeep <= #(Tcq) 8'h07; end  // D0-D1-D2---------------
-                                4 : begin len_i = len_i - 4; s_axis_rq_tkeep <= #(Tcq) 8'h0F; end  // D0-D1-D2-D3------------
-                                5 : begin len_i = len_i - 5; s_axis_rq_tkeep <= #(Tcq) 8'h1F; end  // D0-D1-D2-D3-D4---------
-                                6 : begin len_i = len_i - 6; s_axis_rq_tkeep <= #(Tcq) 8'h3F; end  // D0-D1-D2-D3-D4-D5------
-                                7 : begin len_i = len_i - 7; s_axis_rq_tkeep <= #(Tcq) 8'h7F; end  // D0-D1-D2-D3-D4-D5-D6---
-                                0 : begin len_i = len_i - 8; s_axis_rq_tkeep <= #(Tcq) 8'hFF; end  // D0-D1-D2-D3-D4-D5-D6-D7
-                            endcase 
-                        end else begin
-                            len_i               = len_i - 8; s_axis_rq_tkeep <= #(Tcq) 8'hFF;      // D0-D1-D2-D3-D4-D5-D6-D7
-                        end
-                        
-                        if (len_i == 0)
-                            s_axis_rq_tlast        <= #(Tcq) 1'b1;
-                        else
-                            s_axis_rq_tlast        <= #(Tcq) 1'b0;
-
-                        // Call this just to check for the tready, but don't log anything. That's the job for pcie_tlp_data
-                        // The reason for splitting the TSK_TX_SYNCHRONIZE task and distribute them in both sequential group
-                        // is that in address aligned mode, it's possible that the additional padded zeros cause the AXIS RQ
-                        // to be one beat longer than the actual PCIe TLP. When it happens do not log the last clock beat
-                        // but just send the packet on AXIS RQ interface
-                        TSK_TX_SYNCHRONIZE(0, 0, 0, `SYNC_RQ_RDY);
-                            
-                    end // for loop
-                end // End sequential group 1 - AXIS RQ
+          // Call this just to check for the tready, but don't log anything. That's the job for pcie_tlp_data
+          // The reason for splitting the TSK_TX_SYNCHRONIZE task and distribute them in both sequential group
+          // is that in address aligned mode, it's possible that the additional padded zeros cause the AXIS RQ
+          // to be one beat longer than the actual PCIe TLP. When it happens do not log the last clock beat
+          // but just send the packet on AXIS RQ interface
+          TSK_TX_SYNCHRONIZE(0, 0, 0, `SYNC_RQ_RDY);
+        end // for loop
+      end // End sequential group 1 - AXIS RQ
                 
-                begin // Sequential group 2 - pcie_tlp
-                    for (_j = 16; _len != 0; _j = _j + 32) begin
-                        pcie_tlp_data <= #(Tcq) {
-                                                DATA_STORE[_j + 0],
-                                                DATA_STORE[_j + 1],
-                                                DATA_STORE[_j + 2],
-                                                DATA_STORE[_j + 3],
-                                                DATA_STORE[_j + 4],
-                                                DATA_STORE[_j + 5],
-                                                DATA_STORE[_j + 6],
-                                                DATA_STORE[_j + 7],
-                                                DATA_STORE[_j + 8],
-                                                DATA_STORE[_j + 9],
-                                                DATA_STORE[_j + 10],
-                                                DATA_STORE[_j + 11],
-                                                DATA_STORE[_j + 12],
-                                                DATA_STORE[_j + 13],
-                                                DATA_STORE[_j + 14],
-                                                DATA_STORE[_j + 15],
-                                                DATA_STORE[_j + 16],
-                                                DATA_STORE[_j + 17],
-                                                DATA_STORE[_j + 18],
-                                                DATA_STORE[_j + 19],
-                                                DATA_STORE[_j + 20],
-                                                DATA_STORE[_j + 21],
-                                                DATA_STORE[_j + 22],
-                                                DATA_STORE[_j + 23],
-                                                DATA_STORE[_j + 24],
-                                                DATA_STORE[_j + 25],
-                                                DATA_STORE[_j + 26],
-                                                DATA_STORE[_j + 27],
-                                                DATA_STORE[_j + 28],
-                                                DATA_STORE[_j + 29],
-                                                DATA_STORE[_j + 30],
-                                                DATA_STORE[_j + 31]
-                                                };
+      begin // Sequential group 2 - pcie_tlp
+        for (_j = 16; _len != 0; _j = _j + 32) begin
+          for (_k = 0; _k < 32; _k += 1) begin
+            tmp <<= 8;
+            tmp[7:0] = DATA_STORE[_j + _k];
+          end
+          pcie_tlp_data <= #(Tcq) tmp;
+
+          if (1 <= _len && _len <= 7) begin
+            pcie_tlp_rem <= #(Tcq) 3'd0 - _len[2:0];
+            _len = 0;
+          end else begin
+            pcie_tlp_rem <= #(Tcq) 3'd0;
+            _len = _len - 8;
+          end
                         
-                        if ((_len)/8 == 0) begin
-                            case ((_len) % 8)
-                                1 : begin _len = _len - 1; pcie_tlp_rem <= #(Tcq) 3'b111; end  // D0---------------------
-                                2 : begin _len = _len - 2; pcie_tlp_rem <= #(Tcq) 3'b110; end  // D0-D1------------------
-                                3 : begin _len = _len - 3; pcie_tlp_rem <= #(Tcq) 3'b101; end  // D0-D1-D2---------------
-                                4 : begin _len = _len - 4; pcie_tlp_rem <= #(Tcq) 3'b100; end  // D0-D1-D2-D3------------
-                                5 : begin _len = _len - 5; pcie_tlp_rem <= #(Tcq) 3'b011; end  // D0-D1-D2-D3-D4---------
-                                6 : begin _len = _len - 6; pcie_tlp_rem <= #(Tcq) 3'b010; end  // D0-D1-D2-D3-D4-D5------
-                                7 : begin _len = _len - 7; pcie_tlp_rem <= #(Tcq) 3'b001; end  // D0-D1-D2-D3-D4-D5-D6---
-                                0 : begin _len = _len - 8; pcie_tlp_rem <= #(Tcq) 3'b000; end  // D0-D1-D2-D3-D4-D5-D6-D7
-                            endcase
-                        end else begin
-                            _len               = _len - 8; pcie_tlp_rem <= #(Tcq) 3'b000; // D0-D1-D2-D3-D4-D5-D6-D7
-                        end
-                        
-                        if (_len == 0)
-                            TSK_TX_SYNCHRONIZE(0, 1, 1, `SYNC_RQ_RDY);
-                        else
-                            TSK_TX_SYNCHRONIZE(0, 1, 0, `SYNC_RQ_RDY);
-                    end // for loop
-                end // End sequential group 2 - pcie_tlp
-                             
-                join
-            end // if
-            // End of Second and Subsequent Data Beat
-            //-----------------------------------------------------------------------\\
-            // Packet Complete - Drive 0s
-            s_axis_rq_tvalid         <= #(Tcq) 1'b0;
-            s_axis_rq_tlast          <= #(Tcq) 1'b0;
-            s_axis_rq_tkeep          <= #(Tcq) 8'h00;
-            s_axis_rq_tuser_wo_parity<= #(Tcq) 137'b0;
-            s_axis_rq_tdata          <= #(Tcq) 512'b0;
-            //-----------------------------------------------------------------------\\
-            pcie_tlp_rem             <= #(Tcq) 3'b000;
-            //-----------------------------------------------------------------------\\
-        end
-    endtask // TSK_TX_MEMORY_WRITE_64
+          if (_len == 0) TSK_TX_SYNCHRONIZE(0, 1, 1, `SYNC_RQ_RDY);
+          else           TSK_TX_SYNCHRONIZE(0, 1, 0, `SYNC_RQ_RDY);
+        end // for loop
+      end // End sequential group 2 - pcie_tlp
+    join
+  end // if
+  // End of Second and Subsequent Data Beat
+  //-----------------------------------------------------------------------\\
+  // Packet Complete - Drive 0s
+  s_axis_rq_tvalid         <= #(Tcq) 1'b0;
+  s_axis_rq_tlast          <= #(Tcq) 1'b0;
+  s_axis_rq_tkeep          <= #(Tcq) 8'h00;
+  s_axis_rq_tuser_wo_parity<= #(Tcq) 137'b0;
+  s_axis_rq_tdata          <= #(Tcq) 512'b0;
+  //-----------------------------------------------------------------------\\
+  pcie_tlp_rem             <= #(Tcq) 3'b000;
+  //-----------------------------------------------------------------------\\
+end
+endtask // TSK_TX_MEMORY_WRITE_64
 
     /************************************************************
     Task : TSK_TX_COMPLETION_DATA
