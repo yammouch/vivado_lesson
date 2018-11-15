@@ -2338,127 +2338,102 @@ end
 endtask // TSK_BUILD_PCIE_MAP
 
 
-   /************************************************************
-        Task : TSK_BAR_SCAN
-        Inputs : None
-        Outputs : None
-        Description : Scans PCI core's configuration registers.
-   *************************************************************/
+/************************************************************
+     Task : TSK_BAR_SCAN
+     Inputs : None
+     Outputs : None
+     Description : Scans PCI core's configuration registers.
+*************************************************************/
+task TSK_BAR_SCAN;
+begin
+  //--------------------------------------------------------------------------
+  // Write PCI_MASK to bar's space via PCIe fabric interface to find range
+  //--------------------------------------------------------------------------
+  P_ADDRESS_MASK          = 32'hffff_ffff;
+  DEFAULT_TAG         = 0;
+  DEFAULT_TC          = 0;
 
-    task TSK_BAR_SCAN;
-       begin
+  $display("[%t] : Inspecting Core Configuration Space...", $realtime);
 
-        //--------------------------------------------------------------------------
-        // Write PCI_MASK to bar's space via PCIe fabric interface to find range
-        //--------------------------------------------------------------------------
+  // Determine Range for BAR0
 
-        P_ADDRESS_MASK          = 32'hffff_ffff;
-    DEFAULT_TAG         = 0;
-    DEFAULT_TC          = 0;
+  TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h10, P_ADDRESS_MASK, 4'hF);
+  DEFAULT_TAG = DEFAULT_TAG + 1;
+  repeat (100) @(posedge user_clk);
 
+  // Read BAR0 Range
+  TSK_TX_TYPE0_CONFIGURATION_READ(DEFAULT_TAG, 12'h10, 4'hF);
+  DEFAULT_TAG = DEFAULT_TAG + 1;
+  TSK_WAIT_FOR_READ_DATA;
+  BAR_INIT_P_BAR_RANGE[0] = P_READ_DATA;
 
-        $display("[%t] : Inspecting Core Configuration Space...", $realtime);
+  // Determine Range for BAR1
+  TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h14, P_ADDRESS_MASK, 4'hF);
+  DEFAULT_TAG = DEFAULT_TAG + 1;
+  repeat (100) @(posedge user_clk);
 
-    // Determine Range for BAR0
+  // Read BAR1 Range
+  TSK_TX_TYPE0_CONFIGURATION_READ(DEFAULT_TAG, 12'h14, 4'hF);
+  DEFAULT_TAG = DEFAULT_TAG + 1;
+  TSK_WAIT_FOR_READ_DATA;
+  BAR_INIT_P_BAR_RANGE[1] = P_READ_DATA;
 
-    TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h10, P_ADDRESS_MASK, 4'hF);
-        DEFAULT_TAG = DEFAULT_TAG + 1;
-        repeat (100) @(posedge user_clk);
+  // Determine Range for BAR2
+  TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h18, P_ADDRESS_MASK, 4'hF);
+  DEFAULT_TAG = DEFAULT_TAG + 1;
+  repeat (100) @(posedge user_clk);
 
-    // Read BAR0 Range
+  // Read BAR2 Range
+  TSK_TX_TYPE0_CONFIGURATION_READ(DEFAULT_TAG, 12'h18, 4'hF);
+  DEFAULT_TAG = DEFAULT_TAG + 1;
+  TSK_WAIT_FOR_READ_DATA;
+  BAR_INIT_P_BAR_RANGE[2] = P_READ_DATA;
 
-    TSK_TX_TYPE0_CONFIGURATION_READ(DEFAULT_TAG, 12'h10, 4'hF);
-        DEFAULT_TAG = DEFAULT_TAG + 1;
-        TSK_WAIT_FOR_READ_DATA;
-        BAR_INIT_P_BAR_RANGE[0] = P_READ_DATA;
+  // Determine Range for BAR3
+  TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h1C, P_ADDRESS_MASK, 4'hF);
+  DEFAULT_TAG = DEFAULT_TAG + 1;
+  repeat (100) @(posedge user_clk);
 
+  // Read BAR3 Range
+  TSK_TX_TYPE0_CONFIGURATION_READ(DEFAULT_TAG, 12'h1C, 4'hF);
+  DEFAULT_TAG = DEFAULT_TAG + 1;
+  TSK_WAIT_FOR_READ_DATA;
+  BAR_INIT_P_BAR_RANGE[3] = P_READ_DATA;
 
-    // Determine Range for BAR1
+  // Determine Range for BAR4
+  TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h20, P_ADDRESS_MASK, 4'hF);
+  DEFAULT_TAG = DEFAULT_TAG + 1;
+  repeat (100) @(posedge user_clk);
 
-        TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h14, P_ADDRESS_MASK, 4'hF);
-        DEFAULT_TAG = DEFAULT_TAG + 1;
-        repeat (100) @(posedge user_clk);
+  // Read BAR4 Range
+  TSK_TX_TYPE0_CONFIGURATION_READ(DEFAULT_TAG, 12'h20, 4'hF);
+  DEFAULT_TAG = DEFAULT_TAG + 1;
+  TSK_WAIT_FOR_READ_DATA;
+  BAR_INIT_P_BAR_RANGE[4] = P_READ_DATA;
 
-    // Read BAR1 Range
+  // Determine Range for BAR5
+  TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h24, P_ADDRESS_MASK, 4'hF);
+  DEFAULT_TAG = DEFAULT_TAG + 1;
+  repeat (100) @(posedge user_clk);
 
-        TSK_TX_TYPE0_CONFIGURATION_READ(DEFAULT_TAG, 12'h14, 4'hF);
-        DEFAULT_TAG = DEFAULT_TAG + 1;
-        TSK_WAIT_FOR_READ_DATA;
-        BAR_INIT_P_BAR_RANGE[1] = P_READ_DATA;
+  // Read BAR5 Range
+  TSK_TX_TYPE0_CONFIGURATION_READ(DEFAULT_TAG, 12'h24, 4'hF);
+  DEFAULT_TAG = DEFAULT_TAG + 1;
+  TSK_WAIT_FOR_READ_DATA;
+  BAR_INIT_P_BAR_RANGE[5] = P_READ_DATA;
 
+  // Determine Range for Expansion ROM BAR
+  TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h30, P_ADDRESS_MASK, 4'hF);
+  DEFAULT_TAG = DEFAULT_TAG + 1;
+  repeat (100) @(posedge user_clk);
 
-    // Determine Range for BAR2
-
-        TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h18, P_ADDRESS_MASK, 4'hF);
-        DEFAULT_TAG = DEFAULT_TAG + 1;
-        repeat (100) @(posedge user_clk);
-
-
-    // Read BAR2 Range
-
-        TSK_TX_TYPE0_CONFIGURATION_READ(DEFAULT_TAG, 12'h18, 4'hF);
-        DEFAULT_TAG = DEFAULT_TAG + 1;
-        TSK_WAIT_FOR_READ_DATA;
-        BAR_INIT_P_BAR_RANGE[2] = P_READ_DATA;
-
-
-    // Determine Range for BAR3
-
-        TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h1C, P_ADDRESS_MASK, 4'hF);
-        DEFAULT_TAG = DEFAULT_TAG + 1;
-        repeat (100) @(posedge user_clk);
-
-    // Read BAR3 Range
-
-        TSK_TX_TYPE0_CONFIGURATION_READ(DEFAULT_TAG, 12'h1C, 4'hF);
-        DEFAULT_TAG = DEFAULT_TAG + 1;
-        TSK_WAIT_FOR_READ_DATA;
-        BAR_INIT_P_BAR_RANGE[3] = P_READ_DATA;
-
-
-    // Determine Range for BAR4
-
-        TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h20, P_ADDRESS_MASK, 4'hF);
-        DEFAULT_TAG = DEFAULT_TAG + 1;
-        repeat (100) @(posedge user_clk);
-
-    // Read BAR4 Range
-
-        TSK_TX_TYPE0_CONFIGURATION_READ(DEFAULT_TAG, 12'h20, 4'hF);
-        DEFAULT_TAG = DEFAULT_TAG + 1;
-        TSK_WAIT_FOR_READ_DATA;
-        BAR_INIT_P_BAR_RANGE[4] = P_READ_DATA;
-
-
-    // Determine Range for BAR5
-
-        TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h24, P_ADDRESS_MASK, 4'hF);
-        DEFAULT_TAG = DEFAULT_TAG + 1;
-        repeat (100) @(posedge user_clk);
-
-    // Read BAR5 Range
-
-        TSK_TX_TYPE0_CONFIGURATION_READ(DEFAULT_TAG, 12'h24, 4'hF);
-        DEFAULT_TAG = DEFAULT_TAG + 1;
-        TSK_WAIT_FOR_READ_DATA;
-        BAR_INIT_P_BAR_RANGE[5] = P_READ_DATA;
-
-
-    // Determine Range for Expansion ROM BAR
-
-        TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h30, P_ADDRESS_MASK, 4'hF);
-        DEFAULT_TAG = DEFAULT_TAG + 1;
-        repeat (100) @(posedge user_clk);
-
-    // Read Expansion ROM BAR Range
-
-        TSK_TX_TYPE0_CONFIGURATION_READ(DEFAULT_TAG, 12'h30, 4'hF);
-        DEFAULT_TAG = DEFAULT_TAG + 1;
-        TSK_WAIT_FOR_READ_DATA;
-        BAR_INIT_P_BAR_RANGE[6] = P_READ_DATA;
-
-       end
-    endtask // TSK_BAR_SCAN
+  // Read Expansion ROM BAR Range
+  TSK_TX_TYPE0_CONFIGURATION_READ(DEFAULT_TAG, 12'h30, 4'hF);
+  DEFAULT_TAG = DEFAULT_TAG + 1;
+  TSK_WAIT_FOR_READ_DATA;
+  BAR_INIT_P_BAR_RANGE[6] = P_READ_DATA;
+end
+endtask // TSK_BAR_SCAN
 
 
    /************************************************************
