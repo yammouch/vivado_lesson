@@ -2190,243 +2190,152 @@ begin
 end
 endtask
 
-    /************************************************************
-    Task : TSK_BUILD_PCIE_MAP
-    Inputs :
-    Outputs :
-    Description : Looks at range values read from config space and
-                  builds corresponding mem/io map
-    *************************************************************/
-
-    task TSK_BUILD_PCIE_MAP;
-
-        reg[2:0] ii;
-
-        begin
-
-                  $display("[%t] PCI EXPRESS BAR MEMORY/IO MAPPING PROCESS BEGUN...",$realtime);
-
-              // handle bars 0-6 (including erom)
-              for (ii = 0; ii <= 6; ii = ii + 1) begin
-
-                  if (BAR_INIT_P_BAR_RANGE[ii] != 32'h0000_0000) begin
-
-                     if ((ii != 6) && (BAR_INIT_P_BAR_RANGE[ii] & 32'h0000_0001)) begin // if not erom and io bit set
-
-                        // bar is io mapped
-                        NUMBER_OF_IO_BARS = NUMBER_OF_IO_BARS + 1;
-
-                        if (~BAR_ENABLED[ii]) begin
-                           $display("[%t] Testbench will disable BAR %x",$realtime, ii);
-                           BAR_INIT_P_BAR_ENABLED[ii] = 2'h0; // disable BAR
-                        end
-                        else begin
-                           BAR_INIT_P_BAR_ENABLED[ii] = 2'h1;
-                           $display("[%t] Testbench is enabling IO BAR %x",$realtime, ii);
-                        end //BAR_INIT_P_BAR_ENABLED[ii] = 2'h1;
-
-                        if (!OUT_OF_IO) begin
-
-                           // We need to calculate where the next BAR should start based on the BAR's range
-                                  BAR_INIT_TEMP = BAR_INIT_P_IO_START & {1'b1,(BAR_INIT_P_BAR_RANGE[ii] & 32'hffff_fff0)};
-
-                                  if (BAR_INIT_TEMP < BAR_INIT_P_IO_START) begin
-                                     // Current BAR_INIT_P_IO_START is NOT correct start for new base
-                                      BAR_INIT_P_BAR[ii] = BAR_INIT_TEMP + FNC_CONVERT_RANGE_TO_SIZE_32(ii);
-                                      BAR_INIT_P_IO_START = BAR_INIT_P_BAR[ii] + FNC_CONVERT_RANGE_TO_SIZE_32(ii);
-
-                                  end
-                                  else begin
-
-                                     // Initial BAR case and Current BAR_INIT_P_IO_START is correct start for new base
-                                      BAR_INIT_P_BAR[ii] = BAR_INIT_P_IO_START;
-                                      BAR_INIT_P_IO_START = BAR_INIT_P_IO_START + FNC_CONVERT_RANGE_TO_SIZE_32(ii);
-
-                                  end
-
-                                  OUT_OF_IO = BAR_INIT_P_BAR[ii][32];
-
-                              if (OUT_OF_IO) begin
-
-                                 $display("\tOut of PCI EXPRESS IO SPACE due to BAR %x", ii);
-
-                              end
-
-                        end
-                          else begin
-
-                               $display("\tOut of PCI EXPRESS IO SPACE due to BAR %x", ii);
-
-                          end
-
-
-
-                     end // bar is io mapped
-
-                     else begin
-
-                        // bar is mem mapped
-                        if ((ii != 5) && (BAR_INIT_P_BAR_RANGE[ii] & 32'h0000_0004)) begin
-
-                           // bar is mem64 mapped - memManager is not handling out of 64bit memory
-                               NUMBER_OF_MEM64_BARS = NUMBER_OF_MEM64_BARS + 1;
-
-                           if (~BAR_ENABLED[ii]) begin
-                              $display("[%t] Testbench will disable BAR %x",$realtime, ii);
-                              BAR_INIT_P_BAR_ENABLED[ii] = 2'h0; // disable BAR
-                           end
-                           else begin
-                              BAR_INIT_P_BAR_ENABLED[ii] = 2'h3; // bar is mem64 mapped
-                              $display("[%t] Testbench is enabling MEM64 BAR %x",$realtime, ii);
-                           end 
-
-
-                           if ( (BAR_INIT_P_BAR_RANGE[ii] & 32'hFFFF_FFF0) == 32'h0000_0000) begin
-
-                              // Mem64 space has range larger than 2 Gigabytes
-
-                              // calculate where the next BAR should start based on the BAR's range
-                                  BAR_INIT_TEMP = BAR_INIT_P_MEM64_HI_START & BAR_INIT_P_BAR_RANGE[ii+1];
-
-                                  if (BAR_INIT_TEMP < BAR_INIT_P_MEM64_HI_START) begin
-
-                                     // Current MEM32_START is NOT correct start for new base
-                                     BAR_INIT_P_BAR[ii+1] =      BAR_INIT_TEMP + FNC_CONVERT_RANGE_TO_SIZE_HI32(ii+1);
-                                     BAR_INIT_P_BAR[ii] =        32'h0000_0000;
-                                     BAR_INIT_P_MEM64_HI_START = BAR_INIT_P_BAR[ii+1] + FNC_CONVERT_RANGE_TO_SIZE_HI32(ii+1);
-                                     BAR_INIT_P_MEM64_LO_START = 32'h0000_0000;
-
-                                  end
-                                  else begin
-
-                                     // Initial BAR case and Current MEM32_START is correct start for new base
-                                     BAR_INIT_P_BAR[ii] =        32'h0000_0000;
-                                     BAR_INIT_P_BAR[ii+1] =      BAR_INIT_P_MEM64_HI_START;
-                                     BAR_INIT_P_MEM64_HI_START = BAR_INIT_P_MEM64_HI_START + FNC_CONVERT_RANGE_TO_SIZE_HI32(ii+1);
-
-                                  end
-
-                           end
-                           else begin
-
-                              // Mem64 space has range less than/equal 2 Gigabytes
-
-                              // calculate where the next BAR should start based on the BAR's range
-                                  BAR_INIT_TEMP = BAR_INIT_P_MEM64_LO_START & (BAR_INIT_P_BAR_RANGE[ii] & 32'hffff_fff0);
-
-                                  if (BAR_INIT_TEMP < BAR_INIT_P_MEM64_LO_START) begin
-
-                                     // Current MEM32_START is NOT correct start for new base
-                                     BAR_INIT_P_BAR[ii] =        BAR_INIT_TEMP + FNC_CONVERT_RANGE_TO_SIZE_32(ii);
-                                     BAR_INIT_P_BAR[ii+1] =      BAR_INIT_P_MEM64_HI_START;
-                                     BAR_INIT_P_MEM64_LO_START = BAR_INIT_P_BAR[ii] + FNC_CONVERT_RANGE_TO_SIZE_32(ii);
-
-                                  end
-                                  else begin
-
-                                     // Initial BAR case and Current MEM32_START is correct start for new base
-                                     BAR_INIT_P_BAR[ii] =        BAR_INIT_P_MEM64_LO_START;
-                                     BAR_INIT_P_BAR[ii+1] =      BAR_INIT_P_MEM64_HI_START;
-                                     BAR_INIT_P_MEM64_LO_START = BAR_INIT_P_MEM64_LO_START + FNC_CONVERT_RANGE_TO_SIZE_32(ii);
-
-                                  end
-
-                           end
-
-                              // skip over the next bar since it is being used by the 64bit bar
-                              ii = ii + 1;
-
-                        end
-                        else begin
-
-                           if ( (ii != 6) || ((ii == 6) && (BAR_INIT_P_BAR_RANGE[ii] & 32'h0000_0001)) ) begin
-                              // handling general mem32 case and erom case
-
-                              // bar is mem32 mapped
-                              if (ii != 6) begin
-
-                                 NUMBER_OF_MEM32_BARS = NUMBER_OF_MEM32_BARS + 1; // not counting erom space
-
-                                 if (~BAR_ENABLED[ii]) begin
-                                    $display("[%t] Testbench will disable BAR %x",$realtime, ii);
-                                    BAR_INIT_P_BAR_ENABLED[ii] = 2'h0; // disable BAR
-                                 end
-                                 else  begin
-                                    BAR_INIT_P_BAR_ENABLED[ii] = 2'h2; // bar is mem32 mapped
-                                    $display("[%t] Testbench is enabling MEM32 BAR %x",$realtime, ii);
-                                 end
-                              end
-
-                              else BAR_INIT_P_BAR_ENABLED[ii] = 2'h2; // erom bar is mem32 mapped
-
-                              if (!OUT_OF_LO_MEM) begin
-
-                                     // We need to calculate where the next BAR should start based on the BAR's range
-                                     BAR_INIT_TEMP = BAR_INIT_P_MEM32_START & {1'b1,(BAR_INIT_P_BAR_RANGE[ii] & 32'hffff_fff0)};
-
-                                     if (BAR_INIT_TEMP < BAR_INIT_P_MEM32_START) begin
-
-                                         // Current MEM32_START is NOT correct start for new base
-                                         BAR_INIT_P_BAR[ii] =     BAR_INIT_TEMP + FNC_CONVERT_RANGE_TO_SIZE_32(ii);
-                                         BAR_INIT_P_MEM32_START = BAR_INIT_P_BAR[ii] + FNC_CONVERT_RANGE_TO_SIZE_32(ii);
-
-                                     end
-                                     else begin
-
-                                         // Initial BAR case and Current MEM32_START is correct start for new base
-                                         BAR_INIT_P_BAR[ii] =     BAR_INIT_P_MEM32_START;
-                                         BAR_INIT_P_MEM32_START = BAR_INIT_P_MEM32_START + FNC_CONVERT_RANGE_TO_SIZE_32(ii);
-
-                                     end
-
-
-     if (ii == 6) begin
-
-        // make sure to set enable bit if we are mapping the erom space
-
-        BAR_INIT_P_BAR[ii] = BAR_INIT_P_BAR[ii] | 33'h1;
-
-
-     end
-
-
-                                 OUT_OF_LO_MEM = BAR_INIT_P_BAR[ii][32];
-
-                                 if (OUT_OF_LO_MEM) begin
-
-                                    $display("\tOut of PCI EXPRESS MEMORY 32 SPACE due to BAR %x", ii);
-
-                                 end
-
-                              end
-                              else begin
-
-                                     $display("\tOut of PCI EXPRESS MEMORY 32 SPACE due to BAR %x", ii);
-
-                              end
-
-                           end
-
-                        end
-
-                     end
-
-                  end
-
+/************************************************************
+Task : TSK_BUILD_PCIE_MAP
+Inputs :
+Outputs :
+Description : Looks at range values read from config space and
+              builds corresponding mem/io map
+*************************************************************/
+task TSK_BUILD_PCIE_MAP;
+reg [2:0] ii;
+begin
+  $display("[%t] PCI EXPRESS BAR MEMORY/IO MAPPING PROCESS BEGUN...",$realtime);
+
+  // handle bars 0-6 (including erom)
+  for (ii = 0; ii <= 6; ii = ii + 1) begin
+    if (BAR_INIT_P_BAR_RANGE[ii] != 32'h0000_0000) begin
+      if ((ii != 6) && (BAR_INIT_P_BAR_RANGE[ii] & 32'h0000_0001)) begin // if not erom and io bit set
+        // bar is io mapped
+        NUMBER_OF_IO_BARS = NUMBER_OF_IO_BARS + 1;
+        if (~BAR_ENABLED[ii]) begin
+          $display("[%t] Testbench will disable BAR %x",$realtime, ii);
+          BAR_INIT_P_BAR_ENABLED[ii] = 2'h0; // disable BAR
+        end else begin
+          BAR_INIT_P_BAR_ENABLED[ii] = 2'h1;
+          $display("[%t] Testbench is enabling IO BAR %x",$realtime, ii);
+        end //BAR_INIT_P_BAR_ENABLED[ii] = 2'h1;
+
+        if (!OUT_OF_IO) begin
+          // We need to calculate where the next BAR should start based on the BAR's range
+          BAR_INIT_TEMP = BAR_INIT_P_IO_START & {1'b1,(BAR_INIT_P_BAR_RANGE[ii] & 32'hffff_fff0)};
+
+          if (BAR_INIT_TEMP < BAR_INIT_P_IO_START) begin
+            // Current BAR_INIT_P_IO_START is NOT correct start for new base
+            BAR_INIT_P_BAR[ii] = BAR_INIT_TEMP + FNC_CONVERT_RANGE_TO_SIZE_32(ii);
+            BAR_INIT_P_IO_START = BAR_INIT_P_BAR[ii] + FNC_CONVERT_RANGE_TO_SIZE_32(ii);
+          end else begin
+            // Initial BAR case and Current BAR_INIT_P_IO_START is correct start for new base
+            BAR_INIT_P_BAR[ii] = BAR_INIT_P_IO_START;
+            BAR_INIT_P_IO_START = BAR_INIT_P_IO_START + FNC_CONVERT_RANGE_TO_SIZE_32(ii);
+          end
+          OUT_OF_IO = BAR_INIT_P_BAR[ii][32];
+
+          if (OUT_OF_IO) begin
+            $display("\tOut of PCI EXPRESS IO SPACE due to BAR %x", ii);
+          end
+        end else begin
+          $display("\tOut of PCI EXPRESS IO SPACE due to BAR %x", ii);
+        end
+      end else begin // bar is io mapped
+        // bar is mem mapped
+        if ((ii != 5) && (BAR_INIT_P_BAR_RANGE[ii] & 32'h0000_0004)) begin
+          // bar is mem64 mapped - memManager is not handling out of 64bit memory
+          NUMBER_OF_MEM64_BARS = NUMBER_OF_MEM64_BARS + 1;
+            if (~BAR_ENABLED[ii]) begin
+              $display("[%t] Testbench will disable BAR %x",$realtime, ii);
+              BAR_INIT_P_BAR_ENABLED[ii] = 2'h0; // disable BAR
+            end else begin
+              BAR_INIT_P_BAR_ENABLED[ii] = 2'h3; // bar is mem64 mapped
+              $display("[%t] Testbench is enabling MEM64 BAR %x",$realtime, ii);
+            end 
+            if ( (BAR_INIT_P_BAR_RANGE[ii] & 32'hFFFF_FFF0) == 32'h0000_0000) begin
+              // Mem64 space has range larger than 2 Gigabytes
+              // calculate where the next BAR should start based on the BAR's range
+              BAR_INIT_TEMP = BAR_INIT_P_MEM64_HI_START & BAR_INIT_P_BAR_RANGE[ii+1];
+              if (BAR_INIT_TEMP < BAR_INIT_P_MEM64_HI_START) begin
+                // Current MEM32_START is NOT correct start for new base
+                BAR_INIT_P_BAR[ii+1] =      BAR_INIT_TEMP + FNC_CONVERT_RANGE_TO_SIZE_HI32(ii+1);
+                BAR_INIT_P_BAR[ii] =        32'h0000_0000;
+                BAR_INIT_P_MEM64_HI_START = BAR_INIT_P_BAR[ii+1] + FNC_CONVERT_RANGE_TO_SIZE_HI32(ii+1);
+                BAR_INIT_P_MEM64_LO_START = 32'h0000_0000;
+              end else begin
+                // Initial BAR case and Current MEM32_START is correct start for new base
+                BAR_INIT_P_BAR[ii] =        32'h0000_0000;
+                BAR_INIT_P_BAR[ii+1] =      BAR_INIT_P_MEM64_HI_START;
+                BAR_INIT_P_MEM64_HI_START = BAR_INIT_P_MEM64_HI_START + FNC_CONVERT_RANGE_TO_SIZE_HI32(ii+1);
+              end
+            end else begin
+              // Mem64 space has range less than/equal 2 Gigabytes
+              // calculate where the next BAR should start based on the BAR's range
+              BAR_INIT_TEMP = BAR_INIT_P_MEM64_LO_START & (BAR_INIT_P_BAR_RANGE[ii] & 32'hffff_fff0);
+              if (BAR_INIT_TEMP < BAR_INIT_P_MEM64_LO_START) begin
+                // Current MEM32_START is NOT correct start for new base
+                BAR_INIT_P_BAR[ii] =        BAR_INIT_TEMP + FNC_CONVERT_RANGE_TO_SIZE_32(ii);
+                BAR_INIT_P_BAR[ii+1] =      BAR_INIT_P_MEM64_HI_START;
+                BAR_INIT_P_MEM64_LO_START = BAR_INIT_P_BAR[ii] + FNC_CONVERT_RANGE_TO_SIZE_32(ii);
+              end else begin
+                // Initial BAR case and Current MEM32_START is correct start for new base
+                BAR_INIT_P_BAR[ii] =        BAR_INIT_P_MEM64_LO_START;
+                BAR_INIT_P_BAR[ii+1] =      BAR_INIT_P_MEM64_HI_START;
+                BAR_INIT_P_MEM64_LO_START = BAR_INIT_P_MEM64_LO_START + FNC_CONVERT_RANGE_TO_SIZE_32(ii);
+              end
+            end
+            // skip over the next bar since it is being used by the 64bit bar
+            ii = ii + 1;
+          end else begin
+            if ( (ii != 6) || ((ii == 6) && (BAR_INIT_P_BAR_RANGE[ii] & 32'h0000_0001)) ) begin
+            // handling general mem32 case and erom case
+            // bar is mem32 mapped
+            if (ii != 6) begin
+              NUMBER_OF_MEM32_BARS = NUMBER_OF_MEM32_BARS + 1; // not counting erom space
+              if (~BAR_ENABLED[ii]) begin
+                $display("[%t] Testbench will disable BAR %x",$realtime, ii);
+                BAR_INIT_P_BAR_ENABLED[ii] = 2'h0; // disable BAR
+              end else begin
+                BAR_INIT_P_BAR_ENABLED[ii] = 2'h2; // bar is mem32 mapped
+                $display("[%t] Testbench is enabling MEM32 BAR %x",$realtime, ii);
+              end
+            end else
+              BAR_INIT_P_BAR_ENABLED[ii] = 2'h2; // erom bar is mem32 mapped
+
+            if (!OUT_OF_LO_MEM) begin
+              // We need to calculate where the next BAR should start based on the BAR's range
+              BAR_INIT_TEMP = BAR_INIT_P_MEM32_START & {1'b1,(BAR_INIT_P_BAR_RANGE[ii] & 32'hffff_fff0)};
+              if (BAR_INIT_TEMP < BAR_INIT_P_MEM32_START) begin
+                // Current MEM32_START is NOT correct start for new base
+                BAR_INIT_P_BAR[ii] =     BAR_INIT_TEMP + FNC_CONVERT_RANGE_TO_SIZE_32(ii);
+                BAR_INIT_P_MEM32_START = BAR_INIT_P_BAR[ii] + FNC_CONVERT_RANGE_TO_SIZE_32(ii);
+              end else begin
+                // Initial BAR case and Current MEM32_START is correct start for new base
+                BAR_INIT_P_BAR[ii] =     BAR_INIT_P_MEM32_START;
+                BAR_INIT_P_MEM32_START = BAR_INIT_P_MEM32_START + FNC_CONVERT_RANGE_TO_SIZE_32(ii);
               end
 
-
-                  if ( (OUT_OF_IO) | (OUT_OF_LO_MEM)) begin
-                     TSK_DISPLAY_PCIE_MAP;
-                     $display("ERROR: Ending simulation: Memory Manager is out of memory/IO to allocate to PCI Express device");
-                     $finish;
-
-                  end
-
-
+              if (ii == 6) begin
+                // make sure to set enable bit if we are mapping the erom space
+                BAR_INIT_P_BAR[ii] = BAR_INIT_P_BAR[ii] | 33'h1;
+              end
+              OUT_OF_LO_MEM = BAR_INIT_P_BAR[ii][32];
+              if (OUT_OF_LO_MEM) begin
+                $display("\tOut of PCI EXPRESS MEMORY 32 SPACE due to BAR %x", ii);
+              end
+            end else begin
+              $display("\tOut of PCI EXPRESS MEMORY 32 SPACE due to BAR %x", ii);
+            end
+          end
         end
+      end
+    end
+  end
 
-    endtask // TSK_BUILD_PCIE_MAP
+  if ( (OUT_OF_IO) | (OUT_OF_LO_MEM)) begin
+    TSK_DISPLAY_PCIE_MAP;
+    $display("ERROR: Ending simulation: Memory Manager is out of memory/IO to allocate to PCI Express device");
+    $finish;
+  end
+end
+endtask // TSK_BUILD_PCIE_MAP
 
 
    /************************************************************
