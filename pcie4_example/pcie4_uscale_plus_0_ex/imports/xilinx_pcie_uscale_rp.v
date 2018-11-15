@@ -82,7 +82,6 @@ module xilinx_pcie4_uscale_rp # (
   parameter        AXI4_RQ_TUSER_WIDTH = 137,
   parameter        AXI4_RC_TUSER_WIDTH = 161,
   parameter        AXISTEN_IF_ENABLE_CLIENT_TAG   = "TRUE",
-  parameter        AXISTEN_IF_RQ_PARITY_CHECK     = 0,
   parameter        AXISTEN_IF_CC_PARITY_CHECK     = 0,
   parameter        AXISTEN_IF_RC_PARITY_CHECK     = 0,
   parameter        AXISTEN_IF_CQ_PARITY_CHECK     = 0,
@@ -571,7 +570,6 @@ module xilinx_pcie4_uscale_rp # (
     .AXISTEN_IF_CQ_ALIGNMENT_MODE     ( AXISTEN_IF_CQ_ALIGNMENT_MODE ),
     .AXISTEN_IF_RC_ALIGNMENT_MODE     ( AXISTEN_IF_RC_ALIGNMENT_MODE ),
     .AXISTEN_IF_RQ_ALIGNMENT_MODE     ( AXISTEN_IF_RQ_ALIGNMENT_MODE ),
-    .AXISTEN_IF_RQ_PARITY_CHECK       ( AXISTEN_IF_RQ_PARITY_CHECK   ),
     .AXISTEN_IF_CC_PARITY_CHECK       ( AXISTEN_IF_CC_PARITY_CHECK   ),
     .EP_DEV_ID                        ( EP_DEV_ID                    )
   ) tx_usrapp (

@@ -57,7 +57,6 @@
 
 `include "board_common.vh"
 
-`define EXPECT_FINISH_CHECK board.RP.tx_usrapp.expect_finish_check
 module pci_exp_usrapp_rx #(
     parameter   C_DATA_WIDTH                   = 64,
     parameter   AXISTEN_IF_RQ_ALIGNMENT_MODE   = "FALSE",
@@ -145,7 +144,6 @@ reg   [63:0]      cq_data;
 reg   [63:0]      rc_data;
 reg   [7:0]       cq_be;
 reg   [7:0]       rc_be;
-reg   [31:0]      next_cq_rx_timeout;
 reg               cq_beat0_valid;
 reg               rc_beat0_valid;
 reg   [7:0]       ii;                   // Loop through tkeep
@@ -609,10 +607,8 @@ end
 
 /* Transaction Receive Timeout */
 
-reg [31:0] sim_timeout;
 initial
 begin
-   sim_timeout = `CQ_RX_TIMEOUT;
    m_axis_rc_tready=1'b1;
    pcie_cq_np_req=1'b1;
 end
