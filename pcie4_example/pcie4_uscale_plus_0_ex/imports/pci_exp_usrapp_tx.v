@@ -1884,110 +1884,105 @@ begin
 end
 endtask // TSK_TX_IO_READ
 
-    /************************************************************
-    Task : TSK_TX_IO_WRITE
-    Inputs : Tag, Address, Data
-    Outputs : Transaction Tx Interface Signaling
-    Description : Generates a IO Write TLP
-    *************************************************************/
-
-    task TSK_TX_IO_WRITE;
-        input    [7:0]    tag_;
-        input    [31:0]   addr_;
-        input    [3:0]    first_dw_be_;
-        input    [31:0]   data_;
-        begin
-            //-----------------------------------------------------------------------\\
-            if (user_lnk_up_n) begin
-                $display("[%t] :  interface is MIA", $realtime);
-                $finish(1);
-            end
-            //-----------------------------------------------------------------------\\
-            TSK_TX_SYNCHRONIZE(0, 0, 0, `SYNC_RQ_RDY);
-            //-----------------------------------------------------------------------\\
-            s_axis_rq_tvalid         <= #(Tcq) 1'b1;
-            s_axis_rq_tlast          <= #(Tcq) 1'b1;
-            s_axis_rq_tkeep          <= #(Tcq) 8'h1F;           // 2DW Descriptor for Memory Transactions alone
-            s_axis_rq_tuser_wo_parity<= #(Tcq) {
-                                                64'b0,                   // Parity Bit slot - 64bit
-                                                6'b101010,               // Seq Number - 6bit
-                                                6'b101010,               // Seq Number - 6bit
-                                                16'h0000,                // TPH Steering Tag - 16 bit
-                                                2'b00,                   // TPH indirect Tag Enable - 2bit
-                                                4'b0000,                 // TPH Type - 4 bit
-                                                2'b00,                   // TPH Present - 2 bit
-                                                1'b0,                    // Discontinue                                   
-                                                4'b0000,                 // is_eop1_ptr
-                                                4'b0000,                 // is_eop0_ptr
-                                                2'b01,                   // is_eop[1:0]
-                                                2'b10,                   // is_sop1_ptr[1:0]
-                                                2'b00,                   // is_sop0_ptr[1:0]
-                                                2'b01,                   // is_sop[1:0]
-                                                2'b00,2'b00,             // Byte Lane number in case of Address Aligned mode - 4 bit
-                                                4'b0000,4'b0000,     // Last BE of the Write Data -  8 bit
-                                                4'b0000,first_dw_be_     // First BE of the Write Data - 8 bit
-                                               };
- 
-
-            s_axis_rq_tdata          <= #(Tcq) {32'b0,          // *unused*
-                                                32'b0,          // *unused*
-                                                32'b0,          // *unused*
-                                                data_,          // IO Write data on 5th DW
-                                                1'b0,           // Force ECRC                                         //128
-                                                3'b000,         // Attributes {ID Based Ordering, Relaxed Ordering, No Snoop}
-                                                3'b000,         // Traffic Class
-                                                1'b1,           // RID Enable to use the Client supplied Bus/Device/Func No
-                                                EP_BUS_DEV_FNS, // Completer ID
-                                                tag_,           // Tag
-                                                RP_BUS_DEV_FNS, // Requester ID -- Used only when RID enable = 1      //96
-                                                1'b0,           // Poisoned Req
-                                                4'b0011,        // Req Type for IOWr Req
-                                                11'b1 ,         // DWORD Count
-                                                32'b0,          // 32-bit Addressing. So, bits[63:32] = 0             //64
-                                                addr_[31:2],    // IO Write address 32-bits                           //32
-                                                2'b00};         // AT -> 00 : Untranslated Address
-            //-----------------------------------------------------------------------\\
-            pcie_tlp_data            <= #(Tcq) {
-                                                3'b010,         // Fmt for IO Write Req
-                                                5'b00010,       // Type for IO Write Req
-                                                1'b0,           // *reserved*
-                                                3'b000,         // 3-bit Traffic Class
-                                                1'b0,           // *reserved*
-                                                1'b0,           // Attributes {ID Based Ordering}
-                                                1'b0,           // *reserved*
-                                                1'b0,           // TLP Processing Hints
-                                                1'b0,           // TLP Digest Present
-                                                1'b0,           // Poisoned Req
-                                                2'b00,          // Attributes {Relaxed Ordering, No Snoop}
-                                                2'b00,          // Address Translation
-                                                10'b1,          // DWORD Count                                        //32
-                                                RP_BUS_DEV_FNS, // Requester ID
-                                                tag_,           // Tag
-                                                4'b0,           // last DW Byte Enable
-                                                first_dw_be_,   // First DW Byte Enable                               //64
-                                                addr_[31:2],    // Address
-                                                2'b00,          // *reserved*                                         //96
-                                                data_[7:0],     // IO Write Data
-                                                data_[15:8],    // IO Write Data
-                                                data_[23:16],   // IO Write Data
-                                                data_[31:24],   // IO Write Data                                      //128
-                                                128'b0          // *unused*                                           //256
-                                               };
-
-            pcie_tlp_rem             <= #(Tcq)  3'b100;
-            //-----------------------------------------------------------------------\\
-            TSK_TX_SYNCHRONIZE(1, 1, 1, `SYNC_RQ_RDY);
-            //-----------------------------------------------------------------------\\
-            s_axis_rq_tvalid         <= #(Tcq) 1'b0;
-            s_axis_rq_tlast          <= #(Tcq) 1'b0;
-            s_axis_rq_tkeep          <= #(Tcq) 8'h00;
-            s_axis_rq_tuser_wo_parity<= #(Tcq) 137'b0;
-            s_axis_rq_tdata          <= #(Tcq) 256'b0;
-            //-----------------------------------------------------------------------\\
-            pcie_tlp_rem             <= #(Tcq) 3'b000;
-            //-----------------------------------------------------------------------\\
-        end
-    endtask // TSK_TX_IO_WRITE
+/************************************************************
+Task : TSK_TX_IO_WRITE
+Inputs : Tag, Address, Data
+Outputs : Transaction Tx Interface Signaling
+Description : Generates a IO Write TLP
+*************************************************************/
+task TSK_TX_IO_WRITE;
+input [ 7:0] tag_;
+input [31:0] addr_;
+input [ 3:0] first_dw_be_;
+input [31:0] data_;
+begin
+  //-----------------------------------------------------------------------\\
+  if (user_lnk_up_n) begin
+    $display("[%t] :  interface is MIA", $realtime);
+    $finish(1);
+  end
+  //-----------------------------------------------------------------------\\
+  TSK_TX_SYNCHRONIZE(0, 0, 0, `SYNC_RQ_RDY);
+  //-----------------------------------------------------------------------\\
+  s_axis_rq_tvalid         <= #(Tcq) 1'b1;
+  s_axis_rq_tlast          <= #(Tcq) 1'b1;
+  s_axis_rq_tkeep          <= #(Tcq) 8'h1F;           // 2DW Descriptor for Memory Transactions alone
+  s_axis_rq_tuser_wo_parity<= #(Tcq) {
+   64'b0,                   // Parity Bit slot - 64bit
+   6'b101010,               // Seq Number - 6bit
+   6'b101010,               // Seq Number - 6bit
+   16'h0000,                // TPH Steering Tag - 16 bit
+   2'b00,                   // TPH indirect Tag Enable - 2bit
+   4'b0000,                 // TPH Type - 4 bit
+   2'b00,                   // TPH Present - 2 bit
+   1'b0,                    // Discontinue                                   
+   4'b0000,                 // is_eop1_ptr
+   4'b0000,                 // is_eop0_ptr
+   2'b01,                   // is_eop[1:0]
+   2'b10,                   // is_sop1_ptr[1:0]
+   2'b00,                   // is_sop0_ptr[1:0]
+   2'b01,                   // is_sop[1:0]
+   2'b00,2'b00,             // Byte Lane number in case of Address Aligned mode - 4 bit
+   4'b0000,4'b0000,     // Last BE of the Write Data -  8 bit
+   4'b0000,first_dw_be_ }; // First BE of the Write Data - 8 bit
+  s_axis_rq_tdata <= #(Tcq) {
+   32'b0,          // *unused*
+   32'b0,          // *unused*
+   32'b0,          // *unused*
+   data_,          // IO Write data on 5th DW
+   1'b0,           // Force ECRC                                         //128
+   3'b000,         // Attributes {ID Based Ordering, Relaxed Ordering, No Snoop}
+   3'b000,         // Traffic Class
+   1'b1,           // RID Enable to use the Client supplied Bus/Device/Func No
+   EP_BUS_DEV_FNS, // Completer ID
+   tag_,           // Tag
+   RP_BUS_DEV_FNS, // Requester ID -- Used only when RID enable = 1      //96
+   1'b0,           // Poisoned Req
+   4'b0011,        // Req Type for IOWr Req
+   11'b1 ,         // DWORD Count
+   32'b0,          // 32-bit Addressing. So, bits[63:32] = 0             //64
+   addr_[31:2],    // IO Write address 32-bits                           //32
+   2'b00};         // AT -> 00 : Untranslated Address
+  //-----------------------------------------------------------------------\\
+  pcie_tlp_data <= #(Tcq) {
+   3'b010,         // Fmt for IO Write Req
+   5'b00010,       // Type for IO Write Req
+   1'b0,           // *reserved*
+   3'b000,         // 3-bit Traffic Class
+   1'b0,           // *reserved*
+   1'b0,           // Attributes {ID Based Ordering}
+   1'b0,           // *reserved*
+   1'b0,           // TLP Processing Hints
+   1'b0,           // TLP Digest Present
+   1'b0,           // Poisoned Req
+   2'b00,          // Attributes {Relaxed Ordering, No Snoop}
+   2'b00,          // Address Translation
+   10'b1,          // DWORD Count                                        //32
+   RP_BUS_DEV_FNS, // Requester ID
+   tag_,           // Tag
+   4'b0,           // last DW Byte Enable
+   first_dw_be_,   // First DW Byte Enable                               //64
+   addr_[31:2],    // Address
+   2'b00,          // *reserved*                                         //96
+   data_[7:0],     // IO Write Data
+   data_[15:8],    // IO Write Data
+   data_[23:16],   // IO Write Data
+   data_[31:24],   // IO Write Data                                      //128
+   128'b0 }; // *unused*                                           //256
+  pcie_tlp_rem <= #(Tcq)  3'b100;
+  //-----------------------------------------------------------------------\\
+  TSK_TX_SYNCHRONIZE(1, 1, 1, `SYNC_RQ_RDY);
+  //-----------------------------------------------------------------------\\
+  s_axis_rq_tvalid         <= #(Tcq) 1'b0;
+  s_axis_rq_tlast          <= #(Tcq) 1'b0;
+  s_axis_rq_tkeep          <= #(Tcq) 8'h00;
+  s_axis_rq_tuser_wo_parity<= #(Tcq) 137'b0;
+  s_axis_rq_tdata          <= #(Tcq) 256'b0;
+  //-----------------------------------------------------------------------\\
+  pcie_tlp_rem             <= #(Tcq) 3'b000;
+  //-----------------------------------------------------------------------\\
+end
+endtask // TSK_TX_IO_WRITE
 
     /************************************************************
     Task : TSK_TX_SYNCHRONIZE
