@@ -1692,108 +1692,103 @@ begin
 end
 endtask // TSK_TX_COMPLETION_DATA
 
-    /************************************************************
-    Task : TSK_TX_MESSAGE
-    Inputs : Tag, TC, Address, Message Routing, Message Code
-    Outputs : Transaction Tx Interface Signaling
-    Description : Generates a Message TLP
-    *************************************************************/
+/************************************************************
+Task : TSK_TX_MESSAGE
+Inputs : Tag, TC, Address, Message Routing, Message Code
+Outputs : Transaction Tx Interface Signaling
+Description : Generates a Message TLP
+*************************************************************/
+task TSK_TX_MESSAGE;
+input [ 7:0] tag_;
+input [ 2:0] tc_;
+input [10:0] len_;
+input [63:0] data_;
+input [ 2:0] message_rtg_;
+input [ 7:0] message_code_;
+begin
+  //-----------------------------------------------------------------------\\
+  if (user_lnk_up_n) begin
+    $display("[%t] :  interface is MIA", $realtime);
+    $finish(1);
+  end
+  //-----------------------------------------------------------------------\\
+  TSK_TX_SYNCHRONIZE(0, 0, 0, `SYNC_RQ_RDY);
+  //--------- Tx Message Transaction :                          -----------\\
+  s_axis_rq_tvalid         <= #(Tcq) 1'b1;
+  s_axis_rq_tlast          <= #(Tcq) 1'b1;
+  s_axis_rq_tkeep          <= #(Tcq) 8'h0F;          // 2DW Descriptor
+  s_axis_rq_tuser_wo_parity<= #(Tcq) {
+   64'b0,            // Parity Bit slot - 64bit
+   6'b101010,        // Seq Number - 6bit
+   6'b101010,        // Seq Number - 6bit
+   16'h0000,         // TPH Steering Tag - 16 bit
+   2'b00,            // TPH indirect Tag Enable - 2bit
+   4'b0000,          // TPH Type - 4 bit
+   2'b00,            // TPH Present - 2 bit
+   1'b0,             // Discontinue                                   
+   4'b0000,          // is_eop1_ptr
+   4'b0000,          // is_eop0_ptr
+   2'b01,            // is_eop[1:0]
+   2'b10,            // is_sop1_ptr[1:0]
+   2'b00,            // is_sop0_ptr[1:0]
+   2'b01,            // is_sop[1:0]
+   2'b00,2'b00,      // Byte Lane number in case of Address Aligned mode - 4 bit
+   4'b0000,4'b0000,  // Last BE of the Write Data -  8 bit
+   4'b0000,4'b0000 };// First BE of the Write Data - 8 bit
+  s_axis_rq_tdata <= #(Tcq) {
+   256'b0,128'b0,        // 4DW unused
+   1'b0,          // Force ECRC
+   3'b000,        // Attributes {ID Based Ordering, Relaxed Ordering, No Snoop}
+   tc_,           // Traffic Class
+   1'b1,          // RID Enable to use the Client supplied Bus/Device/Func No
+   5'b0,          // *reserved*
+   message_rtg_,  // Message Routing
+   message_code_, // Message Code
+   tag_,          // Tag
+   RP_BUS_DEV_FNS, // Requester ID
+   1'b0,          // Poisoned Req
+   4'b1100,       // Request Type for Message
+   len_ ,         // DWORD Count
+   data_[63:32],  // Vendor Defined Header Bytes
+   data_[15: 0],  // Vendor ID
+   data_[31:16] }; // Destination ID
+  //-----------------------------------------------------------------------\\
+  pcie_tlp_data <= #(Tcq) {
+   3'b001,         // Fmt for Message w/o Data
+   {{2'b10}, {message_rtg_}}, // Type for Message w/o Data
+   1'b0,           // *reserved*
+   tc_,            // 3-bit Traffic Class
+   1'b0,           // *reserved*
+   1'b0,           // Attributes {ID Based Ordering}
+   1'b0,           // *reserved*
+   1'b0,           // TLP Processing Hints
+   1'b0,           // TLP Digest Present
+   1'b0,           // Poisoned Req
+   2'b00,          // Attributes {Relaxed Ordering, No Snoop}
+   2'b00,          // Address Translation
+   10'b0,          // DWORD Count                                     //32
+   RP_BUS_DEV_FNS, // Requester ID
+   tag_,           // Tag
+   message_code_,  // Message Code                                    //64
+   data_[63:32],   // Vendor Defined Header Bytes
+   data_[31:16],   // Destination ID
+   data_[15: 0],   // Vendor ID
+   128'b0 };       // *unused*
 
-    task TSK_TX_MESSAGE;
-        input    [7:0]    tag_;
-        input    [2:0]    tc_;
-        input    [10:0]   len_;
-        input    [63:0]   data_;
-        input    [2:0]    message_rtg_;
-        input    [7:0]    message_code_;
-        begin
-            //-----------------------------------------------------------------------\\
-            if (user_lnk_up_n) begin
-                $display("[%t] :  interface is MIA", $realtime);
-                $finish(1);
-            end
-            //-----------------------------------------------------------------------\\
-            TSK_TX_SYNCHRONIZE(0, 0, 0, `SYNC_RQ_RDY);
-            //--------- Tx Message Transaction :                          -----------\\
-            s_axis_rq_tvalid         <= #(Tcq) 1'b1;
-            s_axis_rq_tlast          <= #(Tcq) 1'b1;
-            s_axis_rq_tkeep          <= #(Tcq) 8'h0F;          // 2DW Descriptor
-            s_axis_rq_tuser_wo_parity<= #(Tcq) {
-                                                64'b0,                   // Parity Bit slot - 64bit
-                                                6'b101010,               // Seq Number - 6bit
-                                                6'b101010,               // Seq Number - 6bit
-                                                16'h0000,                // TPH Steering Tag - 16 bit
-                                                2'b00,                   // TPH indirect Tag Enable - 2bit
-                                                4'b0000,                 // TPH Type - 4 bit
-                                                2'b00,                   // TPH Present - 2 bit
-                                                1'b0,                    // Discontinue                                   
-                                                4'b0000,                 // is_eop1_ptr
-                                                4'b0000,                 // is_eop0_ptr
-                                                2'b01,                   // is_eop[1:0]
-                                                2'b10,                   // is_sop1_ptr[1:0]
-                                                2'b00,                   // is_sop0_ptr[1:0]
-                                                2'b01,                   // is_sop[1:0]
-                                                2'b00,2'b00,             // Byte Lane number in case of Address Aligned mode - 4 bit
-                                                4'b0000,4'b0000,         // Last BE of the Write Data -  8 bit
-                                                4'b0000,4'b0000          // First BE of the Write Data - 8 bit
-                                               };
- 
-
-            s_axis_rq_tdata          <= #(Tcq) {256'b0,128'b0,        // 4DW unused
-                                                1'b0,          // Force ECRC
-                                                3'b000,        // Attributes {ID Based Ordering, Relaxed Ordering, No Snoop}
-                                                tc_,           // Traffic Class
-                                                1'b1,          // RID Enable to use the Client supplied Bus/Device/Func No
-                                                5'b0,          // *reserved*
-                                                message_rtg_,  // Message Routing
-                                                message_code_, // Message Code
-                                                tag_,          // Tag
-                                                RP_BUS_DEV_FNS, // Requester ID
-                                                1'b0,          // Poisoned Req
-                                                4'b1100,       // Request Type for Message
-                                                len_ ,         // DWORD Count
-                                                data_[63:32],  // Vendor Defined Header Bytes
-                                                data_[15: 0],  // Vendor ID
-                                                data_[31:16]   // Destination ID
-                                               };
-            //-----------------------------------------------------------------------\\
-            pcie_tlp_data            <= #(Tcq) {
-                                                3'b001,         // Fmt for Message w/o Data
-                                                {{2'b10}, {message_rtg_}}, // Type for Message w/o Data
-                                                1'b0,           // *reserved*
-                                                tc_,            // 3-bit Traffic Class
-                                                1'b0,           // *reserved*
-                                                1'b0,           // Attributes {ID Based Ordering}
-                                                1'b0,           // *reserved*
-                                                1'b0,           // TLP Processing Hints
-                                                1'b0,           // TLP Digest Present
-                                                1'b0,           // Poisoned Req
-                                                2'b00,          // Attributes {Relaxed Ordering, No Snoop}
-                                                2'b00,          // Address Translation
-                                                10'b0,          // DWORD Count                                     //32
-                                                RP_BUS_DEV_FNS, // Requester ID
-                                                tag_,           // Tag
-                                                message_code_,  // Message Code                                    //64
-                                                data_[63:32],   // Vendor Defined Header Bytes
-                                                data_[31:16],   // Destination ID
-                                                data_[15: 0],   // Vendor ID
-                                                128'b0          // *unused*
-                                               };
-
-            pcie_tlp_rem             <= #(Tcq)  3'b100;
-            //-----------------------------------------------------------------------\\
-            TSK_TX_SYNCHRONIZE(1, 1, 1, `SYNC_RQ_RDY);
-            //-----------------------------------------------------------------------\\
-            s_axis_rq_tvalid         <= #(Tcq) 1'b0;
-            s_axis_rq_tlast          <= #(Tcq) 1'b0;
-            s_axis_rq_tkeep          <= #(Tcq) 8'h0;
-            s_axis_rq_tuser_wo_parity<= #(Tcq) 137'b0;
-            s_axis_rq_tdata          <= #(Tcq) 512'b0;
-            //-----------------------------------------------------------------------\\
-            pcie_tlp_rem             <= #(Tcq) 3'b000;
-            //-----------------------------------------------------------------------\\
-        end
-    endtask // TSK_TX_MESSAGE
+  pcie_tlp_rem             <= #(Tcq)  3'b100;
+  //-----------------------------------------------------------------------\\
+  TSK_TX_SYNCHRONIZE(1, 1, 1, `SYNC_RQ_RDY);
+  //-----------------------------------------------------------------------\\
+  s_axis_rq_tvalid         <= #(Tcq) 1'b0;
+  s_axis_rq_tlast          <= #(Tcq) 1'b0;
+  s_axis_rq_tkeep          <= #(Tcq) 8'h0;
+  s_axis_rq_tuser_wo_parity<= #(Tcq) 137'b0;
+  s_axis_rq_tdata          <= #(Tcq) 512'b0;
+  //-----------------------------------------------------------------------\\
+  pcie_tlp_rem             <= #(Tcq) 3'b000;
+  //-----------------------------------------------------------------------\\
+end
+endtask // TSK_TX_MESSAGE
 
     /************************************************************
     Task : TSK_TX_IO_READ
