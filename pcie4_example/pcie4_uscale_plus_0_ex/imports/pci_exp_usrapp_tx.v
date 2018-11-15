@@ -2496,27 +2496,20 @@ begin
 end
 endtask // TSK_BAR_PROGRAM
 
-
-   /************************************************************
-        Task : TSK_BAR_INIT
-        Inputs : None
-        Outputs : None
-        Description : Initialize PCI core based on core's configuration.
-   *************************************************************/
-
-    task TSK_BAR_INIT;
-       begin
-
-        TSK_BAR_SCAN;
-
-        TSK_BUILD_PCIE_MAP;
-
-        TSK_DISPLAY_PCIE_MAP;
-
-        TSK_BAR_PROGRAM;
-
-       end
-    endtask // TSK_BAR_INIT
+/************************************************************
+     Task : TSK_BAR_INIT
+     Inputs : None
+     Outputs : None
+     Description : Initialize PCI core based on core's configuration.
+*************************************************************/
+task TSK_BAR_INIT;
+begin
+  TSK_BAR_SCAN;
+  TSK_BUILD_PCIE_MAP;
+  TSK_DISPLAY_PCIE_MAP;
+  TSK_BAR_PROGRAM;
+end
+endtask // TSK_BAR_INIT
 
 /************************************************************
         Task : TSK_MEM_TEST_DATA_BUS
@@ -2528,149 +2521,133 @@ endtask // TSK_BAR_PROGRAM
 *************************************************************/
 
 task TSK_MEM_TEST_DATA_BUS;
-   input [2:0]  bar_index;
-   reg [31:0] pattern;
-   reg success;
-   begin
-
-    $display("[%t] : Performing Memory data test to address %x", $realtime, BAR_INIT_P_BAR[bar_index][31:0]);
-    success = 1; // assume success
-    // Perform a walking 1's test at the given address.
-    for (pattern = 1; pattern != 0; pattern = pattern << 1)
-      begin
-        // Write the test pattern. *address = pattern;pio_memTestAddrBus_test1
-
-        TSK_TX_BAR_WRITE(bar_index, 32'h0, DEFAULT_TAG, DEFAULT_TC, pattern);
-        TSK_TX_CLK_EAT(10);
+input [ 2:0] bar_index;
+reg   [31:0] pattern;
+reg          success;
+begin
+  $display("[%t] : Performing Memory data test to address %x", $realtime, BAR_INIT_P_BAR[bar_index][31:0]);
+  success = 1; // assume success
+  // Perform a walking 1's test at the given address.
+  for (pattern = 1; pattern != 0; pattern = pattern << 1) begin
+    // Write the test pattern. *address = pattern;pio_memTestAddrBus_test1
+    TSK_TX_BAR_WRITE(bar_index, 32'h0, DEFAULT_TAG, DEFAULT_TC, pattern);
+    TSK_TX_CLK_EAT(10);
     DEFAULT_TAG = DEFAULT_TAG + 1;
-        TSK_TX_BAR_READ(bar_index, 32'h0, DEFAULT_TAG, DEFAULT_TC);
+    TSK_TX_BAR_READ(bar_index, 32'h0, DEFAULT_TAG, DEFAULT_TC);
+    TSK_WAIT_FOR_READ_DATA;
+    if (P_READ_DATA != pattern) begin
+      $display("[%t] : Data Error Mismatch, Address: %x Write Data %x != Read Data %x", $realtime,
+       BAR_INIT_P_BAR[bar_index][31:0], pattern, P_READ_DATA);
+      success = 0;
+      $finish;
+    end else begin
+      $display("[%t] : Address: %x Write Data: %x successfully received", $realtime,
+       BAR_INIT_P_BAR[bar_index][31:0], P_READ_DATA);
+    end
+    TSK_TX_CLK_EAT(10);
+    DEFAULT_TAG = DEFAULT_TAG + 1;
 
-
-        TSK_WAIT_FOR_READ_DATA;
-        if  (P_READ_DATA != pattern)
-           begin
-             $display("[%t] : Data Error Mismatch, Address: %x Write Data %x != Read Data %x", $realtime,
-                              BAR_INIT_P_BAR[bar_index][31:0], pattern, P_READ_DATA);
-             success = 0;
-             $finish;
-           end
-        else
-           begin
-             $display("[%t] : Address: %x Write Data: %x successfully received", $realtime,
-                              BAR_INIT_P_BAR[bar_index][31:0], P_READ_DATA);
-           end
-        TSK_TX_CLK_EAT(10);
-        DEFAULT_TAG = DEFAULT_TAG + 1;
-
-      end  // for loop
-    if (success == 1)
-        $display("[%t] : TSK_MEM_TEST_DATA_BUS successfully completed", $realtime);
-    else
-        $display("[%t] : TSK_MEM_TEST_DATA_BUS completed with errors", $realtime);
-
-   end
-
+  end  // for loop
+  if (success == 1)
+    $display("[%t] : TSK_MEM_TEST_DATA_BUS successfully completed", $realtime);
+  else
+    $display("[%t] : TSK_MEM_TEST_DATA_BUS completed with errors", $realtime);
+end
 endtask   // TSK_MEM_TEST_DATA_BUS
 
-        /************************************************************
-    Function : FNC_CONVERT_RANGE_TO_SIZE_32
-    Inputs : BAR index for 32 bit BAR
-    Outputs : 32 bit BAR size
-    Description : Called from tx app. Note that the smallest range
-                  supported by this function is 16 bytes.
-    *************************************************************/
+/************************************************************
+Function : FNC_CONVERT_RANGE_TO_SIZE_32
+Inputs : BAR index for 32 bit BAR
+Outputs : 32 bit BAR size
+Description : Called from tx app. Note that the smallest range
+              supported by this function is 16 bytes.
+*************************************************************/
+function [31:0] FNC_CONVERT_RANGE_TO_SIZE_32;
+input [31:0] bar_index;
+reg   [32:0] return_value;
+begin
+  case (BAR_INIT_P_BAR_RANGE[bar_index] & 32'hFFFF_FFF0) // AND off control bits
+  32'hFFFF_FFF0 : return_value = 33'h0000_0010;
+  32'hFFFF_FFE0 : return_value = 33'h0000_0020;
+  32'hFFFF_FFC0 : return_value = 33'h0000_0040;
+  32'hFFFF_FF80 : return_value = 33'h0000_0080;
+  32'hFFFF_FF00 : return_value = 33'h0000_0100;
+  32'hFFFF_FE00 : return_value = 33'h0000_0200;
+  32'hFFFF_FC00 : return_value = 33'h0000_0400;
+  32'hFFFF_F800 : return_value = 33'h0000_0800;
+  32'hFFFF_F000 : return_value = 33'h0000_1000;
+  32'hFFFF_E000 : return_value = 33'h0000_2000;
+  32'hFFFF_C000 : return_value = 33'h0000_4000;
+  32'hFFFF_8000 : return_value = 33'h0000_8000;
+  32'hFFFF_0000 : return_value = 33'h0001_0000;
+  32'hFFFE_0000 : return_value = 33'h0002_0000;
+  32'hFFFC_0000 : return_value = 33'h0004_0000;
+  32'hFFF8_0000 : return_value = 33'h0008_0000;
+  32'hFFF0_0000 : return_value = 33'h0010_0000;
+  32'hFFE0_0000 : return_value = 33'h0020_0000;
+  32'hFFC0_0000 : return_value = 33'h0040_0000;
+  32'hFF80_0000 : return_value = 33'h0080_0000;
+  32'hFF00_0000 : return_value = 33'h0100_0000;
+  32'hFE00_0000 : return_value = 33'h0200_0000;
+  32'hFC00_0000 : return_value = 33'h0400_0000;
+  32'hF800_0000 : return_value = 33'h0800_0000;
+  32'hF000_0000 : return_value = 33'h1000_0000;
+  32'hE000_0000 : return_value = 33'h2000_0000;
+  32'hC000_0000 : return_value = 33'h4000_0000;
+  32'h8000_0000 : return_value = 33'h8000_0000;
+  default :      return_value = 33'h0000_0000;
+  endcase
+  FNC_CONVERT_RANGE_TO_SIZE_32 = return_value;
+end
+endfunction // FNC_CONVERT_RANGE_TO_SIZE_32
 
-    function [31:0] FNC_CONVERT_RANGE_TO_SIZE_32;
-                input [31:0] bar_index;
-                reg   [32:0] return_value;
-        begin
-                  case (BAR_INIT_P_BAR_RANGE[bar_index] & 32'hFFFF_FFF0) // AND off control bits
-                    32'hFFFF_FFF0 : return_value = 33'h0000_0010;
-                    32'hFFFF_FFE0 : return_value = 33'h0000_0020;
-                    32'hFFFF_FFC0 : return_value = 33'h0000_0040;
-                    32'hFFFF_FF80 : return_value = 33'h0000_0080;
-                    32'hFFFF_FF00 : return_value = 33'h0000_0100;
-                    32'hFFFF_FE00 : return_value = 33'h0000_0200;
-                    32'hFFFF_FC00 : return_value = 33'h0000_0400;
-                    32'hFFFF_F800 : return_value = 33'h0000_0800;
-                    32'hFFFF_F000 : return_value = 33'h0000_1000;
-                    32'hFFFF_E000 : return_value = 33'h0000_2000;
-                    32'hFFFF_C000 : return_value = 33'h0000_4000;
-                    32'hFFFF_8000 : return_value = 33'h0000_8000;
-                    32'hFFFF_0000 : return_value = 33'h0001_0000;
-                    32'hFFFE_0000 : return_value = 33'h0002_0000;
-                    32'hFFFC_0000 : return_value = 33'h0004_0000;
-                    32'hFFF8_0000 : return_value = 33'h0008_0000;
-                    32'hFFF0_0000 : return_value = 33'h0010_0000;
-                    32'hFFE0_0000 : return_value = 33'h0020_0000;
-                    32'hFFC0_0000 : return_value = 33'h0040_0000;
-                    32'hFF80_0000 : return_value = 33'h0080_0000;
-                    32'hFF00_0000 : return_value = 33'h0100_0000;
-                    32'hFE00_0000 : return_value = 33'h0200_0000;
-                    32'hFC00_0000 : return_value = 33'h0400_0000;
-                    32'hF800_0000 : return_value = 33'h0800_0000;
-                    32'hF000_0000 : return_value = 33'h1000_0000;
-                    32'hE000_0000 : return_value = 33'h2000_0000;
-                    32'hC000_0000 : return_value = 33'h4000_0000;
-                    32'h8000_0000 : return_value = 33'h8000_0000;
-                    default :      return_value = 33'h0000_0000;
-                  endcase
-
-                  FNC_CONVERT_RANGE_TO_SIZE_32 = return_value;
-        end
-    endfunction // FNC_CONVERT_RANGE_TO_SIZE_32
-
-
-
-    /************************************************************
-    Function : FNC_CONVERT_RANGE_TO_SIZE_HI32
-    Inputs : BAR index for upper 32 bit BAR of 64 bit address
-    Outputs : upper 32 bit BAR size
-    Description : Called from tx app.
-    *************************************************************/
-
-    function [31:0] FNC_CONVERT_RANGE_TO_SIZE_HI32;
-                input [31:0] bar_index;
-                reg   [32:0] return_value;
-        begin
-                  case (BAR_INIT_P_BAR_RANGE[bar_index])
-                    32'hFFFF_FFFF : return_value = 33'h00000_0001;
-                    32'hFFFF_FFFE : return_value = 33'h00000_0002;
-                    32'hFFFF_FFFC : return_value = 33'h00000_0004;
-                    32'hFFFF_FFF8 : return_value = 33'h00000_0008;
-                    32'hFFFF_FFF0 : return_value = 33'h00000_0010;
-                    32'hFFFF_FFE0 : return_value = 33'h00000_0020;
-                    32'hFFFF_FFC0 : return_value = 33'h00000_0040;
-                    32'hFFFF_FF80 : return_value = 33'h00000_0080;
-                    32'hFFFF_FF00 : return_value = 33'h00000_0100;
-                    32'hFFFF_FE00 : return_value = 33'h00000_0200;
-                    32'hFFFF_FC00 : return_value = 33'h00000_0400;
-                    32'hFFFF_F800 : return_value = 33'h00000_0800;
-                    32'hFFFF_F000 : return_value = 33'h00000_1000;
-                    32'hFFFF_E000 : return_value = 33'h00000_2000;
-                    32'hFFFF_C000 : return_value = 33'h00000_4000;
-                    32'hFFFF_8000 : return_value = 33'h00000_8000;
-                    32'hFFFF_0000 : return_value = 33'h00001_0000;
-                    32'hFFFE_0000 : return_value = 33'h00002_0000;
-                    32'hFFFC_0000 : return_value = 33'h00004_0000;
-                    32'hFFF8_0000 : return_value = 33'h00008_0000;
-                    32'hFFF0_0000 : return_value = 33'h00010_0000;
-                    32'hFFE0_0000 : return_value = 33'h00020_0000;
-                    32'hFFC0_0000 : return_value = 33'h00040_0000;
-                    32'hFF80_0000 : return_value = 33'h00080_0000;
-                    32'hFF00_0000 : return_value = 33'h00100_0000;
-                    32'hFE00_0000 : return_value = 33'h00200_0000;
-                    32'hFC00_0000 : return_value = 33'h00400_0000;
-                    32'hF800_0000 : return_value = 33'h00800_0000;
-                    32'hF000_0000 : return_value = 33'h01000_0000;
-                    32'hE000_0000 : return_value = 33'h02000_0000;
-                    32'hC000_0000 : return_value = 33'h04000_0000;
-                    32'h8000_0000 : return_value = 33'h08000_0000;
-                    default :      return_value = 33'h00000_0000;
-                  endcase
-
-                  FNC_CONVERT_RANGE_TO_SIZE_HI32 = return_value;
-        end
-    endfunction // FNC_CONVERT_RANGE_TO_SIZE_HI32
+/************************************************************
+Function : FNC_CONVERT_RANGE_TO_SIZE_HI32
+Inputs : BAR index for upper 32 bit BAR of 64 bit address
+Outputs : upper 32 bit BAR size
+Description : Called from tx app.
+*************************************************************/
+function [31:0] FNC_CONVERT_RANGE_TO_SIZE_HI32;
+input [31:0] bar_index;
+reg   [32:0] return_value;
+begin
+  case (BAR_INIT_P_BAR_RANGE[bar_index])
+  32'hFFFF_FFFF : return_value = 33'h00000_0001;
+  32'hFFFF_FFFE : return_value = 33'h00000_0002;
+  32'hFFFF_FFFC : return_value = 33'h00000_0004;
+  32'hFFFF_FFF8 : return_value = 33'h00000_0008;
+  32'hFFFF_FFF0 : return_value = 33'h00000_0010;
+  32'hFFFF_FFE0 : return_value = 33'h00000_0020;
+  32'hFFFF_FFC0 : return_value = 33'h00000_0040;
+  32'hFFFF_FF80 : return_value = 33'h00000_0080;
+  32'hFFFF_FF00 : return_value = 33'h00000_0100;
+  32'hFFFF_FE00 : return_value = 33'h00000_0200;
+  32'hFFFF_FC00 : return_value = 33'h00000_0400;
+  32'hFFFF_F800 : return_value = 33'h00000_0800;
+  32'hFFFF_F000 : return_value = 33'h00000_1000;
+  32'hFFFF_E000 : return_value = 33'h00000_2000;
+  32'hFFFF_C000 : return_value = 33'h00000_4000;
+  32'hFFFF_8000 : return_value = 33'h00000_8000;
+  32'hFFFF_0000 : return_value = 33'h00001_0000;
+  32'hFFFE_0000 : return_value = 33'h00002_0000;
+  32'hFFFC_0000 : return_value = 33'h00004_0000;
+  32'hFFF8_0000 : return_value = 33'h00008_0000;
+  32'hFFF0_0000 : return_value = 33'h00010_0000;
+  32'hFFE0_0000 : return_value = 33'h00020_0000;
+  32'hFFC0_0000 : return_value = 33'h00040_0000;
+  32'hFF80_0000 : return_value = 33'h00080_0000;
+  32'hFF00_0000 : return_value = 33'h00100_0000;
+  32'hFE00_0000 : return_value = 33'h00200_0000;
+  32'hFC00_0000 : return_value = 33'h00400_0000;
+  32'hF800_0000 : return_value = 33'h00800_0000;
+  32'hF000_0000 : return_value = 33'h01000_0000;
+  32'hE000_0000 : return_value = 33'h02000_0000;
+  32'hC000_0000 : return_value = 33'h04000_0000;
+  32'h8000_0000 : return_value = 33'h08000_0000;
+  default :      return_value = 33'h00000_0000;
+  endcase
+  FNC_CONVERT_RANGE_TO_SIZE_HI32 = return_value;
+end
+endfunction // FNC_CONVERT_RANGE_TO_SIZE_HI32
 
 endmodule // pci_exp_usrapp_tx
