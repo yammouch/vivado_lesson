@@ -2435,81 +2435,66 @@ begin
 end
 endtask // TSK_BAR_SCAN
 
+/************************************************************
+     Task : TSK_BAR_PROGRAM
+     Inputs : None
+     Outputs : None
+     Description : Program's PCI core's configuration registers.
+*************************************************************/
+task TSK_BAR_PROGRAM;
+begin
+  //--------------------------------------------------------------------------
+  // Write core configuration space via PCIe fabric interface
+  //--------------------------------------------------------------------------
+  DEFAULT_TAG     = 0;
+  $display("[%t] : Setting Core Configuration Space...", $realtime);
 
-   /************************************************************
-        Task : TSK_BAR_PROGRAM
-        Inputs : None
-        Outputs : None
-        Description : Program's PCI core's configuration registers.
-   *************************************************************/
+  // Program BAR0
+  TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h10, BAR_INIT_P_BAR[0][31:0], 4'hF);
+  DEFAULT_TAG = DEFAULT_TAG + 1;
+  repeat (100) @(posedge user_clk);
 
-    task TSK_BAR_PROGRAM;
-       begin
+  // Program BAR1
+  TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h14, BAR_INIT_P_BAR[1][31:0], 4'hF);
+  DEFAULT_TAG = DEFAULT_TAG + 1;
+  repeat (100) @(posedge user_clk);
 
-        //--------------------------------------------------------------------------
-        // Write core configuration space via PCIe fabric interface
-        //--------------------------------------------------------------------------
+  // Program BAR2
+  TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h18, BAR_INIT_P_BAR[2][31:0], 4'hF);
+  DEFAULT_TAG = DEFAULT_TAG + 1;
+  repeat (100) @(posedge user_clk);
 
-        DEFAULT_TAG     = 0;
+  // Program BAR3
+  TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h1C, BAR_INIT_P_BAR[3][31:0], 4'hF);
+  DEFAULT_TAG = DEFAULT_TAG + 1;
+  repeat (100) @(posedge user_clk);
 
-        $display("[%t] : Setting Core Configuration Space...", $realtime);
+  // Program BAR4
+  TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h20, BAR_INIT_P_BAR[4][31:0], 4'hF);
+  DEFAULT_TAG = DEFAULT_TAG + 1;
+  repeat (100) @(posedge user_clk);
 
-    // Program BAR0
+  // Program BAR5
+ TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h24, BAR_INIT_P_BAR[5][31:0], 4'hF);
+ DEFAULT_TAG = DEFAULT_TAG + 1;
+ repeat (100) @(posedge user_clk);
 
-    TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h10, BAR_INIT_P_BAR[0][31:0], 4'hF);
-        DEFAULT_TAG = DEFAULT_TAG + 1;
-        repeat (100) @(posedge user_clk);
+  // Program Expansion ROM BAR
+  TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h30, BAR_INIT_P_BAR[6][31:0], 4'hF);
+  DEFAULT_TAG = DEFAULT_TAG + 1;
+  repeat (100) @(posedge user_clk);
 
-    // Program BAR1
+  // Program PCI Command Register
+  TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h04, 32'h00000003, 4'h1);
+  DEFAULT_TAG = DEFAULT_TAG + 1;
+  repeat (100) @(posedge user_clk);
 
-        TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h14, BAR_INIT_P_BAR[1][31:0], 4'hF);
-        DEFAULT_TAG = DEFAULT_TAG + 1;
-        repeat (100) @(posedge user_clk);
-
-    // Program BAR2
-
-        TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h18, BAR_INIT_P_BAR[2][31:0], 4'hF);
-        DEFAULT_TAG = DEFAULT_TAG + 1;
-        repeat (100) @(posedge user_clk);
-
-    // Program BAR3
-
-        TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h1C, BAR_INIT_P_BAR[3][31:0], 4'hF);
-        DEFAULT_TAG = DEFAULT_TAG + 1;
-        repeat (100) @(posedge user_clk);
-
-    // Program BAR4
-
-        TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h20, BAR_INIT_P_BAR[4][31:0], 4'hF);
-        DEFAULT_TAG = DEFAULT_TAG + 1;
-        repeat (100) @(posedge user_clk);
-
-    // Program BAR5
-
-        TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h24, BAR_INIT_P_BAR[5][31:0], 4'hF);
-        DEFAULT_TAG = DEFAULT_TAG + 1;
-        repeat (100) @(posedge user_clk);
-
-    // Program Expansion ROM BAR
-
-        TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h30, BAR_INIT_P_BAR[6][31:0], 4'hF);
-        DEFAULT_TAG = DEFAULT_TAG + 1;
-        repeat (100) @(posedge user_clk);
-
-    // Program PCI Command Register
-
-        TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'h04, 32'h00000003, 4'h1);
-        DEFAULT_TAG = DEFAULT_TAG + 1;
-        repeat (100) @(posedge user_clk);
-
-    // Program PCIe Device Control Register
-
-        TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'hC8, 32'h0000005f, 4'h1);
-        DEFAULT_TAG = DEFAULT_TAG + 1;
-        repeat (1000) @(posedge user_clk);
-
-       end
-    endtask // TSK_BAR_PROGRAM
+  // Program PCIe Device Control Register
+  TSK_TX_TYPE0_CONFIGURATION_WRITE(DEFAULT_TAG, 12'hC8, 32'h0000005f, 4'h1);
+  DEFAULT_TAG = DEFAULT_TAG + 1;
+  repeat (1000) @(posedge user_clk);
+end
+endtask // TSK_BAR_PROGRAM
 
 
    /************************************************************
