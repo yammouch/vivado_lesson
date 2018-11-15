@@ -1984,48 +1984,46 @@ begin
 end
 endtask // TSK_TX_IO_WRITE
 
-    /************************************************************
-    Task : TSK_TX_SYNCHRONIZE
-    Inputs : None
-    Outputs : None
-    Description : Synchronize with tx clock and handshake signals
-    *************************************************************/
+/************************************************************
+Task : TSK_TX_SYNCHRONIZE
+Inputs : None
+Outputs : None
+Description : Synchronize with tx clock and handshake signals
+*************************************************************/
+task TSK_TX_SYNCHRONIZE;
+input first_;        // effectively sof
+input active_;       // in pkt -- for pcie_tlp_data signaling only
+input last_call_;    // eof
+input tready_sw_;    // A switch to select CC or RQ tready
+begin
+  //-----------------------------------------------------------------------\\
+  if (user_lnk_up_n) begin
+    $display("[%t] :  interface is MIA", $realtime);
+    $finish(1);
+  end
+  //-----------------------------------------------------------------------\\
 
-    task TSK_TX_SYNCHRONIZE;
-        input        first_;        // effectively sof
-        input        active_;       // in pkt -- for pcie_tlp_data signaling only
-        input        last_call_;    // eof
-        input        tready_sw_;    // A switch to select CC or RQ tready
-
-        begin
-            //-----------------------------------------------------------------------\\
-            if (user_lnk_up_n) begin
-                $display("[%t] :  interface is MIA", $realtime);
-                $finish(1);
-            end
-            //-----------------------------------------------------------------------\\
-
-            @(posedge user_clk);
-            if (tready_sw_ == `SYNC_CC_RDY) begin
-                while (s_axis_cc_tready == 1'b0) begin
-                    @(posedge user_clk);
-                end
-            end else begin // tready_sw_ == `SYNC_RQ_RDY
-                while (s_axis_rq_tready == 1'b0) begin
-                    @(posedge user_clk);
-                end
-            end
-            //-----------------------------------------------------------------------\\
-            if (active_ == 1'b1) begin
-                // read data driven into memory
-                board.RP.com_usrapp.TSK_READ_DATA_512(first_, last_call_,`TX_LOG,pcie_tlp_data,pcie_tlp_rem);
-            end
-            //-----------------------------------------------------------------------\\
-            if (last_call_)
-                 board.RP.com_usrapp.TSK_PARSE_FRAME(`TX_LOG);
-            //-----------------------------------------------------------------------\\
-        end
-    endtask // TSK_TX_SYNCHRONIZE
+  @(posedge user_clk);
+  if (tready_sw_ == `SYNC_CC_RDY) begin
+    while (s_axis_cc_tready == 1'b0) begin
+      @(posedge user_clk);
+    end
+  end else begin // tready_sw_ == `SYNC_RQ_RDY
+    while (s_axis_rq_tready == 1'b0) begin
+      @(posedge user_clk);
+    end
+  end
+  //-----------------------------------------------------------------------\\
+  if (active_ == 1'b1) begin
+    // read data driven into memory
+    board.RP.com_usrapp.TSK_READ_DATA_512(first_, last_call_,`TX_LOG,pcie_tlp_data,pcie_tlp_rem);
+  end
+  //-----------------------------------------------------------------------\\
+  if (last_call_)
+    board.RP.com_usrapp.TSK_PARSE_FRAME(`TX_LOG);
+  //-----------------------------------------------------------------------\\
+end
+endtask // TSK_TX_SYNCHRONIZE
 
     /************************************************************
     Task : TSK_TX_BAR_READ
