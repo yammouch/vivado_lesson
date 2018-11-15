@@ -2025,48 +2025,37 @@ begin
 end
 endtask // TSK_TX_SYNCHRONIZE
 
-    /************************************************************
-    Task : TSK_TX_BAR_READ
-    Inputs : Tag, Length, Address, Last Byte En, First Byte En
-    Outputs : Transaction Tx Interface Signaling
-    Description : Generates a Memory Read 32,64 or IO Read TLP
-                  requesting 1 dword
-    *************************************************************/
-
-    task TSK_TX_BAR_READ;
-
-        input    [2:0]    bar_index;
-        input    [31:0]   byte_offset;
-        input    [7:0]    tag_;
-        input    [2:0]    tc_;
-
-
-        begin
-
-
-          case(BAR_INIT_P_BAR_ENABLED[bar_index])
-        2'b01 : // IO SPACE
-            begin
-                TSK_TX_IO_READ(tag_, BAR_INIT_P_BAR[bar_index][31:0]+(byte_offset), 4'hF);
-                end
-
-        2'b10 : // MEM 32 SPACE
-            begin
-                TSK_TX_MEMORY_READ_32(tag_, tc_, 10'd1,
-                                      BAR_INIT_P_BAR[bar_index][31:0]+(byte_offset), 4'h0, 4'hF);
-                end
-        2'b11 : // MEM 64 SPACE
-            begin
-               TSK_TX_MEMORY_READ_64(tag_, tc_, 10'd1, {BAR_INIT_P_BAR[ii+1][31:0],
-                                     BAR_INIT_P_BAR[bar_index][31:0]+(byte_offset)}, 4'h0, 4'hF);
-                end
-        default : begin
-                    $display("Error case in task TSK_TX_BAR_READ");
-                  end
-      endcase
-
-        end
-    endtask // TSK_TX_BAR_READ
+/************************************************************
+Task : TSK_TX_BAR_READ
+Inputs : Tag, Length, Address, Last Byte En, First Byte En
+Outputs : Transaction Tx Interface Signaling
+Description : Generates a Memory Read 32,64 or IO Read TLP
+              requesting 1 dword
+*************************************************************/
+task TSK_TX_BAR_READ;
+input [ 2:0] bar_index;
+input [31:0] byte_offset;
+input [ 7:0] tag_;
+input [ 2:0] tc_;
+begin
+  case(BAR_INIT_P_BAR_ENABLED[bar_index])
+  2'b01 : begin // IO SPACE
+    TSK_TX_IO_READ(tag_, BAR_INIT_P_BAR[bar_index][31:0]+(byte_offset), 4'hF);
+  end
+  2'b10 : begin // MEM 32 SPACE
+    TSK_TX_MEMORY_READ_32(tag_, tc_, 10'd1,
+     BAR_INIT_P_BAR[bar_index][31:0]+(byte_offset), 4'h0, 4'hF);
+  end
+  2'b11 : begin // MEM 64 SPACE
+    TSK_TX_MEMORY_READ_64(tag_, tc_, 10'd1, {BAR_INIT_P_BAR[ii+1][31:0],
+     BAR_INIT_P_BAR[bar_index][31:0]+(byte_offset)}, 4'h0, 4'hF);
+    end
+  default : begin
+    $display("Error case in task TSK_TX_BAR_READ");
+  end
+  endcase
+end
+endtask // TSK_TX_BAR_READ
 
 
 
