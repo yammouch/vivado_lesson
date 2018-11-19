@@ -11,15 +11,69 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0fs"></ZoomStartTime>
-      <ZoomEndTime time="218000000001fs"></ZoomEndTime>
-      <Cursor1Time time="157184381000fs"></Cursor1Time>
+      <ZoomStartTime time="106146381000fs"></ZoomStartTime>
+      <ZoomEndTime time="113191381001fs"></ZoomEndTime>
+      <Cursor1Time time="107521381000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="399"></NameColumnWidth>
-      <ValueColumnWidth column_width="138"></ValueColumnWidth>
+      <ValueColumnWidth column_width="134"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="24" />
+   <WVObjectSize size="35" />
+   <wvobject fp_name="/board/RP/user_clk" type="logic">
+      <obj_property name="ElementShortName">user_clk</obj_property>
+      <obj_property name="ObjectShortName">user_clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/board/RP/user_reset" type="logic">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">user_reset</obj_property>
+      <obj_property name="ObjectShortName">user_reset</obj_property>
+   </wvobject>
+   <wvobject fp_name="/board/RP/user_lnk_up" type="logic">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">user_lnk_up</obj_property>
+      <obj_property name="ObjectShortName">user_lnk_up</obj_property>
+   </wvobject>
+   <wvobject fp_name="/board/RP/cfg_usrapp/cfg_mgmt_addr" type="array">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">cfg_mgmt_addr[9:0]</obj_property>
+      <obj_property name="ObjectShortName">cfg_mgmt_addr[9:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/board/RP/cfg_usrapp/cfg_mgmt_write" type="logic">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">cfg_mgmt_write</obj_property>
+      <obj_property name="ObjectShortName">cfg_mgmt_write</obj_property>
+   </wvobject>
+   <wvobject fp_name="/board/RP/cfg_usrapp/cfg_mgmt_write_data" type="array">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">cfg_mgmt_write_data[31:0]</obj_property>
+      <obj_property name="ObjectShortName">cfg_mgmt_write_data[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/board/RP/cfg_usrapp/cfg_mgmt_byte_enable" type="array">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">cfg_mgmt_byte_enable[3:0]</obj_property>
+      <obj_property name="ObjectShortName">cfg_mgmt_byte_enable[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/board/RP/cfg_usrapp/cfg_mgmt_read" type="logic">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">cfg_mgmt_read</obj_property>
+      <obj_property name="ObjectShortName">cfg_mgmt_read</obj_property>
+   </wvobject>
+   <wvobject fp_name="/board/RP/cfg_usrapp/cfg_mgmt_read_data" type="array">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">cfg_mgmt_read_data[31:0]</obj_property>
+      <obj_property name="ObjectShortName">cfg_mgmt_read_data[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/board/RP/cfg_usrapp/cfg_mgmt_read_write_done" type="logic">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">cfg_mgmt_read_write_done</obj_property>
+      <obj_property name="ObjectShortName">cfg_mgmt_read_write_done</obj_property>
+   </wvobject>
+   <wvobject fp_name="/board/RP/cfg_usrapp/cfg_mgmt_type1_cfg_reg_access" type="logic">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">cfg_mgmt_type1_cfg_reg_access</obj_property>
+      <obj_property name="ObjectShortName">cfg_mgmt_type1_cfg_reg_access</obj_property>
+   </wvobject>
    <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata" type="array">
       <obj_property name="DisplayName">FullPathName</obj_property>
       <obj_property name="ElementShortName">s_axis_rq_tdata[511:0]</obj_property>
