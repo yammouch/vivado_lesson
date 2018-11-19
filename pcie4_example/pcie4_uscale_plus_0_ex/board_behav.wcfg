@@ -11,204 +11,44 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="22792968666fs"></ZoomStartTime>
-      <ZoomEndTime time="119892968667fs"></ZoomEndTime>
-      <Cursor1Time time="113292968666fs"></Cursor1Time>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="218000000001fs"></ZoomEndTime>
+      <Cursor1Time time="157184381000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="399"></NameColumnWidth>
-      <ValueColumnWidth column_width="142"></ValueColumnWidth>
+      <ValueColumnWidth column_width="138"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="156" />
-   <wvobject fp_name="/board/i" type="array">
+   <WVObjectSize size="24" />
+   <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata" type="array">
       <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">i[31:0]</obj_property>
-      <obj_property name="ObjectShortName">i[31:0]</obj_property>
+      <obj_property name="ElementShortName">s_axis_rq_tdata[511:0]</obj_property>
+      <obj_property name="ObjectShortName">s_axis_rq_tdata[511:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/board/sys_rst_n" type="logic">
+   <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tkeep" type="array">
       <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">sys_rst_n</obj_property>
-      <obj_property name="ObjectShortName">sys_rst_n</obj_property>
+      <obj_property name="ElementShortName">s_axis_rq_tkeep[15:0]</obj_property>
+      <obj_property name="ObjectShortName">s_axis_rq_tkeep[15:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/board/ep_sys_clk_p" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">ep_sys_clk_p</obj_property>
-      <obj_property name="ObjectShortName">ep_sys_clk_p</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/ep_sys_clk_n" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">ep_sys_clk_n</obj_property>
-      <obj_property name="ObjectShortName">ep_sys_clk_n</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/rp_sys_clk_p" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">rp_sys_clk_p</obj_property>
-      <obj_property name="ObjectShortName">rp_sys_clk_p</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/rp_sys_clk_n" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">rp_sys_clk_n</obj_property>
-      <obj_property name="ObjectShortName">rp_sys_clk_n</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/ep_pci_exp_txn" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">ep_pci_exp_txn[0:0]</obj_property>
-      <obj_property name="ObjectShortName">ep_pci_exp_txn[0:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/ep_pci_exp_txp" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">ep_pci_exp_txp[0:0]</obj_property>
-      <obj_property name="ObjectShortName">ep_pci_exp_txp[0:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/rp_pci_exp_txn" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">rp_pci_exp_txn[0:0]</obj_property>
-      <obj_property name="ObjectShortName">rp_pci_exp_txn[0:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/rp_pci_exp_txp" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">rp_pci_exp_txp[0:0]</obj_property>
-      <obj_property name="ObjectShortName">rp_pci_exp_txp[0:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/rp_txn" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">rp_txn[14:0]</obj_property>
-      <obj_property name="ObjectShortName">rp_txn[14:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/rp_txp" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">rp_txp[14:0]</obj_property>
-      <obj_property name="ObjectShortName">rp_txp[14:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/REF_CLK_FREQ" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">REF_CLK_FREQ[31:0]</obj_property>
-      <obj_property name="ObjectShortName">REF_CLK_FREQ[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/LINK_WIDTH" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">LINK_WIDTH[4:0]</obj_property>
-      <obj_property name="ObjectShortName">LINK_WIDTH[4:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/LINK_SPEED_US" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">LINK_SPEED_US[3:0]</obj_property>
-      <obj_property name="ObjectShortName">LINK_SPEED_US[3:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/LINK_SPEED" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">LINK_SPEED[1:0]</obj_property>
-      <obj_property name="ObjectShortName">LINK_SPEED[1:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/REF_CLK_HALF_CYCLE" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">REF_CLK_HALF_CYCLE[31:0]</obj_property>
-      <obj_property name="ObjectShortName">REF_CLK_HALF_CYCLE[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/PF0_DEV_CAP_MAX_PAYLOAD_SIZE" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">PF0_DEV_CAP_MAX_PAYLOAD_SIZE[2:0]</obj_property>
-      <obj_property name="ObjectShortName">PF0_DEV_CAP_MAX_PAYLOAD_SIZE[2:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EXT_PIPE_SIM" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">EXT_PIPE_SIM[39:0]</obj_property>
-      <obj_property name="ObjectShortName">EXT_PIPE_SIM[39:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/pci_exp_txn" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">pci_exp_txn[0:0]</obj_property>
-      <obj_property name="ObjectShortName">pci_exp_txn[0:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/pci_exp_txp" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">pci_exp_txp[0:0]</obj_property>
-      <obj_property name="ObjectShortName">pci_exp_txp[0:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/pci_exp_rxn" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">pci_exp_rxn[0:0]</obj_property>
-      <obj_property name="ObjectShortName">pci_exp_rxn[0:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/pci_exp_rxp" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">pci_exp_rxp[0:0]</obj_property>
-      <obj_property name="ObjectShortName">pci_exp_rxp[0:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/user_clk" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">user_clk</obj_property>
-      <obj_property name="ObjectShortName">user_clk</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/user_reset" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">user_reset</obj_property>
-      <obj_property name="ObjectShortName">user_reset</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/user_lnk_up" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">user_lnk_up</obj_property>
-      <obj_property name="ObjectShortName">user_lnk_up</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/s_axis_rq_tdata" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">s_axis_rq_tdata[63:0]</obj_property>
-      <obj_property name="ObjectShortName">s_axis_rq_tdata[63:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/s_axis_rq_tkeep" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">s_axis_rq_tkeep[1:0]</obj_property>
-      <obj_property name="ObjectShortName">s_axis_rq_tkeep[1:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/s_axis_rq_tlast" type="logic">
+   <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tlast" type="logic">
       <obj_property name="DisplayName">FullPathName</obj_property>
       <obj_property name="ElementShortName">s_axis_rq_tlast</obj_property>
       <obj_property name="ObjectShortName">s_axis_rq_tlast</obj_property>
    </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/s_axis_rq_tready" type="array">
+   <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tready" type="array">
       <obj_property name="DisplayName">FullPathName</obj_property>
       <obj_property name="ElementShortName">s_axis_rq_tready[3:0]</obj_property>
       <obj_property name="ObjectShortName">s_axis_rq_tready[3:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/s_axis_rq_tuser" type="array">
+   <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tuser" type="array">
       <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">s_axis_rq_tuser[61:0]</obj_property>
-      <obj_property name="ObjectShortName">s_axis_rq_tuser[61:0]</obj_property>
+      <obj_property name="ElementShortName">s_axis_rq_tuser[136:0]</obj_property>
+      <obj_property name="ObjectShortName">s_axis_rq_tuser[136:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/s_axis_rq_tvalid" type="logic">
+   <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tvalid" type="logic">
       <obj_property name="DisplayName">FullPathName</obj_property>
       <obj_property name="ElementShortName">s_axis_rq_tvalid</obj_property>
       <obj_property name="ObjectShortName">s_axis_rq_tvalid</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/m_axis_rc_tdata" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">m_axis_rc_tdata[63:0]</obj_property>
-      <obj_property name="ObjectShortName">m_axis_rc_tdata[63:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/m_axis_rc_tkeep" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">m_axis_rc_tkeep[1:0]</obj_property>
-      <obj_property name="ObjectShortName">m_axis_rc_tkeep[1:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/m_axis_rc_tlast" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">m_axis_rc_tlast</obj_property>
-      <obj_property name="ObjectShortName">m_axis_rc_tlast</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/m_axis_rc_tready" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">m_axis_rc_tready</obj_property>
-      <obj_property name="ObjectShortName">m_axis_rc_tready</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/m_axis_rc_tuser" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">m_axis_rc_tuser[74:0]</obj_property>
-      <obj_property name="ObjectShortName">m_axis_rc_tuser[74:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/m_axis_rc_tvalid" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">m_axis_rc_tvalid</obj_property>
-      <obj_property name="ObjectShortName">m_axis_rc_tvalid</obj_property>
    </wvobject>
    <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/m_axis_cq_tdata" type="array">
       <obj_property name="DisplayName">FullPathName</obj_property>
@@ -270,534 +110,34 @@
       <obj_property name="ElementShortName">s_axis_cc_tvalid</obj_property>
       <obj_property name="ObjectShortName">s_axis_cc_tvalid</obj_property>
    </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/pcie_rq_seq_num0" type="array">
+   <wvobject fp_name="/board/RP/pcie_4_0_rport/m_axis_rc_tdata" type="array">
       <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">pcie_rq_seq_num0[5:0]</obj_property>
-      <obj_property name="ObjectShortName">pcie_rq_seq_num0[5:0]</obj_property>
+      <obj_property name="ElementShortName">m_axis_rc_tdata[511:0]</obj_property>
+      <obj_property name="ObjectShortName">m_axis_rc_tdata[511:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/pcie_rq_seq_num_vld0" type="logic">
+   <wvobject fp_name="/board/RP/pcie_4_0_rport/m_axis_rc_tkeep" type="array">
       <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">pcie_rq_seq_num_vld0</obj_property>
-      <obj_property name="ObjectShortName">pcie_rq_seq_num_vld0</obj_property>
+      <obj_property name="ElementShortName">m_axis_rc_tkeep[15:0]</obj_property>
+      <obj_property name="ObjectShortName">m_axis_rc_tkeep[15:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/pcie_rq_seq_num1" type="array">
+   <wvobject fp_name="/board/RP/pcie_4_0_rport/m_axis_rc_tlast" type="logic">
       <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">pcie_rq_seq_num1[5:0]</obj_property>
-      <obj_property name="ObjectShortName">pcie_rq_seq_num1[5:0]</obj_property>
+      <obj_property name="ElementShortName">m_axis_rc_tlast</obj_property>
+      <obj_property name="ObjectShortName">m_axis_rc_tlast</obj_property>
    </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/pcie_rq_seq_num_vld1" type="logic">
+   <wvobject fp_name="/board/RP/pcie_4_0_rport/m_axis_rc_tready" type="array">
       <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">pcie_rq_seq_num_vld1</obj_property>
-      <obj_property name="ObjectShortName">pcie_rq_seq_num_vld1</obj_property>
+      <obj_property name="ElementShortName">m_axis_rc_tready[21:0]</obj_property>
+      <obj_property name="ObjectShortName">m_axis_rc_tready[21:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/pcie_rq_tag0" type="array">
+   <wvobject fp_name="/board/RP/pcie_4_0_rport/m_axis_rc_tuser" type="array">
       <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">pcie_rq_tag0[7:0]</obj_property>
-      <obj_property name="ObjectShortName">pcie_rq_tag0[7:0]</obj_property>
+      <obj_property name="ElementShortName">m_axis_rc_tuser[160:0]</obj_property>
+      <obj_property name="ObjectShortName">m_axis_rc_tuser[160:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/pcie_rq_tag1" type="array">
+   <wvobject fp_name="/board/RP/pcie_4_0_rport/m_axis_rc_tvalid" type="logic">
       <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">pcie_rq_tag1[7:0]</obj_property>
-      <obj_property name="ObjectShortName">pcie_rq_tag1[7:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/pcie_rq_tag_av" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">pcie_rq_tag_av[3:0]</obj_property>
-      <obj_property name="ObjectShortName">pcie_rq_tag_av[3:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/pcie_rq_tag_vld0" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">pcie_rq_tag_vld0</obj_property>
-      <obj_property name="ObjectShortName">pcie_rq_tag_vld0</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/pcie_rq_tag_vld1" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">pcie_rq_tag_vld1</obj_property>
-      <obj_property name="ObjectShortName">pcie_rq_tag_vld1</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/pcie_tfc_nph_av" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">pcie_tfc_nph_av[3:0]</obj_property>
-      <obj_property name="ObjectShortName">pcie_tfc_nph_av[3:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/pcie_tfc_npd_av" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">pcie_tfc_npd_av[3:0]</obj_property>
-      <obj_property name="ObjectShortName">pcie_tfc_npd_av[3:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/pcie_cq_np_req" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">pcie_cq_np_req[1:0]</obj_property>
-      <obj_property name="ObjectShortName">pcie_cq_np_req[1:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/pcie_cq_np_req_count" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">pcie_cq_np_req_count[5:0]</obj_property>
-      <obj_property name="ObjectShortName">pcie_cq_np_req_count[5:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_phy_link_down" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_phy_link_down</obj_property>
-      <obj_property name="ObjectShortName">cfg_phy_link_down</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_phy_link_status" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_phy_link_status[1:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_phy_link_status[1:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_negotiated_width" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_negotiated_width[2:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_negotiated_width[2:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_current_speed" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_current_speed[1:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_current_speed[1:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_max_payload" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_max_payload[1:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_max_payload[1:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_max_read_req" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_max_read_req[2:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_max_read_req[2:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_function_status" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_function_status[15:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_function_status[15:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_function_power_state" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_function_power_state[11:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_function_power_state[11:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_vf_status" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_vf_status[503:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_vf_status[503:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_vf_power_state" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_vf_power_state[755:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_vf_power_state[755:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_link_power_state" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_link_power_state[1:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_link_power_state[1:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_mgmt_addr" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_mgmt_addr[9:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_mgmt_addr[9:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_mgmt_function_number" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_mgmt_function_number[7:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_mgmt_function_number[7:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_mgmt_write" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_mgmt_write</obj_property>
-      <obj_property name="ObjectShortName">cfg_mgmt_write</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_mgmt_write_data" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_mgmt_write_data[31:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_mgmt_write_data[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_mgmt_byte_enable" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_mgmt_byte_enable[3:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_mgmt_byte_enable[3:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_mgmt_read" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_mgmt_read</obj_property>
-      <obj_property name="ObjectShortName">cfg_mgmt_read</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_mgmt_read_data" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_mgmt_read_data[31:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_mgmt_read_data[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_mgmt_read_write_done" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_mgmt_read_write_done</obj_property>
-      <obj_property name="ObjectShortName">cfg_mgmt_read_write_done</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_mgmt_debug_access" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_mgmt_debug_access</obj_property>
-      <obj_property name="ObjectShortName">cfg_mgmt_debug_access</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_err_cor_out" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_err_cor_out</obj_property>
-      <obj_property name="ObjectShortName">cfg_err_cor_out</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_err_nonfatal_out" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_err_nonfatal_out</obj_property>
-      <obj_property name="ObjectShortName">cfg_err_nonfatal_out</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_err_fatal_out" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_err_fatal_out</obj_property>
-      <obj_property name="ObjectShortName">cfg_err_fatal_out</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_local_error_valid" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_local_error_valid</obj_property>
-      <obj_property name="ObjectShortName">cfg_local_error_valid</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_local_error_out" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_local_error_out[4:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_local_error_out[4:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_ltssm_state" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_ltssm_state[5:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_ltssm_state[5:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_rx_pm_state" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_rx_pm_state[1:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_rx_pm_state[1:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_tx_pm_state" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_tx_pm_state[1:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_tx_pm_state[1:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_rcb_status" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_rcb_status[3:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_rcb_status[3:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_obff_enable" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_obff_enable[1:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_obff_enable[1:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_pl_status_change" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_pl_status_change</obj_property>
-      <obj_property name="ObjectShortName">cfg_pl_status_change</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_tph_requester_enable" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_tph_requester_enable[3:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_tph_requester_enable[3:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_tph_st_mode" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_tph_st_mode[11:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_tph_st_mode[11:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_vf_tph_requester_enable" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_vf_tph_requester_enable[251:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_vf_tph_requester_enable[251:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_vf_tph_st_mode" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_vf_tph_st_mode[755:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_vf_tph_st_mode[755:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_msg_received" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_msg_received</obj_property>
-      <obj_property name="ObjectShortName">cfg_msg_received</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_msg_received_data" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_msg_received_data[7:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_msg_received_data[7:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_msg_received_type" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_msg_received_type[4:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_msg_received_type[4:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_msg_transmit" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_msg_transmit</obj_property>
-      <obj_property name="ObjectShortName">cfg_msg_transmit</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_msg_transmit_type" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_msg_transmit_type[2:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_msg_transmit_type[2:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_msg_transmit_data" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_msg_transmit_data[31:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_msg_transmit_data[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_msg_transmit_done" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_msg_transmit_done</obj_property>
-      <obj_property name="ObjectShortName">cfg_msg_transmit_done</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_fc_ph" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_fc_ph[7:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_fc_ph[7:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_fc_pd" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_fc_pd[11:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_fc_pd[11:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_fc_nph" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_fc_nph[7:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_fc_nph[7:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_fc_npd" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_fc_npd[11:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_fc_npd[11:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_fc_cplh" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_fc_cplh[7:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_fc_cplh[7:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_fc_cpld" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_fc_cpld[11:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_fc_cpld[11:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_fc_sel" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_fc_sel[2:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_fc_sel[2:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_dsn" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_dsn[63:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_dsn[63:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_bus_number" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_bus_number[7:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_bus_number[7:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_power_state_change_ack" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_power_state_change_ack</obj_property>
-      <obj_property name="ObjectShortName">cfg_power_state_change_ack</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_power_state_change_interrupt" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_power_state_change_interrupt</obj_property>
-      <obj_property name="ObjectShortName">cfg_power_state_change_interrupt</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_err_cor_in" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_err_cor_in</obj_property>
-      <obj_property name="ObjectShortName">cfg_err_cor_in</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_err_uncor_in" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_err_uncor_in</obj_property>
-      <obj_property name="ObjectShortName">cfg_err_uncor_in</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_flr_in_process" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_flr_in_process[3:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_flr_in_process[3:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_flr_done" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_flr_done[3:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_flr_done[3:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_vf_flr_in_process" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_vf_flr_in_process[251:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_vf_flr_in_process[251:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_vf_flr_func_num" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_vf_flr_func_num[7:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_vf_flr_func_num[7:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_vf_flr_done" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_vf_flr_done[0:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_vf_flr_done[0:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_link_training_enable" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_link_training_enable</obj_property>
-      <obj_property name="ObjectShortName">cfg_link_training_enable</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_interrupt_int" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_interrupt_int[3:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_interrupt_int[3:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_interrupt_pending" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_interrupt_pending[3:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_interrupt_pending[3:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_interrupt_sent" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_interrupt_sent</obj_property>
-      <obj_property name="ObjectShortName">cfg_interrupt_sent</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_interrupt_msi_enable" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_interrupt_msi_enable[3:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_interrupt_msi_enable[3:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_interrupt_msi_mmenable" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_interrupt_msi_mmenable[11:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_interrupt_msi_mmenable[11:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_interrupt_msi_mask_update" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_interrupt_msi_mask_update</obj_property>
-      <obj_property name="ObjectShortName">cfg_interrupt_msi_mask_update</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_interrupt_msi_data" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_interrupt_msi_data[31:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_interrupt_msi_data[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_interrupt_msi_select" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_interrupt_msi_select[1:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_interrupt_msi_select[1:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_interrupt_msi_int" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_interrupt_msi_int[31:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_interrupt_msi_int[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_interrupt_msi_pending_status" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_interrupt_msi_pending_status[31:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_interrupt_msi_pending_status[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_interrupt_msi_pending_status_data_enable" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_interrupt_msi_pending_status_data_enable</obj_property>
-      <obj_property name="ObjectShortName">cfg_interrupt_msi_pending_status_data_enable</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_interrupt_msi_pending_status_function_num" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_interrupt_msi_pending_status_function_num[1:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_interrupt_msi_pending_status_function_num[1:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_interrupt_msi_sent" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_interrupt_msi_sent</obj_property>
-      <obj_property name="ObjectShortName">cfg_interrupt_msi_sent</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_interrupt_msi_fail" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_interrupt_msi_fail</obj_property>
-      <obj_property name="ObjectShortName">cfg_interrupt_msi_fail</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_interrupt_msi_attr" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_interrupt_msi_attr[2:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_interrupt_msi_attr[2:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_interrupt_msi_tph_present" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_interrupt_msi_tph_present</obj_property>
-      <obj_property name="ObjectShortName">cfg_interrupt_msi_tph_present</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_interrupt_msi_tph_type" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_interrupt_msi_tph_type[1:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_interrupt_msi_tph_type[1:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_interrupt_msi_tph_st_tag" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_interrupt_msi_tph_st_tag[7:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_interrupt_msi_tph_st_tag[7:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_interrupt_msi_function_number" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_interrupt_msi_function_number[7:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_interrupt_msi_function_number[7:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_pm_aspm_l1_entry_reject" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_pm_aspm_l1_entry_reject</obj_property>
-      <obj_property name="ObjectShortName">cfg_pm_aspm_l1_entry_reject</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_pm_aspm_tx_l0s_entry_disable" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_pm_aspm_tx_l0s_entry_disable</obj_property>
-      <obj_property name="ObjectShortName">cfg_pm_aspm_tx_l0s_entry_disable</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_hot_reset_out" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_hot_reset_out</obj_property>
-      <obj_property name="ObjectShortName">cfg_hot_reset_out</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_config_space_enable" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_config_space_enable</obj_property>
-      <obj_property name="ObjectShortName">cfg_config_space_enable</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_req_pm_transition_l23_ready" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_req_pm_transition_l23_ready</obj_property>
-      <obj_property name="ObjectShortName">cfg_req_pm_transition_l23_ready</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_hot_reset_in" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_hot_reset_in</obj_property>
-      <obj_property name="ObjectShortName">cfg_hot_reset_in</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_ds_port_number" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_ds_port_number[7:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_ds_port_number[7:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_ds_bus_number" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_ds_bus_number[7:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_ds_bus_number[7:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_ds_device_number" type="array">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">cfg_ds_device_number[4:0]</obj_property>
-      <obj_property name="ObjectShortName">cfg_ds_device_number[4:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/sys_clk" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">sys_clk</obj_property>
-      <obj_property name="ObjectShortName">sys_clk</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/sys_clk_gt" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">sys_clk_gt</obj_property>
-      <obj_property name="ObjectShortName">sys_clk_gt</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/sys_reset" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">sys_reset</obj_property>
-      <obj_property name="ObjectShortName">sys_reset</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/phy_rdy_out" type="logic">
-      <obj_property name="DisplayName">FullPathName</obj_property>
-      <obj_property name="ElementShortName">phy_rdy_out</obj_property>
-      <obj_property name="ObjectShortName">phy_rdy_out</obj_property>
+      <obj_property name="ElementShortName">m_axis_rc_tvalid</obj_property>
+      <obj_property name="ObjectShortName">m_axis_rc_tvalid</obj_property>
    </wvobject>
 </wave_config>
