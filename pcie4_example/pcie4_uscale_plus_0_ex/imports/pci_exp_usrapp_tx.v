@@ -2244,49 +2244,49 @@ begin
         if ((ii != 5) && (BAR_INIT_P_BAR_RANGE[ii] & 32'h0000_0004)) begin
           // bar is mem64 mapped - memManager is not handling out of 64bit memory
           NUMBER_OF_MEM64_BARS = NUMBER_OF_MEM64_BARS + 1;
-            if (~BAR_ENABLED[ii]) begin
-              $display("[%t] Testbench will disable BAR %x",$realtime, ii);
-              BAR_INIT_P_BAR_ENABLED[ii] = 2'h0; // disable BAR
-            end else begin
-              BAR_INIT_P_BAR_ENABLED[ii] = 2'h3; // bar is mem64 mapped
-              $display("[%t] Testbench is enabling MEM64 BAR %x",$realtime, ii);
-            end 
-            if ( (BAR_INIT_P_BAR_RANGE[ii] & 32'hFFFF_FFF0) == 32'h0000_0000) begin
-              // Mem64 space has range larger than 2 Gigabytes
-              // calculate where the next BAR should start based on the BAR's range
-              BAR_INIT_TEMP = BAR_INIT_P_MEM64_HI_START & BAR_INIT_P_BAR_RANGE[ii+1];
-              if (BAR_INIT_TEMP < BAR_INIT_P_MEM64_HI_START) begin
-                // Current MEM32_START is NOT correct start for new base
-                BAR_INIT_P_BAR[ii+1] =      BAR_INIT_TEMP + FNC_CONVERT_RANGE_TO_SIZE_HI32(ii+1);
-                BAR_INIT_P_BAR[ii] =        32'h0000_0000;
-                BAR_INIT_P_MEM64_HI_START = BAR_INIT_P_BAR[ii+1] + FNC_CONVERT_RANGE_TO_SIZE_HI32(ii+1);
-                BAR_INIT_P_MEM64_LO_START = 32'h0000_0000;
-              end else begin
-                // Initial BAR case and Current MEM32_START is correct start for new base
-                BAR_INIT_P_BAR[ii] =        32'h0000_0000;
-                BAR_INIT_P_BAR[ii+1] =      BAR_INIT_P_MEM64_HI_START;
-                BAR_INIT_P_MEM64_HI_START = BAR_INIT_P_MEM64_HI_START + FNC_CONVERT_RANGE_TO_SIZE_HI32(ii+1);
-              end
-            end else begin
-              // Mem64 space has range less than/equal 2 Gigabytes
-              // calculate where the next BAR should start based on the BAR's range
-              BAR_INIT_TEMP = BAR_INIT_P_MEM64_LO_START & (BAR_INIT_P_BAR_RANGE[ii] & 32'hffff_fff0);
-              if (BAR_INIT_TEMP < BAR_INIT_P_MEM64_LO_START) begin
-                // Current MEM32_START is NOT correct start for new base
-                BAR_INIT_P_BAR[ii] =        BAR_INIT_TEMP + FNC_CONVERT_RANGE_TO_SIZE_32(ii);
-                BAR_INIT_P_BAR[ii+1] =      BAR_INIT_P_MEM64_HI_START;
-                BAR_INIT_P_MEM64_LO_START = BAR_INIT_P_BAR[ii] + FNC_CONVERT_RANGE_TO_SIZE_32(ii);
-              end else begin
-                // Initial BAR case and Current MEM32_START is correct start for new base
-                BAR_INIT_P_BAR[ii] =        BAR_INIT_P_MEM64_LO_START;
-                BAR_INIT_P_BAR[ii+1] =      BAR_INIT_P_MEM64_HI_START;
-                BAR_INIT_P_MEM64_LO_START = BAR_INIT_P_MEM64_LO_START + FNC_CONVERT_RANGE_TO_SIZE_32(ii);
-              end
-            end
-            // skip over the next bar since it is being used by the 64bit bar
-            ii = ii + 1;
+          if (~BAR_ENABLED[ii]) begin
+            $display("[%t] Testbench will disable BAR %x",$realtime, ii);
+            BAR_INIT_P_BAR_ENABLED[ii] = 2'h0; // disable BAR
           end else begin
-            if ( (ii != 6) || ((ii == 6) && (BAR_INIT_P_BAR_RANGE[ii] & 32'h0000_0001)) ) begin
+            BAR_INIT_P_BAR_ENABLED[ii] = 2'h3; // bar is mem64 mapped
+            $display("[%t] Testbench is enabling MEM64 BAR %x",$realtime, ii);
+          end 
+          if ( (BAR_INIT_P_BAR_RANGE[ii] & 32'hFFFF_FFF0) == 32'h0000_0000) begin
+            // Mem64 space has range larger than 2 Gigabytes
+            // calculate where the next BAR should start based on the BAR's range
+            BAR_INIT_TEMP = BAR_INIT_P_MEM64_HI_START & BAR_INIT_P_BAR_RANGE[ii+1];
+            if (BAR_INIT_TEMP < BAR_INIT_P_MEM64_HI_START) begin
+              // Current MEM32_START is NOT correct start for new base
+              BAR_INIT_P_BAR[ii+1] =      BAR_INIT_TEMP + FNC_CONVERT_RANGE_TO_SIZE_HI32(ii+1);
+              BAR_INIT_P_BAR[ii] =        32'h0000_0000;
+              BAR_INIT_P_MEM64_HI_START = BAR_INIT_P_BAR[ii+1] + FNC_CONVERT_RANGE_TO_SIZE_HI32(ii+1);
+              BAR_INIT_P_MEM64_LO_START = 32'h0000_0000;
+            end else begin
+              // Initial BAR case and Current MEM32_START is correct start for new base
+              BAR_INIT_P_BAR[ii] =        32'h0000_0000;
+              BAR_INIT_P_BAR[ii+1] =      BAR_INIT_P_MEM64_HI_START;
+              BAR_INIT_P_MEM64_HI_START = BAR_INIT_P_MEM64_HI_START + FNC_CONVERT_RANGE_TO_SIZE_HI32(ii+1);
+            end
+          end else begin
+            // Mem64 space has range less than/equal 2 Gigabytes
+            // calculate where the next BAR should start based on the BAR's range
+            BAR_INIT_TEMP = BAR_INIT_P_MEM64_LO_START & (BAR_INIT_P_BAR_RANGE[ii] & 32'hffff_fff0);
+            if (BAR_INIT_TEMP < BAR_INIT_P_MEM64_LO_START) begin
+              // Current MEM32_START is NOT correct start for new base
+              BAR_INIT_P_BAR[ii] =        BAR_INIT_TEMP + FNC_CONVERT_RANGE_TO_SIZE_32(ii);
+              BAR_INIT_P_BAR[ii+1] =      BAR_INIT_P_MEM64_HI_START;
+              BAR_INIT_P_MEM64_LO_START = BAR_INIT_P_BAR[ii] + FNC_CONVERT_RANGE_TO_SIZE_32(ii);
+            end else begin
+              // Initial BAR case and Current MEM32_START is correct start for new base
+              BAR_INIT_P_BAR[ii] =        BAR_INIT_P_MEM64_LO_START;
+              BAR_INIT_P_BAR[ii+1] =      BAR_INIT_P_MEM64_HI_START;
+              BAR_INIT_P_MEM64_LO_START = BAR_INIT_P_MEM64_LO_START + FNC_CONVERT_RANGE_TO_SIZE_32(ii);
+            end
+          end
+          // skip over the next bar since it is being used by the 64bit bar
+          ii = ii + 1;
+        end else begin
+          if ( (ii != 6) || ((ii == 6) && (BAR_INIT_P_BAR_RANGE[ii] & 32'h0000_0001)) ) begin
             // handling general mem32 case and erom case
             // bar is mem32 mapped
             if (ii != 6) begin
