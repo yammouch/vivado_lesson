@@ -70,7 +70,7 @@
 module board;
 
   parameter          REF_CLK_FREQ       = 0 ;      // 0 - 100 MHz, 1 - 125 MHz,  2 - 250 MHz
-  parameter    [4:0] LINK_WIDTH         = 5'd1;
+  parameter    [4:0] LINK_WIDTH         = 5'd16;
   `ifdef LINKSPEED
   localparam   [3:0] LINK_SPEED_US      = 4'h`LINKSPEED;
   `else
@@ -187,10 +187,10 @@ module board;
     //
     // PCI-Express Serial Interface
     //
-    .pci_exp_txn({rp_txn,rp_pci_exp_txn}),
-    .pci_exp_txp({rp_txp,rp_pci_exp_txp}),
-    .pci_exp_rxn({15'b0,ep_pci_exp_txn}),
-    .pci_exp_rxp({15'b0,ep_pci_exp_txp})
+    .pci_exp_txn(rp_pci_exp_txn),
+    .pci_exp_txp(rp_pci_exp_txp),
+    .pci_exp_rxn(ep_pci_exp_txn),
+    .pci_exp_rxp(ep_pci_exp_txp)
   
   
   );
