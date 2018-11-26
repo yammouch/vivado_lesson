@@ -63,8 +63,8 @@
 module xilinx_pcie4_uscale_ep # (
 /*
 */
-  parameter [4:0]    PL_LINK_CAP_MAX_LINK_WIDTH     = 1,  // 1- X1, 2 - X2, 4 - X4, 8 - X8, 16 - X16
-  parameter          C_DATA_WIDTH                   = 64,         // RX/TX interface data width
+  parameter [4:0]    PL_LINK_CAP_MAX_LINK_WIDTH     = 16,  // 1- X1, 2 - X2, 4 - X4, 8 - X8, 16 - X16
+  parameter          C_DATA_WIDTH                   = 512,         // RX/TX interface data width
   parameter          AXISTEN_IF_MC_RX_STRADDLE      = 0,
   parameter          PL_LINK_CAP_MAX_LINK_SPEED     = 1,  // 1- GEN1, 2 - GEN2, 4 - GEN3, 8 - GEN4
   parameter          KEEP_WIDTH                     = C_DATA_WIDTH / 32,
@@ -73,10 +73,10 @@ module xilinx_pcie4_uscale_ep # (
   parameter          AXISTEN_IF_CQ_ALIGNMENT_MODE   = "FALSE",
   parameter          AXISTEN_IF_RQ_ALIGNMENT_MODE   = "FALSE",
   parameter          AXISTEN_IF_RC_ALIGNMENT_MODE   = "FALSE",
-  parameter          AXI4_CQ_TUSER_WIDTH            = 88,
-  parameter          AXI4_CC_TUSER_WIDTH            = 33,
-  parameter          AXI4_RQ_TUSER_WIDTH            = 62,
-  parameter          AXI4_RC_TUSER_WIDTH            = 75,
+  parameter          AXI4_CQ_TUSER_WIDTH            = 183,
+  parameter          AXI4_CC_TUSER_WIDTH            = 81,
+  parameter          AXI4_RQ_TUSER_WIDTH            = 137,
+  parameter          AXI4_RC_TUSER_WIDTH            = 161,
   parameter          AXISTEN_IF_ENABLE_CLIENT_TAG   = 0,
   parameter          RQ_AVAIL_TAG_IDX               = 8,
   parameter          RQ_AVAIL_TAG                   = 256,
@@ -290,7 +290,7 @@ module xilinx_pcie4_uscale_ep # (
 //                                     PCIe Core Top Level Wrapper                                                  //
 //------------------------------------------------------------------------------------------------------------------//
 // Core Top Level Wrapper
- pcie4_uscale_plus_0  pcie4_uscale_plus_0_i (
+ pcie4_uscale_plus_ep16  pcie4_uscale_plus_0_i (
     //---------------------------------------------------------------------------------------//
     //  ID Ports 
     //---------------------------------------------------------------------------------------//
@@ -499,7 +499,13 @@ module xilinx_pcie4_uscale_ep # (
 //------------------------------------------------------------------------------------------------------------------//
 //                                      PIO Example Design Top Level                                                //
 //------------------------------------------------------------------------------------------------------------------//
-  pcie_app_uscale pcie_app_uscale_i (
+  pcie_app_uscale #(
+  .C_DATA_WIDTH        (C_DATA_WIDTH),
+  .AXI4_CQ_TUSER_WIDTH (AXI4_CQ_TUSER_WIDTH),
+  .AXI4_CC_TUSER_WIDTH (AXI4_CC_TUSER_WIDTH),
+  .AXI4_RQ_TUSER_WIDTH (AXI4_RQ_TUSER_WIDTH),
+  .AXI4_RC_TUSER_WIDTH (AXI4_RC_TUSER_WIDTH)
+  ) pcie_app_uscale_i (
     .user_clk                                       ( user_clk ),
     .user_reset                                     ( user_reset ),
     .user_lnk_up                                    ( user_lnk_up ),
