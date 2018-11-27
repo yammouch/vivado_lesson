@@ -419,6 +419,32 @@ begin
 end
 endtask
 
+task test1_long_payload;
+integer i;
+begin
+  for (i = 0; i < 1024; i = i+1) DATA_STORE[i] = i[7:0] + i[15:8];
+  TSK_TX_MEMORY_WRITE_32(DEFAULT_TAG, DEFAULT_TC, 11'd256,
+   32'd0, 4'h0, 4'hF, 1'b0);
+  DEFAULT_TAG = DEFAULT_TAG + 1;
+
+  TSK_TX_MEMORY_READ_32(DEFAULT_TAG, DEFAULT_TC, 11'd256,
+   32'd0, 4'h0, 4'hF);
+  DEFAULT_TAG = DEFAULT_TAG + 1;
+
+  for (i = 0; i < 1024; i = i+1) DATA_STORE[i] = ~(i[7:0] + i[15:8]);
+  TSK_TX_MEMORY_WRITE_32(DEFAULT_TAG, DEFAULT_TC, 11'd256,
+   32'd1024, 4'h0, 4'hF, 1'b0);
+  DEFAULT_TAG = DEFAULT_TAG + 1;
+
+  TSK_TX_MEMORY_READ_32(DEFAULT_TAG, DEFAULT_TC, 11'd256,
+   32'd1024, 4'h0, 4'hF);
+  DEFAULT_TAG = DEFAULT_TAG + 1;
+  TSK_WAIT_FOR_READ_DATA;
+
+  repeat (10) @(posedge user_clk);
+end
+endtask;
+
 task test_main;
 reg testError, te_tmp;
 begin
@@ -438,13 +464,13 @@ begin
     end
   end
 
-  if(testError==1'b0)
-  $display("[%t] : PASS - Test Completed Successfully",$realtime);
-
   if(testError==1'b1)
-  $display("[%t] : FAIL - Test FAILED due to previous error ",$realtime);
-
+    $display("[%t] : FAIL - Test FAILED due to previous error ",$realtime);
+  else
+    $display("[%t] : PASS - Test Completed Successfully",$realtime);
   $display("[%t] : Finished transmission of PCI-Express TLPs", $realtime);
+
+  test1_long_payload;
 end
 endtask
 
