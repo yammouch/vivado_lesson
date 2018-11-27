@@ -12,14 +12,14 @@
    </db_ref_list>
    <zoom_setting>
       <ZoomStartTime time="119031707000fs"></ZoomStartTime>
-      <ZoomEndTime time="119137807001fs"></ZoomEndTime>
+      <ZoomEndTime time="119104140655fs"></ZoomEndTime>
       <Cursor1Time time="119120107000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="399"></NameColumnWidth>
-      <ValueColumnWidth column_width="118"></ValueColumnWidth>
+      <ValueColumnWidth column_width="114"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="89" />
+   <WVObjectSize size="91" />
    <wvobject fp_name="/board/RP/tx_usrapp/BAR_INIT_P_BAR_RANGE" type="array">
       <obj_property name="ElementShortName">BAR_INIT_P_BAR_RANGE[6:0][31:0]</obj_property>
       <obj_property name="ObjectShortName">BAR_INIT_P_BAR_RANGE[6:0][31:0]</obj_property>
@@ -90,6 +90,16 @@
       <obj_property name="ElementShortName">AXISTEN_IF_RQ_ALIGNMENT_MODE[39:0]</obj_property>
       <obj_property name="ObjectShortName">AXISTEN_IF_RQ_ALIGNMENT_MODE[39:0]</obj_property>
       <obj_property name="Radix">ASCIIRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/board/RP/pcie_4_0_rport/cfg_max_payload" type="array">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">cfg_max_payload[1:0]</obj_property>
+      <obj_property name="ObjectShortName">cfg_max_payload[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/board/RP/pcie_4_0_rport/cfg_max_read_req" type="array">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">cfg_max_read_req[2:0]</obj_property>
+      <obj_property name="ObjectShortName">cfg_max_read_req[2:0]</obj_property>
    </wvobject>
    <wvobject fp_name="/board/EP/pcie4_uscale_plus_0_i/cfg_max_payload" type="array">
       <obj_property name="DisplayName">FullPathName</obj_property>
