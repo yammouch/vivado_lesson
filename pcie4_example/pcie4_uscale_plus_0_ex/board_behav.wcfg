@@ -11,15 +11,18 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="119031707000fs"></ZoomStartTime>
-      <ZoomEndTime time="119104140655fs"></ZoomEndTime>
-      <Cursor1Time time="119120107000fs"></Cursor1Time>
+      <ZoomStartTime time="121185381000fs"></ZoomStartTime>
+      <ZoomEndTime time="121232181001fs"></ZoomEndTime>
+      <Cursor1Time time="121250381000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="399"></NameColumnWidth>
-      <ValueColumnWidth column_width="114"></ValueColumnWidth>
+      <ValueColumnWidth column_width="110"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="91" />
+   <WVObjectSize size="101" />
+   <wave_markers>
+      <marker time="71937412000" label="" />
+   </wave_markers>
    <wvobject fp_name="/board/RP/tx_usrapp/BAR_INIT_P_BAR_RANGE" type="array">
       <obj_property name="ElementShortName">BAR_INIT_P_BAR_RANGE[6:0][31:0]</obj_property>
       <obj_property name="ObjectShortName">BAR_INIT_P_BAR_RANGE[6:0][31:0]</obj_property>
@@ -32,7 +35,48 @@
       <obj_property name="ElementShortName">BAR_INIT_P_BAR_ENABLED[6:0][1:0]</obj_property>
       <obj_property name="ObjectShortName">BAR_INIT_P_BAR_ENABLED[6:0][1:0]</obj_property>
    </wvobject>
+   <wvobject fp_name="/board/RP/pcie_4_0_rport/pcie_4_0_int_inst/mcap_clk" type="logic">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">mcap_clk</obj_property>
+      <obj_property name="ObjectShortName">mcap_clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/board/RP/pcie_4_0_rport/pcie_4_0_int_inst/core_clk" type="logic">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">core_clk</obj_property>
+      <obj_property name="ObjectShortName">core_clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/board/RP/pcie_4_0_rport/pcie_4_0_int_inst/pipe_clk" type="logic">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">pipe_clk</obj_property>
+      <obj_property name="ObjectShortName">pipe_clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/board/RP/pcie_4_0_rport/pcie_4_0_int_inst/sys_clk_gt" type="logic">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">sys_clk_gt</obj_property>
+      <obj_property name="ObjectShortName">sys_clk_gt</obj_property>
+   </wvobject>
+   <wvobject fp_name="/board/rp_pci_exp_txp[0]" type="logic">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">[0]</obj_property>
+      <obj_property name="ObjectShortName">[0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/board/rp_pci_exp_txn[0]" type="logic">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">[0]</obj_property>
+      <obj_property name="ObjectShortName">[0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/board/ep_pci_exp_txp[0]" type="logic">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">[0]</obj_property>
+      <obj_property name="ObjectShortName">[0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/board/ep_pci_exp_txn[0]" type="logic">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">[0]</obj_property>
+      <obj_property name="ObjectShortName">[0]</obj_property>
+   </wvobject>
    <wvobject fp_name="/board/RP/user_clk" type="logic">
+      <obj_property name="DisplayName">FullPathName</obj_property>
       <obj_property name="ElementShortName">user_clk</obj_property>
       <obj_property name="ObjectShortName">user_clk</obj_property>
    </wvobject>
@@ -115,6 +159,180 @@
       <obj_property name="DisplayName">FullPathName</obj_property>
       <obj_property name="ElementShortName">s_axis_rq_tdata[511:0]</obj_property>
       <obj_property name="ObjectShortName">s_axis_rq_tdata[511:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="vbus663" type="vbus">
+      <obj_property name="label">rp_write_len</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[74]" type="logic">
+         <obj_property name="ElementShortName">[74]</obj_property>
+         <obj_property name="ObjectShortName">[74]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[73]" type="logic">
+         <obj_property name="ElementShortName">[73]</obj_property>
+         <obj_property name="ObjectShortName">[73]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[72]" type="logic">
+         <obj_property name="ElementShortName">[72]</obj_property>
+         <obj_property name="ObjectShortName">[72]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[71]" type="logic">
+         <obj_property name="ElementShortName">[71]</obj_property>
+         <obj_property name="ObjectShortName">[71]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[70]" type="logic">
+         <obj_property name="ElementShortName">[70]</obj_property>
+         <obj_property name="ObjectShortName">[70]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[69]" type="logic">
+         <obj_property name="ElementShortName">[69]</obj_property>
+         <obj_property name="ObjectShortName">[69]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[68]" type="logic">
+         <obj_property name="ElementShortName">[68]</obj_property>
+         <obj_property name="ObjectShortName">[68]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[67]" type="logic">
+         <obj_property name="ElementShortName">[67]</obj_property>
+         <obj_property name="ObjectShortName">[67]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[66]" type="logic">
+         <obj_property name="ElementShortName">[66]</obj_property>
+         <obj_property name="ObjectShortName">[66]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[65]" type="logic">
+         <obj_property name="ElementShortName">[65]</obj_property>
+         <obj_property name="ObjectShortName">[65]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[64]" type="logic">
+         <obj_property name="ElementShortName">[64]</obj_property>
+         <obj_property name="ObjectShortName">[64]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="vbus632" type="vbus">
+      <obj_property name="label">rp_write_addr</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[31]" type="logic">
+         <obj_property name="ElementShortName">[31]</obj_property>
+         <obj_property name="ObjectShortName">[31]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[30]" type="logic">
+         <obj_property name="ElementShortName">[30]</obj_property>
+         <obj_property name="ObjectShortName">[30]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[29]" type="logic">
+         <obj_property name="ElementShortName">[29]</obj_property>
+         <obj_property name="ObjectShortName">[29]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[28]" type="logic">
+         <obj_property name="ElementShortName">[28]</obj_property>
+         <obj_property name="ObjectShortName">[28]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[27]" type="logic">
+         <obj_property name="ElementShortName">[27]</obj_property>
+         <obj_property name="ObjectShortName">[27]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[26]" type="logic">
+         <obj_property name="ElementShortName">[26]</obj_property>
+         <obj_property name="ObjectShortName">[26]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[25]" type="logic">
+         <obj_property name="ElementShortName">[25]</obj_property>
+         <obj_property name="ObjectShortName">[25]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[24]" type="logic">
+         <obj_property name="ElementShortName">[24]</obj_property>
+         <obj_property name="ObjectShortName">[24]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[23]" type="logic">
+         <obj_property name="ElementShortName">[23]</obj_property>
+         <obj_property name="ObjectShortName">[23]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[22]" type="logic">
+         <obj_property name="ElementShortName">[22]</obj_property>
+         <obj_property name="ObjectShortName">[22]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[21]" type="logic">
+         <obj_property name="ElementShortName">[21]</obj_property>
+         <obj_property name="ObjectShortName">[21]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[20]" type="logic">
+         <obj_property name="ElementShortName">[20]</obj_property>
+         <obj_property name="ObjectShortName">[20]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[19]" type="logic">
+         <obj_property name="ElementShortName">[19]</obj_property>
+         <obj_property name="ObjectShortName">[19]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[18]" type="logic">
+         <obj_property name="ElementShortName">[18]</obj_property>
+         <obj_property name="ObjectShortName">[18]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[17]" type="logic">
+         <obj_property name="ElementShortName">[17]</obj_property>
+         <obj_property name="ObjectShortName">[17]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[16]" type="logic">
+         <obj_property name="ElementShortName">[16]</obj_property>
+         <obj_property name="ObjectShortName">[16]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[15]" type="logic">
+         <obj_property name="ElementShortName">[15]</obj_property>
+         <obj_property name="ObjectShortName">[15]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[14]" type="logic">
+         <obj_property name="ElementShortName">[14]</obj_property>
+         <obj_property name="ObjectShortName">[14]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[13]" type="logic">
+         <obj_property name="ElementShortName">[13]</obj_property>
+         <obj_property name="ObjectShortName">[13]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[12]" type="logic">
+         <obj_property name="ElementShortName">[12]</obj_property>
+         <obj_property name="ObjectShortName">[12]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[11]" type="logic">
+         <obj_property name="ElementShortName">[11]</obj_property>
+         <obj_property name="ObjectShortName">[11]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[10]" type="logic">
+         <obj_property name="ElementShortName">[10]</obj_property>
+         <obj_property name="ObjectShortName">[10]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[9]" type="logic">
+         <obj_property name="ElementShortName">[9]</obj_property>
+         <obj_property name="ObjectShortName">[9]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[8]" type="logic">
+         <obj_property name="ElementShortName">[8]</obj_property>
+         <obj_property name="ObjectShortName">[8]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[7]" type="logic">
+         <obj_property name="ElementShortName">[7]</obj_property>
+         <obj_property name="ObjectShortName">[7]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[6]" type="logic">
+         <obj_property name="ElementShortName">[6]</obj_property>
+         <obj_property name="ObjectShortName">[6]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[5]" type="logic">
+         <obj_property name="ElementShortName">[5]</obj_property>
+         <obj_property name="ObjectShortName">[5]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[4]" type="logic">
+         <obj_property name="ElementShortName">[4]</obj_property>
+         <obj_property name="ObjectShortName">[4]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[3]" type="logic">
+         <obj_property name="ElementShortName">[3]</obj_property>
+         <obj_property name="ObjectShortName">[3]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tdata[2]" type="logic">
+         <obj_property name="ElementShortName">[2]</obj_property>
+         <obj_property name="ObjectShortName">[2]</obj_property>
+      </wvobject>
    </wvobject>
    <wvobject fp_name="/board/RP/pcie_4_0_rport/s_axis_rq_tkeep" type="array">
       <obj_property name="DisplayName">FullPathName</obj_property>
