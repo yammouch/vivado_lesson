@@ -112,7 +112,73 @@ module board;
   wire  [(LINK_WIDTH-1):0]  rp_pci_exp_txp;
   wire  [14:0] rp_txn;
   wire  [14:0] rp_txp;
+
+  wire  ep_pci_exp_txn_0 , ep_pci_exp_txp_0 ;
+  wire  ep_pci_exp_txn_1 , ep_pci_exp_txp_1 ;
+  wire  ep_pci_exp_txn_2 , ep_pci_exp_txp_2 ;
+  wire  ep_pci_exp_txn_3 , ep_pci_exp_txp_3 ;
+  wire  ep_pci_exp_txn_4 , ep_pci_exp_txp_4 ;
+  wire  ep_pci_exp_txn_5 , ep_pci_exp_txp_5 ;
+  wire  ep_pci_exp_txn_6 , ep_pci_exp_txp_6 ;
+  wire  ep_pci_exp_txn_7 , ep_pci_exp_txp_7 ;
+  wire  ep_pci_exp_txn_8 , ep_pci_exp_txp_8 ;
+  wire  ep_pci_exp_txn_9 , ep_pci_exp_txp_9 ;
+  wire  ep_pci_exp_txn_10, ep_pci_exp_txp_10;
+  wire  ep_pci_exp_txn_11, ep_pci_exp_txp_11;
+  wire  ep_pci_exp_txn_12, ep_pci_exp_txp_12;
+  wire  ep_pci_exp_txn_13, ep_pci_exp_txp_13;
+  wire  ep_pci_exp_txn_14, ep_pci_exp_txp_14;
+  wire  ep_pci_exp_txn_15, ep_pci_exp_txp_15;
+
+  wire  rp_pci_exp_txn_0 , rp_pci_exp_txp_0 ;
+  wire  rp_pci_exp_txn_1 , rp_pci_exp_txp_1 ;
+  wire  rp_pci_exp_txn_2 , rp_pci_exp_txp_2 ;
+  wire  rp_pci_exp_txn_3 , rp_pci_exp_txp_3 ;
+  wire  rp_pci_exp_txn_4 , rp_pci_exp_txp_4 ;
+  wire  rp_pci_exp_txn_5 , rp_pci_exp_txp_5 ;
+  wire  rp_pci_exp_txn_6 , rp_pci_exp_txp_6 ;
+  wire  rp_pci_exp_txn_7 , rp_pci_exp_txp_7 ;
+  wire  rp_pci_exp_txn_8 , rp_pci_exp_txp_8 ;
+  wire  rp_pci_exp_txn_9 , rp_pci_exp_txp_9 ;
+  wire  rp_pci_exp_txn_10, rp_pci_exp_txp_10;
+  wire  rp_pci_exp_txn_11, rp_pci_exp_txp_11;
+  wire  rp_pci_exp_txn_12, rp_pci_exp_txp_12;
+  wire  rp_pci_exp_txn_13, rp_pci_exp_txp_13;
+  wire  rp_pci_exp_txn_14, rp_pci_exp_txp_14;
+  wire  rp_pci_exp_txn_15, rp_pci_exp_txp_15;
  
+  assign { ep_pci_exp_txn_15, ep_pci_exp_txn_14
+         , ep_pci_exp_txn_13, ep_pci_exp_txn_12 
+         , ep_pci_exp_txn_11, ep_pci_exp_txn_10 
+         , ep_pci_exp_txn_9 , ep_pci_exp_txn_8
+         , ep_pci_exp_txn_7 , ep_pci_exp_txn_6
+         , ep_pci_exp_txn_5 , ep_pci_exp_txn_4
+         , ep_pci_exp_txn_3 , ep_pci_exp_txn_2
+         , ep_pci_exp_txn_1 , ep_pci_exp_txn_0 } = ep_pci_exp_txn;
+  assign { ep_pci_exp_txp_15, ep_pci_exp_txp_14 
+         , ep_pci_exp_txp_13, ep_pci_exp_txp_12 
+         , ep_pci_exp_txp_11, ep_pci_exp_txp_10 
+         , ep_pci_exp_txp_9 , ep_pci_exp_txp_8
+         , ep_pci_exp_txp_7 , ep_pci_exp_txp_6
+         , ep_pci_exp_txp_5 , ep_pci_exp_txp_4
+         , ep_pci_exp_txp_3 , ep_pci_exp_txp_2
+         , ep_pci_exp_txp_1 , ep_pci_exp_txp_0 } = ep_pci_exp_txn;
+  assign { rp_pci_exp_txn_15, rp_pci_exp_txn_14 
+         , rp_pci_exp_txn_13, rp_pci_exp_txn_12 
+         , rp_pci_exp_txn_11, rp_pci_exp_txn_10 
+         , rp_pci_exp_txn_9 , rp_pci_exp_txn_8
+         , rp_pci_exp_txn_7 , rp_pci_exp_txn_6
+         , rp_pci_exp_txn_5 , rp_pci_exp_txn_4
+         , rp_pci_exp_txn_3 , rp_pci_exp_txn_2
+         , rp_pci_exp_txn_1 , rp_pci_exp_txn_0 } = ep_pci_exp_txn;
+  assign { rp_pci_exp_txp_15, rp_pci_exp_txp_14 
+         , rp_pci_exp_txp_13, rp_pci_exp_txp_12 
+         , rp_pci_exp_txp_11, rp_pci_exp_txp_10 
+         , rp_pci_exp_txp_9 , rp_pci_exp_txp_8
+         , rp_pci_exp_txp_7 , rp_pci_exp_txp_6
+         , rp_pci_exp_txp_5 , rp_pci_exp_txp_4
+         , rp_pci_exp_txp_3 , rp_pci_exp_txp_2
+         , rp_pci_exp_txp_1 , rp_pci_exp_txp_0 } = ep_pci_exp_txn;
 
   sys_clk_gen_ds # (
     .halfcycle(REF_CLK_HALF_CYCLE),
@@ -137,6 +203,40 @@ module board;
   // Generate system-level reset
   //------------------------------------------------------------------------------//
   initial begin
+    $dumpfile("pcie_serial.vcd");
+    $dumpvars(1
+         , ep_pci_exp_txn_15, ep_pci_exp_txn_14
+         , ep_pci_exp_txn_13, ep_pci_exp_txn_12 
+         , ep_pci_exp_txn_11, ep_pci_exp_txn_10 
+         , ep_pci_exp_txn_9 , ep_pci_exp_txn_8
+         , ep_pci_exp_txn_7 , ep_pci_exp_txn_6
+         , ep_pci_exp_txn_5 , ep_pci_exp_txn_4
+         , ep_pci_exp_txn_3 , ep_pci_exp_txn_2
+         , ep_pci_exp_txn_1 , ep_pci_exp_txn_0
+         , ep_pci_exp_txp_15, ep_pci_exp_txp_14 
+         , ep_pci_exp_txp_13, ep_pci_exp_txp_12 
+         , ep_pci_exp_txp_11, ep_pci_exp_txp_10 
+         , ep_pci_exp_txp_9 , ep_pci_exp_txp_8
+         , ep_pci_exp_txp_7 , ep_pci_exp_txp_6
+         , ep_pci_exp_txp_5 , ep_pci_exp_txp_4
+         , ep_pci_exp_txp_3 , ep_pci_exp_txp_2
+         , ep_pci_exp_txp_1 , ep_pci_exp_txp_0
+         , rp_pci_exp_txn_15, rp_pci_exp_txn_14 
+         , rp_pci_exp_txn_13, rp_pci_exp_txn_12 
+         , rp_pci_exp_txn_11, rp_pci_exp_txn_10 
+         , rp_pci_exp_txn_9 , rp_pci_exp_txn_8
+         , rp_pci_exp_txn_7 , rp_pci_exp_txn_6
+         , rp_pci_exp_txn_5 , rp_pci_exp_txn_4
+         , rp_pci_exp_txn_3 , rp_pci_exp_txn_2
+         , rp_pci_exp_txn_1 , rp_pci_exp_txn_0
+         , rp_pci_exp_txp_15, rp_pci_exp_txp_14 
+         , rp_pci_exp_txp_13, rp_pci_exp_txp_12 
+         , rp_pci_exp_txp_11, rp_pci_exp_txp_10 
+         , rp_pci_exp_txp_9 , rp_pci_exp_txp_8
+         , rp_pci_exp_txp_7 , rp_pci_exp_txp_6
+         , rp_pci_exp_txp_5 , rp_pci_exp_txp_4
+         , rp_pci_exp_txp_3 , rp_pci_exp_txp_2
+         , rp_pci_exp_txp_1 , rp_pci_exp_txp_0 );
     $display("[%t] : System Reset Is Asserted...", $realtime);
     sys_rst_n = 1'b0;
     repeat (500) @(posedge rp_sys_clk_p);
