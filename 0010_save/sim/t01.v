@@ -1,9 +1,9 @@
-^timescale 1ps/1ps
+`timescale 1ps/1ps
 
 module tb;
 
 reg  rstn;
-reg  clk
+reg  clk;
 reg  clk_en;
 reg  clr;
 time hi_period, lo_period;
@@ -33,7 +33,7 @@ initial begin
   rstn = 1'b1;
   repeat (4) @(negedge clk);
   $save("snapshot");
-  $finish;
+  clk_en = 1'b0;
 end
 
 endmodule
