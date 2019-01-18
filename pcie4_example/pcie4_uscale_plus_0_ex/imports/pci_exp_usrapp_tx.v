@@ -420,27 +420,16 @@ end
 endtask
 
 task test1_long_payload;
-integer i;
+integer i, j, ii;
 begin
+  ii = 0;
   for (i = 0; i < 1024; i = i+1) DATA_STORE[i] = i[7:0] + i[15:8];
-  TSK_TX_MEMORY_WRITE_32(DEFAULT_TAG, DEFAULT_TC, 11'd256,
-   32'd0, 4'h0, 4'hF, 1'b0);
-  DEFAULT_TAG = DEFAULT_TAG + 1;
-
-  TSK_TX_MEMORY_READ_32(DEFAULT_TAG, DEFAULT_TC, 11'd256,
-   32'd0, 4'h0, 4'hF);
-  DEFAULT_TAG = DEFAULT_TAG + 1;
-
-  for (i = 0; i < 1024; i = i+1) DATA_STORE[i] = ~(i[7:0] + i[15:8]);
-  TSK_TX_MEMORY_WRITE_32(DEFAULT_TAG, DEFAULT_TC, 11'd256,
-   32'd1024, 4'h0, 4'hF, 1'b0);
-  DEFAULT_TAG = DEFAULT_TAG + 1;
-
-  TSK_TX_MEMORY_READ_32(DEFAULT_TAG, DEFAULT_TC, 11'd256,
-   32'd1024, 4'h0, 4'hF);
-  DEFAULT_TAG = DEFAULT_TAG + 1;
-  TSK_WAIT_FOR_READ_DATA;
-
+  repeat (10) begin
+    TSK_TX_MEMORY_WRITE_32(DEFAULT_TAG, DEFAULT_TC, 11'd100,
+     BAR_INIT_P_BAR[ii][31:0]+8'h20+(ii*8'h40), 4'hF, 4'hF, 1'b0);
+    DEFAULT_TAG = DEFAULT_TAG + 1;
+    repeat (2) @(posedge user_clk);
+  end
   repeat (10) @(posedge user_clk);
 end
 endtask;
