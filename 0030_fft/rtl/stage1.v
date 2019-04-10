@@ -21,4 +21,17 @@ always @(posedge clk)
    && cnt[0])
     mem_rd <= mem[{~cnt[CBW-1], cnt[CBW-2:1]} + 1]
 
+wire [2*DBW-1:0] dout_half;
+halfrate halfrate_i #( .DBW(2*DBW), .CBW(CBW) ) (
+ .clk  (clk),
+ .cnt  (cnt),
+ .din  (din),
+ .dout (dout_half) );
+
+wire [4*DBW-1:0] prod;
+cmplxmul cmplxmul_i #( .DBW(DBW) ) (
+ .op1  (table_rd), // table_rd is needed be defined.
+ .op2  (dout_half),
+ .prod (prod) );
+
 endmodule
