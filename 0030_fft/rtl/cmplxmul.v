@@ -4,7 +4,7 @@ module cmplxmul #(
  input  [2*DBW-1:0] op1,
  input  [2*DBW-1:0] op2,
  output [4*DBW-1:0] prod
-)
+);
 
 wire signed [  DBW-1:0] op1_re, op1_im, op2_re, op2_im;
 wire signed [2*DBW-1:0] prod_re, prod_im;

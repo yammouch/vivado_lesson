@@ -1,8 +1,7 @@
-wire clk;
-reg  rstx;
-reg  clear;
-reg  din;
-reg  dout;
+wire       clk;
+reg        rstx;
+reg        clear;
+reg  [3:0] din;
 
 tb_clk_gen cg(.clk(clk));
 

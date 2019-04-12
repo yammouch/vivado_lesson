@@ -15,7 +15,7 @@ always @(posedge clk or negedge rstx)
 
 wire [2*DBW-1:0] dout_1, dout_2;
 
-stage1 stage1_1 #(.DBW(DBW), .CBW(CBW)) (
+stage1 #(.DBW(DBW), .CBW(CBW)) stage1_1 (
  .clk    (clk),
  .cnt    (cnt),
  .trigon ({ 4'b0000, 4'b0100
@@ -25,7 +25,7 @@ stage1 stage1_1 #(.DBW(DBW), .CBW(CBW)) (
  .din    ({{DBW{1'b0}}, din}),
  .dout   (dout_1) );
 
-stage1 stage1_2 #(.DBW(DBW), .CBW(CBW)) (
+stage1 #(.DBW(DBW), .CBW(CBW)) stage1_2 (
  .clk    (clk),
  .cnt    ({^cnt[CBW-1], cnt[CBW-2:0]}),
  .trigon ({ 4'b0000, 4'b0100
@@ -35,7 +35,7 @@ stage1 stage1_2 #(.DBW(DBW), .CBW(CBW)) (
  .din    (dout_1),
  .dout   (dout_2) );
 
-stage1 stage1_3 #(.DBW(DBW), .CBW(CBW)) (
+stage1 #(.DBW(DBW), .CBW(CBW)) stage1_3 (
  .clk    (clk),
  .cnt    (cnt),
  .trigon ({ 4'b0000, 4'b0100
