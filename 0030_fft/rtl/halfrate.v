@@ -2,7 +2,6 @@ module halfrate #(
  parameter DBW = 3,
  parameter CBW = 3 ) (
  input                clk,
- input                rstx,
  input      [CBW-1:0] cnt,
  input      [DBW-1:0] din,
  output reg [DBW-1:0] dout );
