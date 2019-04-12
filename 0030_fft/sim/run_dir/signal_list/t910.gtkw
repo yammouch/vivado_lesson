@@ -1,12 +1,12 @@
 [*]
 [*] GTKWave Analyzer v3.3.71 (w)1999-2016 BSI
-[*] Fri Apr 12 11:20:44 2019
+[*] Fri Apr 12 11:48:18 2019
 [*]
 [dumpfile] "C:\Users\nomus\Documents\deve\vivado_lesson\0030_fft\sim\run_dir\result\t910.vcd"
-[dumpfile_mtime] "Fri Apr 12 11:20:41 2019"
-[dumpfile_size] 19132
+[dumpfile_mtime] "Fri Apr 12 11:43:57 2019"
+[dumpfile_size] 19074
 [savefile] "C:\Users\nomus\Documents\deve\vivado_lesson\0030_fft\sim\run_dir\signal_list\t910.gtkw"
-[timestart] 335000
+[timestart] 801000
 [size] 1360 848
 [pos] -1 -1
 *-18.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
@@ -30,14 +30,26 @@ tb.dut.dout_1[7:0]
 tb.dut.dout_2[7:0]
 tb.dut.dout[7:0]
 @200
+-stage1_3
+@22
+tb.dut.stage1_3.cnt[2:0]
+tb.dut.stage1_3.dout_half[7:0]
+tb.dut.stage1_3.trigon1[7:0]
+tb.dut.stage1_3.prod[15:0]
+@23
+tb.dut.stage1_3.mem_rd[7:0]
+@22
+tb.dut.stage1_3.sum_re[8:0]
+tb.dut.stage1_3.sum_im[8:0]
+tb.dut.stage1_3.sum_re_round[5:0]
+tb.dut.stage1_3.sum_im_round[6:0]
+@200
 -stage1_2
 @22
 tb.dut.stage1_2.cnt[2:0]
 tb.dut.stage1_2.mem_rd[7:0]
 tb.dut.stage1_2.dout_half[7:0]
-@23
 tb.dut.stage1_2.trigon1[7:0]
-@22
 tb.dut.stage1_2.prod[15:0]
 tb.dut.stage1_2.sum_re[8:0]
 tb.dut.stage1_2.sum_im[8:0]

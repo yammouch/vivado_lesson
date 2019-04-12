@@ -14,8 +14,8 @@ function [DBW*2:0] addsub(
  input             sub);
 // s1.DBW-2 + s3.DBW*2-4 -> s4.DBW*2-4
   addsub
-   = {{(DBW-FBW){din1[DBW-1]}}, din1[DBW-1:0], {(FBW){1'b0}}}
-   + ({(2*DBW+1){sub}} ^ {din2[2*DBW-1], din2[2*DBW-1:0]})
+   = {{(DBW-FBW+1){din1[DBW-1]}}, din1, {(FBW){1'b0}}}
+   + ({(2*DBW+1){sub}} ^ {din2[2*DBW-1], din2})
    + {{(2*DBW){1'b0}}, sub};
 endfunction
 
