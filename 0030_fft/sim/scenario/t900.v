@@ -12,7 +12,7 @@ begin
   repeat (4) @(negedge clk);
   rstx = 1'b1;
   repeat (4) @(negedge clk);
-  clear = 1'b1;
+  clear = 1'b0;
   repeat (64) @(negedge clk);
   cg.en = 1'b0;
 end

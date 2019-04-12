@@ -35,13 +35,22 @@ endfunction
 
 reg [2*DBW-1:0] mem [(1<<(CBW-1))-1:0];
 reg [2*DBW-1:0] mem_rd;
+wire [CBW-2:0] mem_raddr
+ = {~cnt[CBW-1], cnt[CBW-2:1]} + {{(CBW-2){1'b0}}, 1'b1};
+//wire mem_rden
+ //=  cnt[CBW-1:1] >= {1'b0, {(CBW-2){1'b1}}}
+ //&& cnt[CBW-1:1] <  {(CBW-1){1'b1}}
+ //&& cnt[0];
 always @(posedge clk)
   if (!cnt[CBW-1]) mem[cnt[CBW-2:0]] <= din;
 always @(posedge clk)
-  if (cnt[CBW-1:1] >= {1'b0, {(CBW-2){1'b1}}}
-   && cnt[CBW-1:1] <  {(CBW-1){1'b1}}
-   && cnt[0])
-    mem_rd <= mem[{~cnt[CBW-1], cnt[CBW-2:1]} + 1];
+  //if (cnt[CBW-1:1] >= {1'b0, {(CBW-2){1'b1}}}
+  // && cnt[CBW-1:1] <  {(CBW-1){1'b1}}
+  // && cnt[0])
+  //if (mem_rden)
+  if (cnt[0])
+    //mem_rd <= mem[{~cnt[CBW-1], cnt[CBW-2:1]} + {{(CBW-2){1'b0}}, 1'b1}];
+    mem_rd <= mem[mem_raddr];
 
 wire [2*DBW-1:0] dout_half;
 halfrate #( .DBW(2*DBW), .CBW(CBW) ) halfrate_i (

@@ -1,21 +1,22 @@
 [*]
 [*] GTKWave Analyzer v3.3.71 (w)1999-2016 BSI
-[*] Fri Apr 12 09:18:38 2019
+[*] Fri Apr 12 09:46:53 2019
 [*]
 [dumpfile] "C:\Users\nomus\Documents\deve\vivado_lesson\0030_fft\sim\run_dir\result\t900.vcd"
-[dumpfile_mtime] "Fri Apr 12 09:17:33 2019"
-[dumpfile_size] 16385
+[dumpfile_mtime] "Fri Apr 12 09:46:50 2019"
+[dumpfile_size] 19803
 [savefile] "C:\Users\nomus\Documents\deve\vivado_lesson\0030_fft\sim\run_dir\signal_list\t900.gtkw"
 [timestart] 0
-[size] 1342 861
-[pos] 2638 -250
+[size] 1360 848
+[pos] -1 -1
 *-18.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb.
 [treeopen] tb.dut.
+[treeopen] tb.dut.stage1_1.
 [sst_width] 211
-[signals_width] 122
+[signals_width] 142
 [sst_expanded] 1
-[sst_vpaned_height] 522
+[sst_vpaned_height] 332
 @28
 tb.clk
 tb.rstx
@@ -25,7 +26,32 @@ tb.dut.cnt[2:0]
 tb.din[3:0]
 tb.dut.dout_1[7:0]
 tb.dut.dout_2[7:0]
-@23
 tb.dut.dout[7:0]
+@200
+-stage1_1
+@22
+tb.dut.stage1_1.cnt[2:0]
+tb.dut.stage1_1.din[7:0]
+@28
+tb.dut.stage1_1.mem_raddr[1:0]
+@22
+tb.dut.stage1_1.mem_rd[7:0]
+tb.dut.stage1_1.dout_half[7:0]
+@200
+-halfrate_1
+@22
+tb.dut.stage1_1.halfrate_i.cnt[2:0]
+tb.dut.stage1_1.halfrate_i.cnt_half[2:0]
+tb.dut.stage1_1.halfrate_i.din[7:0]
+tb.dut.stage1_1.halfrate_i.din_d1[7:0]
+@28
+tb.dut.stage1_1.halfrate_i.mem_waddr[1:0]
+@29
+tb.dut.stage1_1.halfrate_i.mem_wren
+@28
+tb.dut.stage1_1.halfrate_i.mem_raddr[1:0]
+tb.dut.stage1_1.halfrate_i.mem_rden
+@22
+tb.dut.stage1_1.halfrate_i.mem_rd[7:0]
 [pattern_trace] 1
 [pattern_trace] 0
