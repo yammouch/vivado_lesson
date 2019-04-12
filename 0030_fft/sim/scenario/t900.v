@@ -19,6 +19,8 @@ end
 endtask
 
 initial begin
+  $dumpfile("result/t900.vcd");
+  $dumpvars;
   test_main;
 end
 
