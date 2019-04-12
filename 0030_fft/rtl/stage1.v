@@ -1,6 +1,7 @@
 module stage1 #(
  parameter DBW = 4,
- parameter CBW = 3 ) (
+ parameter CBW = 3,
+ parameter FBW = 2 ) (
  input                           clk,
  input  [               CBW-1:0] cnt,
  input  [2*DBW*(1<<(CBW-1))-1:0] trigon,
@@ -13,7 +14,7 @@ function [DBW*2:0] addsub(
  input             sub);
 // s1.DBW-2 + s3.DBW*2-4 -> s4.DBW*2-4
   addsub
-   = {din1[DBW-1], din1[DBW-1:0], {(DBW){1'b0}}}
+   = {{(DBW-FBW){din1[DBW-1]}}, din1[DBW-1:0], {(FBW){1'b0}}}
    + ({(2*DBW+1){sub}} ^ {din2[2*DBW-1], din2[2*DBW-1:0]})
    + {{(2*DBW){1'b0}}, sub};
 endfunction
@@ -66,12 +67,13 @@ cmplxmul #( .DBW(DBW) ) cmplxmul_i (
  .op2  (dout_half),
  .prod (prod) );
 
-wire [2*DBW:0] sum_im = addsub(din[2*DBW-1:DBW], prod[4*DBW-1:2*DBW], cnt[0]);
-// ^-- s4.DBW*2-4
+wire [2*DBW:0] sum_im
+ = addsub(mem_rd[2*DBW-1:DBW], prod[4*DBW-1:2*DBW], cnt[0]); // ^-- s4.DBW*2-4
 wire [DBW+2:0] sum_im_round = round(sum_im); // s5.DBW-3
 assign dout[2*DBW-1:DBW] = clip(sum_im_round); // s2.DBW-3
 
-wire [2*DBW:0] sum_re = addsub(din[DBW-1:0], prod[2*DBW-1:0], ~cnt[0]);
+wire [2*DBW:0] sum_re
+ = addsub(mem_rd[DBW-1:0], prod[2*DBW-1:0], cnt[0]);
 wire [DBW+1:0] sum_re_round = round(sum_re);
 assign dout[DBW-1:0] = clip(sum_re_round);
 
