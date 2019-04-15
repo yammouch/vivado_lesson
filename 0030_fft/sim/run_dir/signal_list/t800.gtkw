@@ -1,0 +1,32 @@
+[*]
+[*] GTKWave Analyzer v3.3.71 (w)1999-2016 BSI
+[*] Mon Apr 15 11:13:11 2019
+[*]
+[dumpfile] "C:\Users\nomus\Documents\deve\vivado_lesson\0030_fft\sim\run_dir\result\t800.vcd"
+[dumpfile_mtime] "Mon Apr 15 11:10:17 2019"
+[dumpfile_size] 22476
+[savefile] "C:\Users\nomus\Documents\deve\vivado_lesson\0030_fft\sim\run_dir\signal_list\t800.gtkw"
+[timestart] 346000
+[size] 1304 828
+[pos] 72 29
+*-18.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] tb.
+[treeopen] tb.dut.
+[sst_width] 211
+[signals_width] 166
+[sst_expanded] 1
+[sst_vpaned_height] 367
+@28
+tb.rstx
+tb.clear
+tb.clk
+@22
+tb.dut.din[7:0]
+tb.dut.dout_1[15:0]
+tb.dut.dout_2[15:0]
+tb.dut.dout[15:0]
+@420
+tb.dout_re[7:0]
+tb.dout_im[7:0]
+[pattern_trace] 1
+[pattern_trace] 0

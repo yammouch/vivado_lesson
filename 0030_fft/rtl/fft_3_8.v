@@ -1,4 +1,4 @@
-module fft_3 #(
+module fft_3_8 #(
  parameter DBW = 8,
  parameter CBW = 3) (
  input              clk,

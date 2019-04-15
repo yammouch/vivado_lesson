@@ -5,6 +5,10 @@ module tb;
 `include "inst_fft_3_8.v"
 `include "tasks.v"
 
+wire [7:0] dout_re, dout_im;
+assign dout_re = dut.dout[ 7:0];
+assign dout_im = dut.dout[15:8];
+
 task test_main;
 begin
   init; #50_000;
