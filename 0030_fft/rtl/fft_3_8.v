@@ -28,9 +28,9 @@ stage1 #(.DBW(DBW), .CBW(CBW), .FBW(6)) stage1_1 (
 stage1 #(.DBW(DBW), .CBW(CBW), .FBW(6)) stage1_2 (
  .clk    (clk),
  .cnt    ({~cnt[CBW-1], cnt[CBW-2:0]}),
- .trigon ({ 8'h40, 8'h00
+ .trigon ({ 8'hC0, 8'h00
           , 8'h00, 8'h40
-          , 8'h40, 8'h00
+          , 8'hC0, 8'h00
           , 8'h00, 8'h40 }),
  .din    (dout_1),
  .dout   (dout_2) );
@@ -38,9 +38,9 @@ stage1 #(.DBW(DBW), .CBW(CBW), .FBW(6)) stage1_2 (
 stage1 #(.DBW(DBW), .CBW(CBW), .FBW(6)) stage1_3 (
  .clk    (clk),
  .cnt    (cnt),
- .trigon ({ 8'h2D, 8'hD3
-          , 8'h2D, 8'h2D
-          , 8'h40, 8'h00
+ .trigon ({ 8'hD3, 8'hD3
+          , 8'hD3, 8'h2D
+          , 8'hC0, 8'h00
           , 8'h00, 8'h40 }),
  .din    (dout_2),
  .dout   (dout) );

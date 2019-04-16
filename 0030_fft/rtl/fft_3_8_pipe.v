@@ -31,9 +31,9 @@ always @(posedge clk) dout_1_d <= dout_1;
 stage1 #(.DBW(DBW), .CBW(CBW), .FBW(6)) stage1_2 (
  .clk    (clk),
  .cnt    (cnt + 3'd5),
- .trigon ({ 8'h40, 8'h00
+ .trigon ({ 8'hC0, 8'h00
           , 8'h00, 8'h40
-          , 8'h40, 8'h00
+          , 8'hC0, 8'h00
           , 8'h00, 8'h40 }),
  .din    (dout_1_d),
  .dout   (dout_2) );
@@ -44,9 +44,9 @@ always @(posedge clk) dout_2_d <= dout_2;
 stage1 #(.DBW(DBW), .CBW(CBW), .FBW(6)) stage1_3 (
  .clk    (clk),
  .cnt    (cnt + 3'd2),
- .trigon ({ 8'h2D, 8'hD3
-          , 8'h2D, 8'h2D
-          , 8'h40, 8'h00
+ .trigon ({ 8'hD3, 8'hD3
+          , 8'hD3, 8'h2D
+          , 8'hC0, 8'h00
           , 8'h00, 8'h40 }),
  .din    (dout_2_d),
  .dout   (dout_pre) );
