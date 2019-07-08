@@ -15,7 +15,13 @@ syn_top dut (
  .dout_2 (),
  .dout_3 () );
 
+CHello ch;
+
 initial begin
+  ch = new();
+  ch.data = ~4'd0;
+  ch.show();
+
   din = 4'd0;
   repeat (20) begin
     clk = 1'b0; #1e6;
