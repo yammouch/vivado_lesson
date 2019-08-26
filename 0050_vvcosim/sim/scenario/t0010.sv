@@ -1,16 +1,24 @@
 `timescale 1ps/1ps
 
+module t0010;
+
 `include "inst.svh"
 
 task test1;
 logic [3:0] data [$];
+//logic [3:0] data [4];
 begin
-  data = new();
+  //data = new();
   data.push_back(4'd0);
   data.push_back(4'd1);
   data.push_back(4'd2);
   data.push_back(4'd3);
   for (int i = 0; i < data.size(); i++) begin
+  //data[0] = 4'd0;
+  //data[1] = 4'd1;
+  //data[2] = 4'd2;
+  //data[3] = 4'd3;
+  //for (int i = 0; i < 4; i++) begin
     @(negedge clk) din = data[i];
   end
 end
@@ -27,8 +35,11 @@ begin
   test1();
   cg.en = 1'b0;
 end
-endtask;
+endtask
 
 initial begin
   main_loop;
 end
+
+endmodule
+

@@ -1,6 +1,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.numeric.all;
+use ieee.numeric_std.all;
 
 entity add1 is
   port (
@@ -14,7 +14,7 @@ end entity;
 architecture rtl of add1 is
   signal dout_r : std_logic_vector(3 downto 0);
 begin
-  process (clk, reset) begin
+  process (clk, rstx) begin
     if rstx = '0' then
       dout_r <= (others => '0');
     else
