@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric.all;
 
-entity dut is
+entity add1 is
   port (
    clk  : in  std_logic;
    rstx : in  std_logic;
@@ -11,7 +11,7 @@ entity dut is
   );
 end entity;
 
-architecture rtl of dut is
+architecture rtl of add1 is
   signal dout_r : std_logic_vector(3 downto 0);
 begin
   process (clk, reset) begin
