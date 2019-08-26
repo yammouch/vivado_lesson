@@ -14,10 +14,12 @@ end entity;
 architecture rtl of add1 is
   signal dout_r : std_logic_vector(3 downto 0);
 begin
+  dout <= dout_r;
+
   process (clk, rstx) begin
     if rstx = '0' then
       dout_r <= (others => '0');
-    else
+    elsif clk = '1' and clk'event then
       dout_r <= std_logic_vector(unsigned(din) + 1);
     end if;
   end process;

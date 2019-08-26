@@ -8,19 +8,14 @@ task test1;
 logic [3:0] data [$];
 //logic [3:0] data [4];
 begin
-  //data = new();
-  data.push_back(4'd0);
-  data.push_back(4'd1);
-  data.push_back(4'd2);
-  data.push_back(4'd3);
+  data.push_back(4'hD);
+  data.push_back(4'hC);
+  data.push_back(4'hB);
+  data.push_back(4'hA);
   for (int i = 0; i < data.size(); i++) begin
-  //data[0] = 4'd0;
-  //data[1] = 4'd1;
-  //data[2] = 4'd2;
-  //data[3] = 4'd3;
-  //for (int i = 0; i < 4; i++) begin
     @(negedge clk) din = data[i];
   end
+  repeat (4) @(negedge clk);
 end
 endtask
 
